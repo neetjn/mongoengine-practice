@@ -1,0 +1,2 @@
+mongoengine==0.15.0
+flask==0.12.2
