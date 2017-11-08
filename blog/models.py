@@ -57,7 +57,7 @@ class CommentSerializer(Serializer):
         model = Comment
 
 
-class PostView(Object):
+class PostView(object):
 
     def __init__(self, **kwargs):
 
