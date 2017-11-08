@@ -61,8 +61,18 @@ class PostView(object):
 
     def __init__(self, **kwargs):
 
-        self.ip_address = fields.StringField(required=True)
-        self.view_time = fields.DateTimeField(required=True)
+        self.ip_address = kwargs.get('ip_address', None)
+        self.view_time = kwargs.get('view_time', None)
+
+
+class PostViewSerializer(Serializer):
+
+    ip_address = fields.StringField(required=True)
+    view_time = fields.DateTimeField(required=True)
+
+    class Meta(object):
+
+        model = PostView
 
 
 class Post(object):
@@ -75,7 +85,7 @@ class Post(object):
         self.content = kwargs.get('content', '')
         self.tags = kwargs.get('tags', [])
         self.created = kwargs.get('created', None)
-        self.edited = kwargs.get('edit', None)
+        self.edited = kwargs.get('edited', None)
         self.comments = kwargs.get('comments', [])
         self.likes = kwargs.get('likes', 0)
         self.views = kwargs.get('views', 0)
@@ -92,7 +102,7 @@ class PostSerializer(Serializer):
     edited = fields.DateTimeField()
     comments = fields.ListField(CommentSerializer)
     likes = fields.IntegerField()
-    views = fields.IntegerField()
+    views = fields.ListField(PostViewSerializer)
 
     class Meta(object):
 
