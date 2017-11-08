@@ -67,8 +67,8 @@ class PostView(object):
 
 class PostViewSerializer(Serializer):
 
-    ip_address = fields.StringField(required=True)
-    view_time = fields.DateTimeField(required=True)
+    ip_address = fields.StringField(name='ipAddress', required=True)
+    view_time = fields.DateTimeField(name='viewTime', required=True)
 
     class Meta(object):
 
