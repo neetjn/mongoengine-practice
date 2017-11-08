@@ -8,6 +8,7 @@ class User(object):
         self.username = kwargs.get('username', '')
         self.full_name = kwargs.get('full_name', '')
         self.posts = kwargs.get('posts', [])
+        self.comments = kwargs.get('comments', [])
         self.total_likes = kwargs.get('total_links', 0)
         self.last_posted = kwargs.get('last_posted', None)
         self.last_activity = kwargs.get('last_activity', None)
@@ -18,6 +19,7 @@ class UserSerializer(object):
     username = fields.StringField()
     full_name = fields.StringField(name='fullName')
     posts = fields.ListField(fields.StringField)
+    comments = fields.ListField(fields.StringField)
     total_likes = fields.IntegerField(name='totalLikes')
     last_posted = fields.DateTimeField(name='lastPosted')
     last_activity = fields.DateTimeField(name='lastActivity')
@@ -35,21 +37,32 @@ class Comment(object):
         self.edited = kwargs.get('edited', None)
         self.comments = kwargs.get('comments', [])
         self.likes = kwargs.get('likes', 0)
+        self.views = kwargs.get('views', 0)
 
 
 class CommentSerializer(Serializer):
-    
+
     id = fields.StringField()
     author = fields.StringField()
     content = fields.StringField()
+    tags = fields.ListField(fields.StringField)
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
+    comments = fields.ListField(fields.StringField)
     likes = fields.IntegerField()
     views = fields.IntegerField()
 
     class Meta(object):
 
         model = Comment
+
+
+class PostView(Object):
+
+    def __init__(self, **kwargs):
+
+        self.ip_address = fields.StringField(required=True)
+        self.view_time = fields.DateTimeField(required=True)
 
 
 class Post(object):
@@ -69,11 +82,12 @@ class Post(object):
 
 
 class PostSerializer(Serializer):
-    
+
     id = fields.StringField()
     title = fields.StringField()
     author = fields.StringField()
     content = fields.StringField()
+    tags = fields.ListField(fields.StringField)
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
     comments = fields.ListField(CommentSerializer)
