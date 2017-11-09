@@ -6,8 +6,8 @@ class User(object):
     def __init__(self, **kwargs):
 
         self.username = kwargs.get('username', '')
+        self.email = kwargs.get('email', '')
         self.full_name = kwargs.get('full_name', '')
-        self.posts = kwargs.get('posts', [])
         self.comments = kwargs.get('comments', [])
         self.total_likes = kwargs.get('total_links', 0)
         self.last_posted = kwargs.get('last_posted', None)
@@ -23,6 +23,11 @@ class UserSerializer(object):
     total_likes = fields.IntegerField(name='totalLikes')
     last_posted = fields.DateTimeField(name='lastPosted')
     last_activity = fields.DateTimeField(name='lastActivity')
+
+
+class UserWithPassword(object):
+
+
 
 
 class Comment(object):

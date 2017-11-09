@@ -4,31 +4,41 @@ from mongoengine import *
 
 class User(Document):
 
-    username = StringField()
+    username = StringField(required=True)
+    email = EmailField(required=True)
     full_name = StringField()
-    posts = ListField(StringField)
-    comments = ListField(StringField)
-    total_likes = IntField()
+    password = StringField(required=True)
+    salt = StringField(required=True)
+    avatar_href = StringField()
     last_posted = DateTimeField()
     last_activity = DateTimeField()
+
+
+class CommentLike(EmbeddedDocument):
+
+    user_id = StringField(required=True)
+    time = DateTimeField(default=datetime.now())
 
 
 class Comment(EmbeddedDocument):
 
     author = StringField(required=True)
     content = StringField(required=True)
-    tags = ListField(StringField)
     created = DateTimeField(default=datetime.now())
     edited = DateTimeField()
-    comments = ListField(StringField)
-    likes = IntField(default=0)
-    views = IntField(default=0)
+    likes = ListField(EmbeddedDocumentField(CommentLike))
+
+
+class PostLike(EmbeddedDocument):
+
+    user_id = StringField(required=True)
+    time = DateTimeField(default=datetime.now())
 
 
 class PostView(EmbeddedDocument):
 
     ip_address = StringField(required=True)
-    view_time = DateTimeField(default=datetime.now())
+    seen = DateTimeField(default=datetime.now())
 
 
 class Post(Document):
@@ -39,6 +49,5 @@ class Post(Document):
     tags = ListField(StringField())
     created = DateTimeField(default=datetime.now())
     edited = DateTimeField()
-    comments = ListField(StringField)
-    likes = IntField(default=0)
-    views = IntField(default=0)
+    likes = ListField(EmbeddedDocumentField(PostLike))
+    views = ListField(EmbeddedDocumentField(PostView))
