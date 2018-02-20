@@ -1,5 +1,14 @@
+
+dist: trusty
 language: python
 python:
-  - "2.7"
+  - '3.6'
+before_install:
+  - pip install codecov
+  - pip install pipenv
+install:
+  - pipenv install --system
+  - pipenv install --dev --system
 script:
-  - "echo 'Hello World!'"
+  - pytest --cov blog.core tests
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then codecov; fi
