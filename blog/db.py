@@ -1,53 +1,53 @@
 from datetime import datetime
-from mongoengine import *
+import mongoengine
 
 
-class User(Document):
+class User(mongoengine.Document):
 
-    username = StringField(required=True)
-    email = EmailField(required=True)
-    full_name = StringField()
-    password = StringField(required=True)
-    salt = StringField(required=True)
-    avatar_href = StringField()
-    last_posted = DateTimeField()
-    last_activity = DateTimeField()
-
-
-class CommentLike(EmbeddedDocument):
-
-    user_id = StringField(required=True)
-    time = DateTimeField(default=datetime.now())
+    username = mongoengine.StringField(required=True)
+    email = mongoengine.EmailField(required=True)
+    full_name = mongoengine.StringField()
+    password = mongoengine.StringField(required=True)
+    salt = mongoengine.StringField(required=True)
+    avatar_href = mongoengine.StringField()
+    last_posted = mongoengine.DateTimeField()
+    last_activity = mongoengine.DateTimeField()
 
 
-class Comment(EmbeddedDocument):
+class CommentLike(mongoengine.EmbeddedDocument):
 
-    author = StringField(required=True)
-    content = StringField(required=True)
-    created = DateTimeField(default=datetime.now())
-    edited = DateTimeField()
-    likes = ListField(EmbeddedDocumentField(CommentLike))
+    user_id = mongoengine.StringField(required=True)
+    time = mongoengine.DateTimeField(default=datetime.now())
 
 
-class PostLike(EmbeddedDocument):
+class Comment(mongoengine.EmbeddedDocument):
 
-    user_id = StringField(required=True)
-    time = DateTimeField(default=datetime.now())
-
-
-class PostView(EmbeddedDocument):
-
-    ip_address = StringField(required=True)
-    seen = DateTimeField(default=datetime.now())
+    author = mongoengine.StringField(required=True)
+    content = mongoengine.StringField(required=True)
+    created = mongoengine.DateTimeField(default=datetime.now())
+    edited = mongoengine.DateTimeField()
+    likes = mongoengine.ListField(mongoengine.EmbeddedDocumentField(CommentLike))
 
 
-class Post(Document):
+class PostLike(mongoengine.EmbeddedDocument):
 
-    title = StringField(required=True)
-    author = StringField(required=True)
-    content = StringField(required=True)
-    tags = ListField(StringField())
-    created = DateTimeField(default=datetime.now())
-    edited = DateTimeField()
-    likes = ListField(EmbeddedDocumentField(PostLike))
-    views = ListField(EmbeddedDocumentField(PostView))
+    user_id = mongoengine.StringField(required=True)
+    time = mongoengine.DateTimeField(default=datetime.now())
+
+
+class PostView(mongoengine.EmbeddedDocument):
+
+    ip_address = mongoengine.StringField(required=True)
+    seen = mongoengine.DateTimeField(default=datetime.now())
+
+
+class Post(mongoengine.Document):
+
+    title = mongoengine.StringField(required=True)
+    author = mongoengine.StringField(required=True)
+    content = mongoengine.StringField(required=True)
+    tags = mongoengine.ListField(mongoengine.StringField())
+    created = mongoengine.DateTimeField(default=datetime.now())
+    edited = mongoengine.DateTimeField()
+    likes = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PostLike))
+    views = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PostView))

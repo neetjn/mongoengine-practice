@@ -69,7 +69,7 @@ class CommentDto(object):
         self.comments = kwargs.get('comments', [])
         self.likes = kwargs.get('likes', 0)
         self.views = kwargs.get('views', 0)
-        self.links = wargs.get('links', [])
+        self.links = kwargs.get('links', [])
 
 
 class CommentDtoSerializer(Serializer):
@@ -80,7 +80,6 @@ class CommentDtoSerializer(Serializer):
     tags = fields.ListField(fields.StringField)
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
-    comments = fields.ListField(fields.StringField)
     likes = fields.IntegerField()
     views = fields.IntegerField()
     links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
@@ -88,6 +87,10 @@ class CommentDtoSerializer(Serializer):
     class Meta(object):
 
         model = CommentDto
+
+
+# manual insert for meta data, cannot reference class before it's created
+CommentDtoSerializer.fields.append(fields.ListField(fields.ObjectField(CommentDtoSerializer)))
 
 
 class PostViewDto(object):
@@ -134,9 +137,9 @@ class PostDtoSerializer(Serializer):
     tags = fields.ListField(fields.StringField)
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
-    comments = fields.ListField(CommentSerializer)
+    comments = fields.ListField(CommentDtoSerializer)
     likes = fields.IntegerField()
-    views = fields.ListField(PostViewSerializer)
+    views = fields.ListField(PostViewDtoSerializer)
     links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
 
     class Meta(object):
