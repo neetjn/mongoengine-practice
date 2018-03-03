@@ -19,8 +19,7 @@ python_version = "3.6"
 [packages]
 
 mongoengine = "*"
-flask = "*"
 "r2dto" = "*"
-"jinja2" = "*"
-pyjwt = "*"
+"Jinja2" = "*"
+PyJWT = "*"
 "boto3" = "*"

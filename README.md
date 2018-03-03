@@ -8,7 +8,7 @@ This project provides a seamless REST api for your blog. py-blog has the capabil
 
 **Size**
 
-py-blog is composed of a simple REST api built on top of [Flask](http://flask.pocoo.org/) and supports [resource expansion](https://stormpath.com/blog/linking-and-resource-expansion-rest-api-tips).
+py-blog is composed of a simple REST api built on top of [Falcon](https://falconframework.org/) and supports [resource expansion](https://stormpath.com/blog/linking-and-resource-expansion-rest-api-tips).
 
 **Flexbility**
 
