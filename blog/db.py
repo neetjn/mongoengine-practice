@@ -9,9 +9,11 @@ class User(mongoengine.Document):
     full_name = mongoengine.StringField()
     password = mongoengine.StringField(required=True)
     salt = mongoengine.StringField(required=True)
+    role = mongoengine.StringField()
     avatar_href = mongoengine.StringField()
     last_posted = mongoengine.DateTimeField()
     last_activity = mongoengine.DateTimeField()
+    register_date = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
 
 
 class CommentLike(mongoengine.EmbeddedDocument):

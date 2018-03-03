@@ -49,11 +49,40 @@ class UserDtoSerializer(object):
 
 class UserWithPasswordDto(object):
 
-    def __init__(self):
+    def __init__(self, **kwargs):
 
-        username = fields.StringField()
-        password = fields.StringField()
-        email = fields.StringField()
+        self.username = kwargs.get('username', '')
+        self.password = kwargs.get('password', '')
+        self.email = kwargs.get('email', '')
+        self.full_name = kwargs.get('full_name', '')
+
+
+class UserWithPasswordDtoSerializer(Serializer):
+
+    username = fields.StringField()
+    password = fields.StringField()
+    full_name = fields.StringField(name='fullName')
+    email = fields.StringField()
+
+    class Meta(object):
+
+        model = UserWithPasswordDto
+
+class UserAuthDto(object):
+
+    def __init__(self, **kwargs):
+        self.username = kwargs.get('username', '')
+        self.password = kwargs.get('password', '')
+
+
+class UserAuthDtoSerializer(Serializer):
+
+    username = fields.StringField()
+    password = fields.StringField()
+
+    class Meta(object):
+
+        model = UserAuthDto
 
 
 class CommentDto(object):

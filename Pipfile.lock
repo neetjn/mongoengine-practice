@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6666ba254a8465a7cbabd9ec78bf2322002477689bd8eac6e9e8c24fb568fd55"
+            "sha256": "a28704fad607379903b2094a1ef59b30aedb075b3b223f440ac9c2292224cc86"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -50,6 +50,13 @@
                 "sha256:51e64ef2ebfb29cae1faa133b3710143496eca21c530f3f71424d77687764274"
             ],
             "version": "==0.14"
+        },
+        "falcon": {
+            "hashes": [
+                "sha256:0a66b33458fab9c1e400a9be1a68056abda178eb02a8cb4b8f795e9df20b053b",
+                "sha256:3981f609c0358a9fcdb25b0e7fab3d9e23019356fb429c635ce4133135ae1bc4"
+            ],
+            "version": "==1.4.1"
         },
         "jinja2": {
             "hashes": [
@@ -139,6 +146,13 @@
                 "sha256:891c38b2a02f5bb1be3e4793866c8df49c7d19baabf9c1bad62547e0b4866aca"
             ],
             "version": "==2.6.1"
+        },
+        "python-mimeparse": {
+            "hashes": [
+                "sha256:a295f03ff20341491bfe4717a39cd0a8cc9afad619ba44b77e86b0ab8a2b8282",
+                "sha256:76e4b03d700a641fd7761d3cd4fdbbdcd787eade1ebfac43f877016328334f78"
+            ],
+            "version": "==1.6.0"
         },
         "r2dto": {
             "hashes": [
