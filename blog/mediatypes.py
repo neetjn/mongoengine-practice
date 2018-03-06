@@ -17,6 +17,21 @@ class LinkDtoSerializer(Serializer):
         model = LinkDto
 
 
+class ServiceDescriptionDto(object):
+
+    def __init__(self, **kwargs):
+        self.links = kwargs.get('links', [])
+
+
+class ServiceDescriptionDtoSerializer(Serializer):
+
+    links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
+
+    class Meta(object):
+
+        model = ServiceDescriptionDto
+
+
 class UserDto(object):
 
     def __init__(self, **kwargs):
