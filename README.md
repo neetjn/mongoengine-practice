@@ -14,6 +14,26 @@ py-blog is composed of a simple RESTful api built on top of [Falcon](https://fal
 
 This project was designed with containerization in mind and provides Dockerfile for custom deployments. You can also find docker-compose and ansible configurations in the [here]().
 
+## Configuration
+
+...
+
+## Setting Up
+
+...
+
+## Testing
+
+...
+
+## Deployment
+
+...
+
+## Contributing
+
+...
+
 ---
 
 Copyright (c) 2018 John Nolette Licensed under the MIT License.
