@@ -1,4 +1,4 @@
 import falcon
 
 
-from blog.utils import to_json
+api = falcon.API()

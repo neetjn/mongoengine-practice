@@ -8,3 +8,14 @@ def to_json(serializer, dto):
     base = serializer(object=dto)
     base.validate()
     return base.data
+
+def from_json(serializer, payload):
+    """
+    Deserializes json into data transfer object.
+
+    :param serialier: r2dto serializer definition.
+    :param payload: Payload to deserialize.
+    """
+    base = serializer(data=payload)
+    base.validate()
+    return base.object
