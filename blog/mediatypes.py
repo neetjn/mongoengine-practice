@@ -189,3 +189,37 @@ class PostDtoSerializer(Serializer):
     class Meta(object):
 
         model = PostDto
+
+
+class PostCollectionDto(object):
+
+    def __init__(self, **kwargs):
+        self.posts = kwargs.get('posts', [])
+
+
+class PostCollectionDtoSerializer(Serializer):
+
+    posts = fields.ObjectField(PostDtoSerializer)
+
+    class Model(object):
+
+        model = PostCollectionDto
+
+
+class PostFormDto(object):
+
+    def __init__(self, **kwargs):
+        self.title = kwargs.get('title', '')
+        self.content = kwargs.get('content', '')
+        self.tags = kwargs.get('tags', [])
+
+
+class PostFormSDtoerializer(Serializer):
+
+    title = fields.StringField()
+    content = fields.StringField()
+    tags = fields.ListField(fields.StringField)
+
+    class Meta(object):
+
+        model = PostFormDto
