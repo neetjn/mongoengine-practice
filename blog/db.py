@@ -16,21 +16,6 @@ class User(mongoengine.Document):
     register_date = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
 
 
-class CommentLike(mongoengine.EmbeddedDocument):
-
-    user_id = mongoengine.StringField(required=True)
-    time = mongoengine.DateTimeField(default=datetime.now())
-
-
-class Comment(mongoengine.EmbeddedDocument):
-
-    author = mongoengine.StringField(required=True)
-    content = mongoengine.StringField(required=True)
-    created = mongoengine.DateTimeField(default=datetime.now())
-    edited = mongoengine.DateTimeField()
-    likes = mongoengine.ListField(mongoengine.EmbeddedDocumentField(CommentLike))
-
-
 class PostLike(mongoengine.EmbeddedDocument):
 
     user_id = mongoengine.StringField(required=True)
@@ -46,6 +31,7 @@ class PostView(mongoengine.EmbeddedDocument):
 class Post(mongoengine.Document):
 
     title = mongoengine.StringField(required=True)
+    description = mongoengine.StringField()
     author = mongoengine.StringField(required=True)
     content = mongoengine.StringField(required=True)
     tags = mongoengine.ListField(mongoengine.StringField())
@@ -53,3 +39,19 @@ class Post(mongoengine.Document):
     edited = mongoengine.DateTimeField()
     likes = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PostLike))
     views = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PostView))
+
+
+class CommentLike(mongoengine.EmbeddedDocument):
+
+    user_id = mongoengine.StringField(required=True)
+    time = mongoengine.DateTimeField(default=datetime.now())
+
+
+class Comment(mongoengine.EmbeddedDocument):
+
+    post_id = mongoengine.StringField(required=True)
+    author = mongoengine.StringField(required=True)
+    content = mongoengine.StringField(required=True)
+    created = mongoengine.DateTimeField(default=datetime.now())
+    edited = mongoengine.DateTimeField()
+    likes = mongoengine.ListField(mongoengine.EmbeddedDocumentField(CommentLike))

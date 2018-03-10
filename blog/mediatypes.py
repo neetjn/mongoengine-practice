@@ -36,6 +36,7 @@ class UserDto(object):
 
     def __init__(self, **kwargs):
 
+        self.href = kwargs.get('href', '')
         self.username = kwargs.get('username', '')
         self.email = kwargs.get('email', '')
         self.full_name = kwargs.get('full_name', '')
@@ -48,6 +49,7 @@ class UserDto(object):
 
 class UserDtoSerializer(object):
 
+    href = fields.StringField()
     username = fields.StringField()
     full_name = fields.StringField(name='fullName')
     email = fields.StringField()
@@ -104,7 +106,7 @@ class CommentDto(object):
 
     def __init__(self, **kwargs):
 
-        self.id = kwargs.get('id', '')
+        self.href = kwargs.get('href', '')
         self.author = kwargs.get('author', '')
         self.content = kwargs.get('content', '')
         self.tags = kwargs.get('tags', [])
@@ -118,7 +120,7 @@ class CommentDto(object):
 
 class CommentDtoSerializer(Serializer):
 
-    id = fields.StringField()
+    href = fields.StringField()
     author = fields.StringField()
     content = fields.StringField()
     tags = fields.ListField(fields.StringField)
@@ -159,7 +161,7 @@ class PostDto(object):
 
     def __init__(self, **kwargs):
 
-        self.id = kwargs.get('id', '')
+        self.href = kwargs.get('href', '')
         self.title = kwargs.get('title', '')
         self.author = kwargs.get('author', '')
         self.content = kwargs.get('content', '')
@@ -174,8 +176,9 @@ class PostDto(object):
 
 class PostDtoSerializer(Serializer):
 
-    id = fields.StringField()
+    href = fields.StringField()
     title = fields.StringField()
+    description = fields.StringField()
     author = fields.StringField()
     content = fields.StringField()
     tags = fields.ListField(fields.StringField)
@@ -194,6 +197,7 @@ class PostDtoSerializer(Serializer):
 class PostCollectionDto(object):
 
     def __init__(self, **kwargs):
+
         self.posts = kwargs.get('posts', [])
 
 
@@ -209,7 +213,9 @@ class PostCollectionDtoSerializer(Serializer):
 class PostFormDto(object):
 
     def __init__(self, **kwargs):
+
         self.title = kwargs.get('title', '')
+        self.description = kwargs.get('description', '')
         self.content = kwargs.get('content', '')
         self.tags = kwargs.get('tags', [])
 
@@ -217,6 +223,7 @@ class PostFormDto(object):
 class PostFormSDtoerializer(Serializer):
 
     title = fields.StringField()
+    description = fields.StringField()
     content = fields.StringField()
     tags = fields.ListField(fields.StringField)
 

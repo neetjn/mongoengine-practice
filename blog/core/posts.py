@@ -1,9 +1,8 @@
+import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
-
-from blog.db import User, CommentLike, Comment, PostLike, PostView, Post
-from blog.errors import ResourceNotFound
-from blog.mediatypes import LinkDto, UserDto, UserWithPasswordDto, UserAuthDto, CommentDto, PostViewDto, \
-    PostDto
+from blog.db import Post
+from blog.errors import PostNotFound
+from blog.mediatypes import LinkDto, PostViewDto, PostDto
 
 
 def get_posts(start=None, count=None):
@@ -47,20 +46,20 @@ def get_post(post_id):
     try:
         return Post.objects.get(pk=post_id)
     except (DoesNotExist, ValidationError):
-        raise ResourceNotFound()
+        raise PostNotFound()
 
 
-def edit_post(post_id, post_dto):
+def edit_post(post_id, post_form_dto):
     """
-    Fetch existing post resource.
+    Edit existing post resource.
 
-    :param post_id: Identifier of post to fetch.
+    :param post_id: Identifier of post to edit.
     :type post_id: str
     """
-    # TODO: left here
     post = get_post(post_id)
+    post.title = post_form_dto.title
+    post.description = post_form_dto.description
+    post.content = post_form_dto.content
+    post.tags = post_form_dto.tags
+    post.edited = datetime.datetime.utcnow()
     post.save()
-
-
-def get_comment(id):
-    pass
