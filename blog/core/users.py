@@ -3,6 +3,7 @@ from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, 
 from blog.db import User
 from blog.errors import UserNotFound
 from blog.mediatypes import UserDto, UserFormDto, UserRoles
+from blog.utils import hash_password
 
 
 def get_users(start=None, count=None):
@@ -28,9 +29,9 @@ def create_user(user_form_dto):
     user = User()
     user.username = user_form_dto.username
     user.avatar_href = user_form_dto.avatar_href
-    # TODO: Create authentication algorithm
-    user.passord = user_form_dto.password
-    user.salt = ''
+    password, salt = hash_password(user_form_dto.password)
+    user.passord = password
+    user.salt = salt
     user.full_name = user_form_dto.full_name
     user.email = user_form_dto.email
     user.role = UserRoles.blogger
