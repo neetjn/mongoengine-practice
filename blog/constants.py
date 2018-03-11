@@ -1,6 +1,8 @@
 import os
 
 
+EMAIL_REGEX = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
+
 BLOG_HOST = os.environ.get('BLOG_HOST', '0.0.0.0')
 BLOG_PORT = os.environ.get('BLOG_PORT', 8080)
 

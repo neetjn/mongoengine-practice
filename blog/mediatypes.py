@@ -1,4 +1,12 @@
-from r2dto import fields, validators, Serializer
+import re
+from r2dto import fields, validators, Serializer, ValidationError
+
+
+class UserRoles(object):
+
+    admin = 'ADMIN'
+    moderator = 'MODERATOR'
+    blogger = 'BLOGGER'
 
 
 class LinkDto(object):
@@ -36,6 +44,7 @@ class UserDto(object):
 
     def __init__(self, **kwargs):
 
+        # TODO: Create validators for username, user full name
         self.href = kwargs.get('href', '')
         self.username = kwargs.get('username', '')
         self.email = kwargs.get('email', '')
@@ -52,7 +61,7 @@ class UserDtoSerializer(object):
     href = fields.StringField()
     username = fields.StringField()
     full_name = fields.StringField(name='fullName')
-    email = fields.StringField()
+    email = fields.StringField(validators=[EmailValidator()])
     posts = fields.ListField(fields.StringField)
     comments = fields.ListField(fields.StringField)
     total_likes = fields.IntegerField(name='totalLikes')
@@ -69,6 +78,7 @@ class UserFormDto(object):
     def __init__(self, **kwargs):
 
         self.username = kwargs.get('username', '')
+        self.avatar_href = kwargs.get('avatar_href', '')
         self.password = kwargs.get('password', '')
         self.email = kwargs.get('email', '')
         self.full_name = kwargs.get('full_name', '')
@@ -77,9 +87,10 @@ class UserFormDto(object):
 class UserFormDtoSerializer(Serializer):
 
     username = fields.StringField()
+    avatar_href = fields.StringField(name='avatarHref')
     password = fields.StringField()
     full_name = fields.StringField(name='fullName')
-    email = fields.StringField()
+    email = fields.StringField(validators=[EmailValidator()])
 
     class Meta(object):
 
@@ -176,6 +187,7 @@ class PostDto(object):
 
 class PostDtoSerializer(Serializer):
 
+    # TODO: create validator and rules for post title, description, content
     href = fields.StringField()
     title = fields.StringField()
     description = fields.StringField()

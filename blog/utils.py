@@ -1,3 +1,6 @@
+from blog.constants import EMAIL_REGEX
+
+
 def to_json(serializer, dto):
     """
     Serializes data transfer object with r2dto.
@@ -19,3 +22,14 @@ def from_json(serializer, payload):
     base = serializer(data=payload)
     base.validate()
     return base.object
+
+
+class EmailValidator(object):
+
+    def validate(self, field, data):
+        if not re.match(EMAIL_REGEX, data):
+            raise ValidationError('"f{data}" is not a valid email.')
+
+class CharLengthValidator(object):
+
+    def validate(self, field, data):
