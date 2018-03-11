@@ -64,7 +64,7 @@ class UserDtoSerializer(object):
         model = UserDto
 
 
-class UserWithPasswordDto(object):
+class UserFormDto(object):
 
     def __init__(self, **kwargs):
 
@@ -74,7 +74,7 @@ class UserWithPasswordDto(object):
         self.full_name = kwargs.get('full_name', '')
 
 
-class UserWithPasswordDtoSerializer(Serializer):
+class UserFormDtoSerializer(Serializer):
 
     username = fields.StringField()
     password = fields.StringField()

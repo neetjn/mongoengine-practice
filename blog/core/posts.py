@@ -2,7 +2,7 @@ import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from blog.db import Post
 from blog.errors import PostNotFound
-from blog.mediatypes import LinkDto, PostViewDto, PostDto
+from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto
 
 
 def get_posts(start=None, count=None):
