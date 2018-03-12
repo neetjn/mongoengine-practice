@@ -63,8 +63,12 @@ class UserDto(object):
 class UserDtoSerializer(object):
 
     href = fields.StringField()
-    username = fields.StringField(validators=[CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)])
-    full_name = fields.StringField(name='fullName'validators=[CharLenValidator(min=BLOG_USER_FNAME_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)])
+    username = fields.StringField(validators=[
+        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)
+    ])
+    full_name = fields.StringField(name='fullName'validators=[
+        CharLenValidator(min=BLOG_USER_FNAME_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+    ])
     email = fields.StringField(validators=[EmailValidator()])
     posts = fields.ListField(fields.StringField)
     comments = fields.ListField(fields.StringField)
@@ -90,10 +94,14 @@ class UserFormDto(object):
 
 class UserFormDtoSerializer(Serializer):
 
-    username = fields.StringField(validators=[CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)])
+    username = fields.StringField(validators=[
+        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)
+    ])
     avatar_href = fields.StringField(name='avatarHref')
     password = fields.StringField()
-    full_name = fields.StringField(name='fullName'validators=[CharLenValidator(min=BLOG_USER_FNAME_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)])
+    full_name = fields.StringField(name='fullName'validators=[
+        CharLenValidator(min=BLOG_USER_FNAME_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+    ])
     email = fields.StringField(validators=[EmailValidator()])
 
     class Meta(object):
@@ -109,7 +117,9 @@ class UserAuthDto(object):
 
 class UserAuthDtoSerializer(Serializer):
 
-    username = fields.StringField(validators=[CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)])
+    username = fields.StringField(validators=[
+        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)
+    ])
     password = fields.StringField()
 
     class Meta(object):
@@ -208,10 +218,13 @@ class PostDto(object):
 
 class PostDtoSerializer(Serializer):
 
-    # TODO: create validator and rules for post title, description, content
     href = fields.StringField()
-    title = fields.StringField()
-    description = fields.StringField()
+    title = fields.StringField(validators=[
+        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
+    ])
+    description = fields.StringField(validators=[
+
+    ])
     author = fields.StringField()
     content = fields.StringField()
     tags = fields.ListField(fields.StringField)
