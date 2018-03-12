@@ -1,7 +1,8 @@
 import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
+from mongoengine.queryset.visitor import Q
 from blog.db import User
-from blog.errors import UserNotFound
+from blog.errors import UserNotFoundError, UserExistsError
 from blog.mediatypes import UserDto, UserFormDto, UserRoles
 from blog.utils import hash_password
 
@@ -26,17 +27,21 @@ def create_user(user_form_dto):
     :param user_form_dto: Data transfer object with user details.
     :type user_form_dto: UserFormDto
     """
-    user = User()
-    user.username = user_form_dto.username
-    user.avatar_href = user_form_dto.avatar_href
-    password, salt = hash_password(user_form_dto.password)
-    user.passord = password
-    user.salt = salt
-    user.full_name = user_form_dto.full_name
-    user.email = user_form_dto.email
-    user.role = UserRoles.blogger
-    user.register_date = datetime.datetime.utcnow()
-    user.save()
+    try:
+        User.objects.get(Q(username=user_form_dto.username) | Q(email=user_form_dto.email))
+    except DoesNotExist:
+        user = User()
+        user.username = user_form_dto.username
+        user.avatar_href = user_form_dto.avatar_href
+        password, salt = hash_password(user_form_dto.password)
+        user.passord = password
+        user.salt = salt
+        user.full_name = user_form_dto.full_name
+        user.email = user_form_dto.email
+        user.role = UserRoles.blogger
+        user.save()
+    else:
+        raise UserExistsError()
 
 
 def get_user(user_id):
@@ -49,7 +54,7 @@ def get_user(user_id):
     try:
         return User.objects.get(pk=user_id)
     except (DoesNotExist, ValidationError):
-        raise UserNotFound()
+        raise UserNotFoundError()
 
 
 def edit_user(user_id, user_form_dto):

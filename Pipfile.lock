@@ -1,18 +1,18 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "05c03abe077d713a6347d1c5eba76496d7020e35eb462d297e57eab991f61abb"
+            "sha256": "c3b8ad1be11dba5dbf32db1f2c5883459bf57aef01d28e85adc829258d8687cb"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
-            "implementation_version": "3.6.2",
+            "implementation_version": "3.6.3",
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
-            "platform_release": "4.4.0-116-generic",
+            "platform_release": "4.14.5-1-ARCH",
             "platform_system": "Linux",
-            "platform_version": "#140-Ubuntu SMP Mon Feb 12 21:23:04 UTC 2018",
-            "python_full_version": "3.6.2",
+            "platform_version": "#1 SMP PREEMPT Sun Dec 10 14:50:30 UTC 2017",
+            "python_full_version": "3.6.3",
             "python_version": "3.6",
             "sys_platform": "linux"
         },
@@ -31,17 +31,17 @@
     "default": {
         "boto3": {
             "hashes": [
-                "sha256:d817c21abcb41f390cec28e444d180db7d40ec2786ff5f54813af52e53598362",
-                "sha256:cf5768f1b9f26d5f82369ef97e11eee0010d10f8723b081c61ff17a1cd199bea"
+                "sha256:48823dab93700238a6d879df10e8244db7224f01df62128b20237fae0cf94f56",
+                "sha256:b8d3590f8a26cd3a1e4251a80fccc3de7506a830da9fc29ef1ff9499601682a2"
             ],
-            "version": "==1.6.3"
+            "version": "==1.6.6"
         },
         "botocore": {
             "hashes": [
-                "sha256:8a8c59f4c7b4e3521d82aee4b8cba55e80de44617649c2320823505bfebbcaa4",
-                "sha256:d5b892ab86cd3e8d6cb570dd5275bf1c600cbbf9f07a40a22bcdd9023c0e844f"
+                "sha256:f7e0b48003558086f46895cd22f860046c0a6b939f771d1acc97fa8d18cb4ff4",
+                "sha256:c43d16a60089b09696e5094a74204740dfcf306e644b8267342e3afdd181537c"
             ],
-            "version": "==1.9.3"
+            "version": "==1.9.6"
         },
         "docutils": {
             "hashes": [
@@ -91,6 +91,12 @@
                 "sha256:f8fed3871dfcefd421d3a3be1b43b3b9a1622db6a4271d78f15f494e51003f75"
             ],
             "version": "==0.15.0"
+        },
+        "pycrypto": {
+            "hashes": [
+                "sha256:f2ce1e989b272cfcb677616763e0a2e7ec659effa67a88aa92b3a65528f60a3c"
+            ],
+            "version": "==2.6.1"
         },
         "pyjwt": {
             "hashes": [

@@ -1,7 +1,8 @@
 import hashlib
 from uuid import uuid4
+from Crypto.Cipher import AES
 from r2dto import Serializer
-from blog.constants import EMAIL_REGEX
+from blog.constants import EMAIL_REGEX, BLOG_CONTENT_KEY
 
 
 def to_json(serializer: Serializer, dto: object):
@@ -32,6 +33,14 @@ def from_json(serializer: Serializer, payload: str):
     return base.object
 
 
+def encrypt_content(content: str):
+    pass
+
+
+def decrypt_content(content: str):
+    pass
+
+
 def hash_password(password: str):
     """
     Hashes password with a randomly generated salt value.
@@ -41,7 +50,7 @@ def hash_password(password: str):
     :return: (hashed_password, salt)
     """
     salt = uuid.uuid4().hex
-    hashed_password = hashlib.sha512(password + salt).hexdigest()
+    hashed_password = hashlib.sha256(password + salt).hexdigest()
     return (hashed_password, salt)
 
 
@@ -68,4 +77,8 @@ class CharLenValidator(object):
         self.max = max
 
     def validate(self, field, data):
-        pass
+        size = len(data)
+        if size < self.min or size > self.max:
+            raise ValidationError(
+                '"{field.name}" must be greater than or equal to {self.min}'
+                ' or less than or equal to {self.max} in length.')

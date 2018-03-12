@@ -1,5 +1,10 @@
 import re
 from r2dto import fields, validators, Serializer, ValidationError
+from blog.constants import BLOG_POST_TITLE_MIN_CHAR, BLOG_POST_TITLE_MAX_CHAR, \
+    BLOG_POST_CONTENT_MIN_CHAR, BLOG_POST_COMMENT_MIN_CHAR, BLOG_POST_COMMENT_MAX_CHAR, \
+    BLOG_USER_FNAME_MIN_CHAR, BLOG_USER_FNAME_MAX_CHAR, BLOG_USER_USERNAME_MIN_CHAR, \
+    BLOG_USER_USERNAME_MAX_CHAR
+from blog.utils import CharLenValidator, EmailValidator
 
 
 class UserRoles(object):
@@ -44,7 +49,6 @@ class UserDto(object):
 
     def __init__(self, **kwargs):
 
-        # TODO: Create validators for username, user full name
         self.href = kwargs.get('href', '')
         self.username = kwargs.get('username', '')
         self.email = kwargs.get('email', '')
@@ -59,8 +63,8 @@ class UserDto(object):
 class UserDtoSerializer(object):
 
     href = fields.StringField()
-    username = fields.StringField()
-    full_name = fields.StringField(name='fullName')
+    username = fields.StringField(validators=[CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)])
+    full_name = fields.StringField(name='fullName'validators=[CharLenValidator(min=BLOG_USER_FNAME_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)])
     email = fields.StringField(validators=[EmailValidator()])
     posts = fields.ListField(fields.StringField)
     comments = fields.ListField(fields.StringField)
@@ -86,10 +90,10 @@ class UserFormDto(object):
 
 class UserFormDtoSerializer(Serializer):
 
-    username = fields.StringField()
+    username = fields.StringField(validators=[CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)])
     avatar_href = fields.StringField(name='avatarHref')
     password = fields.StringField()
-    full_name = fields.StringField(name='fullName')
+    full_name = fields.StringField(name='fullName'validators=[CharLenValidator(min=BLOG_USER_FNAME_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)])
     email = fields.StringField(validators=[EmailValidator()])
 
     class Meta(object):
@@ -105,7 +109,7 @@ class UserAuthDto(object):
 
 class UserAuthDtoSerializer(Serializer):
 
-    username = fields.StringField()
+    username = fields.StringField(validators=[CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)])
     password = fields.StringField()
 
     class Meta(object):
@@ -148,6 +152,23 @@ class CommentDtoSerializer(Serializer):
 
 # manual insert for meta data, cannot reference class before it's created
 CommentDtoSerializer.fields.append(fields.ListField(fields.ObjectField(CommentDtoSerializer)))
+
+
+class CommentFormDto(object):
+
+    def __init__(self, **kwargs):
+        self.content = kwargs.get('content', '')
+        self.tags = kwargs.get('tags', [])
+
+
+class CommentFormDtoSerializer(Serializer):
+
+    content = fields.StringField()
+    tags = fields.ListField(fields.StringField)
+
+    class Meta(object):
+
+        model = CommentFormDto
 
 
 class PostViewDto(object):

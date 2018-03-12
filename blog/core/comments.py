@@ -1,11 +1,11 @@
 import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from blog.db import Comment
-from blog.errors import CommentNotFound
-from blog.mediatypes import CommentDto
+from blog.errors import CommentNotFoundError
+from blog.mediatypes import CommentDto, CommentFormDto
 
 
-def get_post_comments(post_id):
+def get_post_comments(post_id: str):
     """
     Fetch collection of comments given post.
 
@@ -16,7 +16,7 @@ def get_post_comments(post_id):
     return Comment.objects(post_id=post_id)
 
 
-def get_comment(comment_id):
+def get_comment(comment_id: str):
     """
     Fetch existing comment resource.
 
@@ -26,10 +26,10 @@ def get_comment(comment_id):
     try:
         return Comment.objects.get(pk=comment_id)
     except (DoesNotExist, ValidationError):
-        raise CommentNotFound()
+        raise CommentNotFoundError()
 
 
-def edit_comment(comment_id, comment_form_dto):
+def edit_comment(comment_id: str, comment_form_dto: CommentFormDto):
     """
     Edit existing comment resource.
 

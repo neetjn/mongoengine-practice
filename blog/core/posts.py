@@ -1,7 +1,8 @@
 import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
+from blog.core.users import get_user
 from blog.db import Post
-from blog.errors import PostNotFound
+from blog.errors import PostNotFoundError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto
 
 
@@ -18,15 +19,20 @@ def get_posts(start=None, count=None):
     return Post.objects[start:count]
 
 
-def create_post(author, post_form_dto):
+def create_post(author_id: str, post_form_dto: PostFormDto):
     """
     Creates a new post resource.
 
-    :param author: Post author.
-    :type author: User
+    :param author_id: Post author identifier.
+    :type author_id: User
     :param post_form_dto: Data transfer object with post details.
     :type post_form_dto: PostFormDto
     """
+    author = get_user(author_id)
+    post_time = datetime.datetime.utcnow()
+    author.last_activity = post_time
+    author.last_posted = post_time
+    # create post resource
     post = Post()
     post.author = author.author_id
     post.title = post_form_dto.title
@@ -35,7 +41,7 @@ def create_post(author, post_form_dto):
     post.save()
 
 
-def get_post(post_id):
+def get_post(post_id: str):
     """
     Fetch existing post resource.
 
@@ -46,10 +52,10 @@ def get_post(post_id):
     try:
         return Post.objects.get(pk=post_id)
     except (DoesNotExist, ValidationError):
-        raise PostNotFound()
+        raise PostNotFoundError()
 
 
-def edit_post(post_id, post_form_dto):
+def edit_post(post_id: str, post_form_dto: PostFormDto):
     """
     Edit existing post resource.
 
