@@ -159,6 +159,18 @@ class CommentDtoSerializer(Serializer):
         model = CommentDto
 
 
+class CommentCollectionDto(object):
+
+    def __init__(self, **kwargs):
+
+        self.comments = kwargs.get('comments', [])
+
+
+class CommentCollectionDtoSerializer(Serializer):
+
+    comments = fields.ListField(fields.ObjectField(CommentDtoSerializer))
+
+
 class CommentFormDto(object):
 
     def __init__(self, **kwargs):
