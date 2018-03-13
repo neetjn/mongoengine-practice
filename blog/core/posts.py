@@ -6,6 +6,8 @@ from blog.errors import PostNotFoundError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto
 
 
+# TODO: add method to delete post resources to core utilities
+
 def get_posts(start=None, count=None):
     """
     Fetches collection of post resources.

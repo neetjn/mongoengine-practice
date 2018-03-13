@@ -5,6 +5,8 @@ from blog.errors import CommentNotFoundError
 from blog.mediatypes import CommentDto, CommentFormDto
 
 
+# TODO: add method to delete comment resources to core utilities
+
 def get_post_comments(post_id: str):
     """
     Fetch collection of comments given post.
