@@ -137,7 +137,6 @@ class CommentDto(object):
         self.tags = kwargs.get('tags', [])
         self.created = kwargs.get('created', None)
         self.edited = kwargs.get('edited', None)
-        self.comments = kwargs.get('comments', [])
         self.likes = kwargs.get('likes', 0)
         self.views = kwargs.get('views', 0)
         self.links = kwargs.get('links', [])
@@ -158,10 +157,6 @@ class CommentDtoSerializer(Serializer):
     class Meta(object):
 
         model = CommentDto
-
-
-# manual insert for meta data, cannot reference class before it's created
-CommentDtoSerializer.fields.append(fields.ListField(fields.ObjectField(CommentDtoSerializer)))
 
 
 class CommentFormDto(object):
