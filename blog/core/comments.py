@@ -4,7 +4,7 @@ from blog.constants import BLOG_CONTENT_KEY
 from blog.db import Comment
 from blog.errors import CommentNotFoundError
 from blog.mediatypes import CommentDto, CommentFormDto
-from blog.utils import encrypt_content, decrypt_content
+from blog.utils.crypto import encrypt_content, decrypt_content
 
 
 def get_post_comments(post_id: str):

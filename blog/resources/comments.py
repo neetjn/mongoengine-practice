@@ -1,5 +1,4 @@
 import falcon
-from blog.utils import to_json, from_json
 
 
 class CommentResource(object):

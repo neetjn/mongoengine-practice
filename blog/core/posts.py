@@ -4,7 +4,7 @@ from blog.core.users import get_user
 from blog.db import Post
 from blog.errors import PostNotFoundError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto
-from blog.utils import encrypt_content, decrypt_content
+from blog.utils.crypto import encrypt_content, decrypt_content
 
 
 def get_posts(start=None, count=None):

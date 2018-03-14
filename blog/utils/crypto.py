@@ -1,7 +1,9 @@
 import base64
 import hashlib
+from uuid import uuid4
 from Crypto import Random
 from Crypto.Cipher import AES
+from blog.constants import BLOG_CONTENT_KEY
 
 
 class AESCipher(object):
@@ -45,3 +47,36 @@ class AESCipher(object):
     @staticmethod
     def _unpad(s):
         return s[:-ord(s[len(s)-1:])]
+
+
+def hash_password(password: str):
+    """
+    Hashes password with a randomly generated salt value.
+
+    :param password: Plain text password to hash.
+    :type password: str
+    :return: (hashed_password, salt)
+    """
+    salt = uuid4().hex
+    hashed_password = hashlib.sha256(password + salt).hexdigest()
+    return (hashed_password, salt)
+
+
+def encrypt_content(content: str):
+    """
+    Encrypt blog post and comment content.
+
+    :param content: Blog content to encrypt.
+    :type content: str
+    """
+    return AESCipher(BLOG_CONTENT_KEY).encrypt(content)
+
+
+def decrypt_content(content: str):
+    """
+    Decrypt blog post and comment content.
+
+    :param content: Blog content to decrypt.
+    :type content: str
+    """
+    return AESCipher(BLOG_CONTENT_KEY).encrypt(content)

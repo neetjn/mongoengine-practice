@@ -5,7 +5,7 @@ from blog.constants import BLOG_WEBMASTER_EMAIL
 from blog.db import User
 from blog.errors import UserNotFoundError, UserExistsError
 from blog.mediatypes import UserDto, UserFormDto, UserRoles
-from blog.utils import hash_password
+from blog.utils.crypto import hash_password
 
 
 def get_users(start=None, count=None):

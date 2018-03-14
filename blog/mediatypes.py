@@ -4,7 +4,7 @@ from blog.constants import BLOG_POST_TITLE_MIN_CHAR, BLOG_POST_TITLE_MAX_CHAR, \
     BLOG_POST_CONTENT_MIN_CHAR, BLOG_POST_COMMENT_MIN_CHAR, BLOG_POST_COMMENT_MAX_CHAR, \
     BLOG_USER_FNAME_MIN_CHAR, BLOG_USER_FNAME_MAX_CHAR, BLOG_USER_USERNAME_MIN_CHAR, \
     BLOG_USER_USERNAME_MAX_CHAR
-from blog.utils import CharLenValidator, EmailValidator
+from blog.utils.serializers import CharLenValidator, EmailValidator
 
 
 class UserRoles(object):
