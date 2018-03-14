@@ -4,7 +4,8 @@ from blog.constants import BLOG_POST_TITLE_MIN_CHAR, BLOG_POST_TITLE_MAX_CHAR, \
     BLOG_POST_CONTENT_MIN_CHAR, BLOG_POST_COMMENT_MIN_CHAR, BLOG_POST_COMMENT_MAX_CHAR, \
     BLOG_USER_FNAME_MIN_CHAR, BLOG_USER_FNAME_MAX_CHAR, BLOG_USER_USERNAME_MIN_CHAR, \
     BLOG_USER_USERNAME_MAX_CHAR, BLOG_USER_USERNAME_PATTERN
-from blog.utils.serializers import CharLenValidator, EmailValidator, RegexValidator
+from blog.utils.serializers import CharLenValidator, EmailValidator, RegexValidator, \
+    NotEmptyValidator
 
 
 class UserRoles(object):
@@ -63,12 +64,15 @@ class UserDtoSerializer(object):
 
     href = fields.StringField()
     username = fields.StringField(validators=[
+        NotEmptyValidator(),
         CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
         RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
     ])
     full_name = fields.StringField(name='fullName', validators=[
-        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)])
-    email = fields.StringField(validators=[EmailValidator()])
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+    ])
+    email = fields.StringField(validators=[NotEmptyValidator(), EmailValidator()])
     posts = fields.ListField(fields.StringField)
     comments = fields.ListField(fields.StringField)
     total_likes = fields.IntegerField(name='totalLikes')
@@ -93,13 +97,16 @@ class UserFormDto(object):
 class UserFormDtoSerializer(Serializer):
 
     username = fields.StringField(validators=[
+        NotEmptyValidator(),
         CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
         RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
     ])
     avatar_href = fields.StringField(name='avatarHref')
     password = fields.StringField()
     full_name = fields.StringField(name='fullName', validators=[
-        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)])
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+    ])
     email = fields.StringField(validators=[EmailValidator()])
 
     class Meta(object):
@@ -146,7 +153,9 @@ class CommentDtoSerializer(Serializer):
     href = fields.StringField()
     author = fields.StringField()
     content = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_POST_COMMENT_MIN_CHAR, max=BLOG_POST_COMMENT_MAX_CHAR)])
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_POST_COMMENT_MIN_CHAR, max=BLOG_POST_COMMENT_MAX_CHAR)
+    ])
     tags = fields.ListField(fields.StringField)
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
@@ -180,7 +189,9 @@ class CommentFormDto(object):
 class CommentFormDtoSerializer(Serializer):
 
     content = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_POST_COMMENT_MIN_CHAR, max=BLOG_POST_COMMENT_MAX_CHAR)])
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_POST_COMMENT_MIN_CHAR, max=BLOG_POST_COMMENT_MAX_CHAR)
+    ])
     tags = fields.ListField(fields.StringField)
 
     class Meta(object):
@@ -226,11 +237,15 @@ class PostDtoSerializer(Serializer):
 
     href = fields.StringField()
     title = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)])
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
+    ])
     description = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)])
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
+    ])
     author = fields.StringField()
-    content = fields.StringField()
+    content = fields.StringField(validators=[NotEmptyValidator()])
     tags = fields.ListField(fields.StringField)
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
@@ -270,10 +285,14 @@ class PostFormDto(object):
 class PostFormSDtoerializer(Serializer):
 
     title = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)])
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
+    ])
     description = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)])
-    content = fields.StringField()
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
+    ])
+    content = fields.StringField(validators=[NotEmptyValidator()])
     tags = fields.ListField(fields.StringField)
 
     class Meta(object):

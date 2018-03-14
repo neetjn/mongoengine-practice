@@ -51,5 +51,12 @@ class CharLenValidator(object):
         size = len(data)
         if size < self.min or size > self.max:
             raise ValidationError(
-                '"{field.name}" must be greater than or equal to {self.min}'
+                'Field "{field.name}" must be greater than or equal to {self.min}'
                 ' or less than or equal to {self.max} in length.')
+
+
+class NotEmptyValidator(object):
+
+    def validate(self, field, data):
+        if not len(data.replace(' ', '')):
+            raise ValidationError('Field "{field.name}" must not be empty.')
