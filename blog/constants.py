@@ -5,6 +5,7 @@ import os
 
 EMAIL_REGEX = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
 
+BLOG_USER_USERNAME_PATTERN = r'([a-zA-Z0-9]{,})$'
 BLOG_USER_USERNAME_MIN_CHAR = 3
 BLOG_USER_USERNAME_MAX_CHAR = 20
 

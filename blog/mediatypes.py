@@ -3,8 +3,8 @@ from r2dto import fields, validators, Serializer, ValidationError
 from blog.constants import BLOG_POST_TITLE_MIN_CHAR, BLOG_POST_TITLE_MAX_CHAR, \
     BLOG_POST_CONTENT_MIN_CHAR, BLOG_POST_COMMENT_MIN_CHAR, BLOG_POST_COMMENT_MAX_CHAR, \
     BLOG_USER_FNAME_MIN_CHAR, BLOG_USER_FNAME_MAX_CHAR, BLOG_USER_USERNAME_MIN_CHAR, \
-    BLOG_USER_USERNAME_MAX_CHAR
-from blog.utils.serializers import CharLenValidator, EmailValidator
+    BLOG_USER_USERNAME_MAX_CHAR, BLOG_USER_USERNAME_PATTERN
+from blog.utils.serializers import CharLenValidator, EmailValidator, RegexValidator
 
 
 class UserRoles(object):
@@ -48,7 +48,6 @@ class ServiceDescriptionDtoSerializer(Serializer):
 class UserDto(object):
 
     def __init__(self, **kwargs):
-
         self.href = kwargs.get('href', '')
         self.username = kwargs.get('username', '')
         self.email = kwargs.get('email', '')
@@ -64,11 +63,11 @@ class UserDtoSerializer(object):
 
     href = fields.StringField()
     username = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)
+        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
+        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
     ])
     full_name = fields.StringField(name='fullName', validators=[
-        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
-    ])
+        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)])
     email = fields.StringField(validators=[EmailValidator()])
     posts = fields.ListField(fields.StringField)
     comments = fields.ListField(fields.StringField)
@@ -84,7 +83,6 @@ class UserDtoSerializer(object):
 class UserFormDto(object):
 
     def __init__(self, **kwargs):
-
         self.username = kwargs.get('username', '')
         self.avatar_href = kwargs.get('avatar_href', '')
         self.password = kwargs.get('password', '')
@@ -95,13 +93,13 @@ class UserFormDto(object):
 class UserFormDtoSerializer(Serializer):
 
     username = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)
+        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
+        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
     ])
     avatar_href = fields.StringField(name='avatarHref')
     password = fields.StringField()
     full_name = fields.StringField(name='fullName', validators=[
-        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
-    ])
+        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)])
     email = fields.StringField(validators=[EmailValidator()])
 
     class Meta(object):
@@ -119,7 +117,8 @@ class UserAuthDto(object):
 class UserAuthDtoSerializer(Serializer):
 
     username = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)
+        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
+        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
     ])
     password = fields.StringField()
 
@@ -131,7 +130,6 @@ class UserAuthDtoSerializer(Serializer):
 class CommentDto(object):
 
     def __init__(self, **kwargs):
-
         self.href = kwargs.get('href', '')
         self.author = kwargs.get('author', '')
         self.content = kwargs.get('content', '')
@@ -147,7 +145,8 @@ class CommentDtoSerializer(Serializer):
 
     href = fields.StringField()
     author = fields.StringField()
-    content = fields.StringField()
+    content = fields.StringField(validators=[
+        CharLenValidator(min=BLOG_POST_COMMENT_MIN_CHAR, max=BLOG_POST_COMMENT_MAX_CHAR)])
     tags = fields.ListField(fields.StringField)
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
@@ -163,7 +162,6 @@ class CommentDtoSerializer(Serializer):
 class CommentCollectionDto(object):
 
     def __init__(self, **kwargs):
-
         self.comments = kwargs.get('comments', [])
 
 
@@ -181,7 +179,8 @@ class CommentFormDto(object):
 
 class CommentFormDtoSerializer(Serializer):
 
-    content = fields.StringField()
+    content = fields.StringField(validators=[
+        CharLenValidator(min=BLOG_POST_COMMENT_MIN_CHAR, max=BLOG_POST_COMMENT_MAX_CHAR)])
     tags = fields.ListField(fields.StringField)
 
     class Meta(object):
@@ -192,7 +191,6 @@ class CommentFormDtoSerializer(Serializer):
 class PostViewDto(object):
 
     def __init__(self, **kwargs):
-
         self.ip_address = kwargs.get('ip_address', None)
         self.view_time = kwargs.get('view_time', None)
 
@@ -210,7 +208,6 @@ class PostViewDtoSerializer(Serializer):
 class PostDto(object):
 
     def __init__(self, **kwargs):
-
         self.href = kwargs.get('href', '')
         self.title = kwargs.get('title', '')
         self.author = kwargs.get('author', '')
@@ -229,11 +226,9 @@ class PostDtoSerializer(Serializer):
 
     href = fields.StringField()
     title = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
-    ])
+        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)])
     description = fields.StringField(validators=[
-
-    ])
+        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)])
     author = fields.StringField()
     content = fields.StringField()
     tags = fields.ListField(fields.StringField)
@@ -252,7 +247,6 @@ class PostDtoSerializer(Serializer):
 class PostCollectionDto(object):
 
     def __init__(self, **kwargs):
-
         self.posts = kwargs.get('posts', [])
 
 
@@ -264,11 +258,9 @@ class PostCollectionDtoSerializer(Serializer):
 
         model = PostCollectionDto
 
-
 class PostFormDto(object):
 
     def __init__(self, **kwargs):
-
         self.title = kwargs.get('title', '')
         self.description = kwargs.get('description', '')
         self.content = kwargs.get('content', '')
@@ -277,8 +269,10 @@ class PostFormDto(object):
 
 class PostFormSDtoerializer(Serializer):
 
-    title = fields.StringField()
-    description = fields.StringField()
+    title = fields.StringField(validators=[
+        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)])
+    description = fields.StringField(validators=[
+        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)])
     content = fields.StringField()
     tags = fields.ListField(fields.StringField)
 
