@@ -1,8 +1,9 @@
 import hashlib
+import re
 from uuid import uuid4
-from Crypto.Cipher import AES
-from r2dto import Serializer
+from r2dto import Serializer, ValidationError
 from blog.constants import EMAIL_REGEX, BLOG_CONTENT_KEY
+from blog.crypto import AESCipher
 
 
 def to_json(serializer: Serializer, dto: object):
@@ -33,14 +34,6 @@ def from_json(serializer: Serializer, payload: str):
     return base.object
 
 
-def encrypt_content(content: str):
-    pass
-
-
-def decrypt_content(content: str):
-    pass
-
-
 def hash_password(password: str):
     """
     Hashes password with a randomly generated salt value.
@@ -49,19 +42,34 @@ def hash_password(password: str):
     :type password: str
     :return: (hashed_password, salt)
     """
-    salt = uuid.uuid4().hex
+    salt = uuid4().hex
     hashed_password = hashlib.sha256(password + salt).hexdigest()
     return (hashed_password, salt)
+
+
+def encrypt_content(content: str):
+    """
+    Encrypt blog post and comment content.
+
+    :param content: Blog content to encrypt.
+    :type content: str
+    """
+    return AESCipher(BLOG_CONTENT_KEY).encrypt(content)
+
+
+def decrypt_content(content: str):
+    """
+    Decrypt blog post and comment content.
+
+    :param content: Blog content to decrypt.
+    :type content: str
+    """
+    return AESCipher(BLOG_CONTENT_KEY).encrypt(content)
 
 
 class EmailValidator(object):
     """
     Email validator for r2dto serializer fields.
-
-    :param field:
-    :type field:
-    :param data:
-    :type data:
     """
     def validate(self, field, data):
         if not re.match(EMAIL_REGEX, data):
@@ -71,8 +79,13 @@ class EmailValidator(object):
 class CharLenValidator(object):
     """
     Character length validator for r2dto serializer fields.
+
+    :param min: Minimum character length for field value.
+    :type min: int
+    :param max: Maximum character length for field value.
+    :type max: int
     """
-    def __init__(self, min, max):
+    def __init__(self, min: int, max: int):
         self.min = min
         self.max = max
 

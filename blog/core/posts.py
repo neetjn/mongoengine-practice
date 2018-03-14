@@ -4,9 +4,8 @@ from blog.core.users import get_user
 from blog.db import Post
 from blog.errors import PostNotFoundError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto
+from blog.utils import encrypt_content, decrypt_content
 
-
-# TODO: add method to delete post resources to core utilities
 
 def get_posts(start=None, count=None):
     """
@@ -18,7 +17,11 @@ def get_posts(start=None, count=None):
     :type count: int
     :return: [Post, ...]
     """
-    return Post.objects[start:count]
+    posts = Post.objects[start:count]
+    for post in posts:
+        post.description = decrypt_content(post.description)
+        post.content = decrypt_content(post.content)
+    return posts
 
 
 def create_post(author_id: str, post_form_dto: PostFormDto):
@@ -38,7 +41,8 @@ def create_post(author_id: str, post_form_dto: PostFormDto):
     post = Post()
     post.author = author.author_id
     post.title = post_form_dto.title
-    post.content = post_form_dto.title
+    post.description = encrypt_content(post_form_dto.description)
+    post.content = encrypt_content(post_form_dto.content)
     post.tags = post_form_dto.tags
     post.save()
 
@@ -52,7 +56,10 @@ def get_post(post_id: str):
     :return: Post
     """
     try:
-        return Post.objects.get(pk=post_id)
+        post = Post.objects.get(pk=post_id)
+        post.description = decrypt_content(post.description)
+        post.content = decrypt_content(post.content)
+        return post
     except (DoesNotExist, ValidationError):
         raise PostNotFoundError()
 
@@ -66,8 +73,18 @@ def edit_post(post_id: str, post_form_dto: PostFormDto):
     """
     post = get_post(post_id)
     post.title = post_form_dto.title
-    post.description = post_form_dto.description
-    post.content = post_form_dto.content
+    post.description = encrypt_content(post_form_dto.description)
+    post.content = encrypt_content(post_form_dto.content)
     post.tags = post_form_dto.tags
     post.edited = datetime.datetime.utcnow()
     post.save()
+
+
+def delete_post(post_id: str):
+    """
+    Delete existing post resource.
+
+    :param post_id: Identifier of post to delete.
+    :type post_id: str
+    """
+    get_post(post_id).delete()

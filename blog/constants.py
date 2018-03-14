@@ -39,3 +39,11 @@ BLOG_AWS_S3_BUCKET = os.environ.get('', 'pyblog')
 # used to encrypt jwt secret key
 
 BLOG_JWT_SECRET_KEY = os.environ.get('BLOG_JWT_SECRET_KEY', 'R3BdYF8cXJdByJWgZPZmemsN')
+
+# used for sending emails
+
+# TODO: add blog options, setup email verification, create email updates/alerts
+
+BLOG_EMAIL_SMTP_HOST = os.environ.get('BLOG_EMAIL_SMTP_HOST', '0.0.0.0')
+BLOG_EMAIL_SMTP_PORT = os.environ.get('BLOG_EMAIL_SMTP_PORT', 25)
+BLOG_EMAIL_WEBMASTER_ADDRESS = os.environ.get('BLOG_EMAIL_WEBMASTER_ADDRESS', 'do-not-reply@mysite.com')

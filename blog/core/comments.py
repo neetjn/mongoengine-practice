@@ -1,11 +1,11 @@
 import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
+from blog.constants import BLOG_CONTENT_KEY
 from blog.db import Comment
 from blog.errors import CommentNotFoundError
 from blog.mediatypes import CommentDto, CommentFormDto
+from blog.utils import encrypt_content, decrypt_content
 
-
-# TODO: add method to delete comment resources to core utilities
 
 def get_post_comments(post_id: str):
     """
@@ -15,7 +15,10 @@ def get_post_comments(post_id: str):
     :type post_id: str
     :return: [Comment, ...]
     """
-    return Comment.objects(post_id=post_id)
+    comments = Comment.objects(post_id=post_id)
+    for comment in comments:
+        comment.content = decrypt_content(comment.content)
+    return comments
 
 
 def get_comment(comment_id: str):
@@ -26,7 +29,9 @@ def get_comment(comment_id: str):
     :type comment_id: str
     """
     try:
-        return Comment.objects.get(pk=comment_id)
+        comment = Comment.objects.get(pk=comment_id)
+        comment.content = decrypt_content(comment.content)
+        return comment
     except (DoesNotExist, ValidationError):
         raise CommentNotFoundError()
 
@@ -35,10 +40,20 @@ def edit_comment(comment_id: str, comment_form_dto: CommentFormDto):
     """
     Edit existing comment resource.
 
-    :param comment_id: Identifier of coment to edit.
+    :param comment_id: Identifier of comment to edit.
     :type comment_id: str
     """
     comment = get_comment(comment_id)
-    comment.content = comment_form_dto.content
+    comment.content = encrypt_content(comment_form_dto.content)
     comment.editted = datetime.datetime.utcnow()
     comment.save()
+
+
+def delete_comment(comment_id: str):
+    """
+    Delete existing post resource.
+
+    :param comment_id: Identifier of comment to delete.
+    :type comment_id: str
+    """
+    get_comment(comment_id).delete()

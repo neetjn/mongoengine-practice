@@ -1,6 +1,7 @@
 import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from mongoengine.queryset.visitor import Q
+from blog.constants import BLOG_WEBMASTER_EMAIL
 from blog.db import User
 from blog.errors import UserNotFoundError, UserExistsError
 from blog.mediatypes import UserDto, UserFormDto, UserRoles
@@ -20,7 +21,7 @@ def get_users(start=None, count=None):
     return User.objects[start:count]
 
 
-def create_user(user_form_dto):
+def create_user(user_form_dto: UserFormDto):
     """
     Creates a new user resource.
 
@@ -44,7 +45,7 @@ def create_user(user_form_dto):
         raise UserExistsError()
 
 
-def get_user(user_id):
+def get_user(user_id: str):
     """
     Fetches existing user resource.
 
@@ -57,7 +58,7 @@ def get_user(user_id):
         raise UserNotFoundError()
 
 
-def edit_user(user_id, user_form_dto):
+def edit_user(user_id: str, user_form_dto: UserFormDto):
     """
     Edit existing user resource.
 
@@ -67,4 +68,10 @@ def edit_user(user_id, user_form_dto):
     :type user_form_dto: UserFormDto
     """
     user = get_user(user_id)
+    if user_form_dto.password:
+        password, salt = hash_password(user_form_dto.password)
+        user.passord = password
+        user.salt = salt
+    user.full_name = user_form_dto.full_name
+    user.email = user_form_dto.email
     user.save()
