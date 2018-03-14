@@ -2,7 +2,7 @@ import falcon
 from blog.core.posts import get_posts, get_post, create_post, delete_post
 from blog.hooks.users import require_login
 from blog.hooks.posts import has_access
-from blog.utils.common import to_json, from_json
+from blog.utils.serializers import to_json, from_json
 
 
 class PostResource(object):
