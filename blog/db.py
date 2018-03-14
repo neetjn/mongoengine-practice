@@ -43,6 +43,7 @@ class Post(mongoengine.Document):
     author = mongoengine.StringField(required=True)
     content = mongoengine.StringField(required=True)
     tags = mongoengine.ListField(mongoengine.StringField())
+    private = mongoengine.BooleanField(default=False)
     created = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
     edited = mongoengine.DateTimeField()
     likes = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PostLike))

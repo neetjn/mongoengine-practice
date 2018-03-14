@@ -1,10 +1,13 @@
 import falcon
 from blog.core.posts import get_posts, get_post, create_post, delete_post
+from blog.hooks.users import require_login
+from blog.hooks.posts import has_access
 from blog.utils.common import to_json, from_json
 
 
 class PostResource(object):
 
+    @falcon.on_before()
     def on_get(self, req, resp):
         """Fetch single post resource."""
         resp.status = falcon.HTTP_200

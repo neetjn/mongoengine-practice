@@ -66,8 +66,8 @@ class UserDtoSerializer(object):
     username = fields.StringField(validators=[
         CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR)
     ])
-    full_name = fields.StringField(name='fullName'validators=[
-        CharLenValidator(min=BLOG_USER_FNAME_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+    full_name = fields.StringField(name='fullName', validators=[
+        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
     ])
     email = fields.StringField(validators=[EmailValidator()])
     posts = fields.ListField(fields.StringField)
@@ -99,14 +99,15 @@ class UserFormDtoSerializer(Serializer):
     ])
     avatar_href = fields.StringField(name='avatarHref')
     password = fields.StringField()
-    full_name = fields.StringField(name='fullName'validators=[
-        CharLenValidator(min=BLOG_USER_FNAME_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+    full_name = fields.StringField(name='fullName', validators=[
+        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
     ])
     email = fields.StringField(validators=[EmailValidator()])
 
     class Meta(object):
 
-        model = UserWithPasswordDto
+        model = UserFormDto
+
 
 class UserAuthDto(object):
 
@@ -215,6 +216,7 @@ class PostDto(object):
         self.author = kwargs.get('author', '')
         self.content = kwargs.get('content', '')
         self.tags = kwargs.get('tags', [])
+        self.private = kwargs.get('private', False)
         self.created = kwargs.get('created', None)
         self.edited = kwargs.get('edited', None)
         self.comments = kwargs.get('comments', [])

@@ -76,6 +76,7 @@ def edit_post(post_id: str, post_form_dto: PostFormDto):
     post.description = encrypt_content(post_form_dto.description)
     post.content = encrypt_content(post_form_dto.content)
     post.tags = post_form_dto.tags
+    post.private = post_form_dto.private
     post.edited = datetime.datetime.utcnow()
     post.save()
 
