@@ -1,4 +1,10 @@
-class ExampleComponent(object):
+import jwt
+from blog.core.users import get_user
+
+
+# TODO: add support for jwt header pre-processing, pass user dto in request
+
+class UserProcessor(object):
     def process_request(self, req, resp):
         """Process the request before routing it.
 

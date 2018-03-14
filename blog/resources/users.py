@@ -1,6 +1,7 @@
 import falcon
 from blog.core.users import get_user
 
+# TODO: create endpoint for authentication, create jwt session
 
 class PostResource(object):
 
