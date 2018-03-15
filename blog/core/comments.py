@@ -15,6 +15,7 @@ def get_post_comments(post_id: str):
     :type post_id: str
     :return: [Comment, ...]
     """
+    # TODO: add ability to paginate post comments
     comments = Comment.objects(post_id=post_id)
     for comment in comments:
         comment.content = decrypt_content(comment.content)
