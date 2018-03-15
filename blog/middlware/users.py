@@ -1,50 +1,28 @@
 import jwt
+from blog.core.errors import UserNotFoundError
 from blog.core.users import get_user
+from blog.utils.logger import debug, warning
 
-
-# TODO: add support for jwt header pre-processing, pass user dto in request
 
 class UserProcessor(object):
+
+    # Note: RFC6648 recommends application headers prefixed with 'X-'
+    # should be depracated
+    # Source: https://tools.ietf.org/html/rfc6648
+
     def process_request(self, req, resp):
-        """Process the request before routing it.
-
-        Args:
-        req: Request object that will eventually be
-        routed to an on_* responder method.
-        resp: Response object that will be routed to
-        the on_* responder.
         """
+        Process the request for user session before routing it.
 
-    def process_resource(self, req, resp, resource, params):
-        """Process the request after routing.
-
-        Note:
-        This method is only called when the request matches
-        a route to a resource.
-
-        Args:
-        req: Request object that will be passed to the
-        routed responder.
-        resp: Response object that will be passed to the
-        responder.
-        resource: Resource object to which the request was
-        routed.
-        params: A dict-like object representing any additional
-        params derived from the route's URI template fields,
-        that will be passed to the resource's responder
-        method as keyword arguments.
+        param req: Request object that will have user details
+        attached to it.
         """
+        session = req.headers.get('Authorization', None)
+        payload = jwt.decode(session, 'secret', algorithms=['HS256']) if session else None
+        if payload:
+            try:
+                req.blog_user = get_user(payload['userId'])
+            except UserNotFoundError:
+                warning(req, 'JWT payload found with invalid username.')
 
-    def process_response(self, req, resp, resource, req_succeeded):
-        """Post-processing of the response (after routing).
-
-        Args:
-        req: Request object.
-        resp: Response object.
-        resource: Resource object to which the request was
-        routed. May be None if no route was found
-        for the request.
-        req_succeeded: True if no exceptions were raised while
-        the framework processed and routed the request;
-        otherwise False.
-        """
+        req.blog_user = None

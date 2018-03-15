@@ -15,7 +15,7 @@ class UserNotFoundError(HTTPNotFound):
 class UserExistsError(HTTPConflict):
 
     def __init__(self):
-        supoer().__init__(description='User resource by username or email already exists')
+        super().__init__(description='User resource by username or email already exists')
 
 
 class PostNotFoundError(HTTPNotFound):
