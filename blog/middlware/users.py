@@ -1,4 +1,5 @@
 import jwt
+from blog.constants import BLOG_JWT_SECRET_KEY
 from blog.core.errors import UserNotFoundError
 from blog.core.users import get_user
 from blog.utils.logger import debug, warning
@@ -18,7 +19,7 @@ class UserProcessor(object):
         attached to it.
         """
         session = req.headers.get('Authorization', None)
-        payload = jwt.decode(session, 'secret', algorithms=['HS256']) if session else None
+        payload = jwt.decode(session, BLOG_JWT_SECRET_KEY, algorithms=['HS256']) if session else None
         if payload:
             try:
                 req.blog_user = get_user(payload['userId'])
