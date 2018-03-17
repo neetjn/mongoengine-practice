@@ -68,12 +68,13 @@ This project is highly configurable, all blog constants can be found in `blog/co
 
 **Environmental**
 
-> Note: If AWS credentials are not provided, api will alternatively store avatars ase base64 encoded binaries in mongodb.
+* **BLOG_HOST**: Host blog will be served on for Gunicorn.
+* **BLOG_PORT**: Port blog will be served on for Gunicorn.
+* **BLOG_CONTENT_KEY**: Key used to encrypt/decrypt blog content.
+* **BLOG_JWT_SECRET_KEY**: Key used to encrypt/decrypt session JWT.
 
-* ***BLOG_HOST**: Host blog will be served on for Gunicorn.
-* ***BLOG_PORT**: Port blog will be served on for Gunicorn.
-* ***BLOG_CONTENT_KEY**: Key used to encrypt/decrypt blog content.
-* ***BLOG_JWT_SECRET_KEY**: Key used to encrypt/decrypt session JWT.
+> Note: If AWS credentials are not provided, api will alternatively store avatars and other media as base64 encoded binaries in mongodb.
+
 * **BLOG_AWS_ACCESS_KEY_ID**: AWS access key id for s3.
 * **BLOG_AWS_SECRET_ACCESS_KEY**: AWS secret access key for s3.
 * **BLOG_AWS_S3_BUCKET**: AWS s3 bucket for storing avatars.
