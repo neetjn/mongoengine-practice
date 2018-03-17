@@ -18,6 +18,7 @@ def get_posts(start=None, count=None):
     :type count: int
     :return: [Post, ...]
     """
+    # TODO: add filter for private posts
     posts = Post.objects[start:count]
     for post in posts:
         post.description = decrypt_content(post.description)

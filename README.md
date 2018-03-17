@@ -12,7 +12,39 @@ py-blog is composed of a simple RESTful api built on top of [Falcon](https://fal
 
 **Flexbility**
 
-This project was designed with containerization in mind and provides Dockerfile for custom deployments. You can also find docker-compose and ansible configurations in the [here]().
+This project was crafted with consumability in mind. The root endpoint serves a service description that can be used as a rel/link mapping for dynamically hydrating front end interfaces. The service description helps simplify resource expansion, endpoint migration, and will allow front end developers to design their blog without having to manually construct any URLs.
+
+*Service Description Example*
+
+```js
+[
+    {
+        "rel": "post-collection",
+        "link": ".../posts"
+    },
+    {
+        "rel": "authentication",
+        "link": ".../user/login"
+    },
+    ...
+]
+```
+
+*Post Collection Example*
+
+```js
+[
+    {
+        "href": ".../post/000000/",
+        "links": [
+            "rel": "like",
+            "href": ".../post/000000/like"
+        ],
+        "title": "Foobar",
+        ...
+    }
+]
+```
 
 **Security**
 
@@ -48,7 +80,26 @@ This project is highly configurable, all blog constants can be found in `blog/co
 
 ## Setting Up
 
+The following requirements are required for staging *py-blog* for either development or production:
 
+- mongodb 3.6
+- python 3.6
+- pipenv (python package manager)
+- s3 bucket or fakes3 (optional)
+
+To install the project's dependencies use:
+
+```bash
+pipenv install
+```
+
+Once the necessary configurations have been made to `blog/constants.py`, the blog can be spun up using:
+
+```bash
+pipenv run python -m blog
+```
+
+TODO: complete setup details
 
 **Docker**
 
