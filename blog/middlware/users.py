@@ -18,11 +18,11 @@ class UserProcessor(object):
         param req: Request object that will have user details
         attached to it.
         """
-        session = req.headers.get('Authorization', None)
-        payload = jwt.decode(session, BLOG_JWT_SECRET_KEY, algorithms=['HS256']) if session else None
+        payload = jwt.decode(req.auth, BLOG_JWT_SECRET_KEY, algorithms=['HS256']) if req.auth else None
         if payload:
             try:
-                req.blog_user = get_user(payload['userId'])
+                # add our user to the request context
+                req.context.set_default('user', get_user(payload['userId']))
             except UserNotFoundError:
                 warning(req, 'JWT payload found with invalid username.')
 

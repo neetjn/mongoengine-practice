@@ -1,5 +1,6 @@
 import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
+from blog.core.comments import get_post_comments
 from blog.core.users import get_user
 from blog.db import Post
 from blog.errors import PostNotFoundError
@@ -47,7 +48,7 @@ def create_post(author_id: str, post_form_dto: PostFormDto):
     post.save()
 
 
-def get_post(post_id: str):
+def get_post(post_id: str) -> Post:
     """
     Fetch existing post resource.
 
@@ -89,3 +90,23 @@ def delete_post(post_id: str):
     :type post_id: str
     """
     get_post(post_id).delete()
+
+
+def post_to_dto(post: Post, comments: bool = True) -> PostDto:
+    """
+    Converts post resource into data transfer object.
+
+    :param post: Post resource to convert.
+    :type post: Post
+    """
+    return PostDto(
+        title=post.title,
+        author=get_user(post.author).username,
+        content=post.content,
+        tags=post.tags,
+        private=post.private,
+        created=post.created,
+        edited=post.edited,
+        comments=get_post_comments(post.post_id) if comments else [],
+        likes=len(post.likes),
+        views=len(post.views))

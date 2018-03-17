@@ -282,7 +282,7 @@ class PostFormDto(object):
         self.tags = kwargs.get('tags', [])
 
 
-class PostFormSDtoerializer(Serializer):
+class PostFormDtoSerializer(Serializer):
 
     title = fields.StringField(validators=[
         NotEmptyValidator(),

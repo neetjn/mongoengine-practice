@@ -45,7 +45,7 @@ def create_user(user_form_dto: UserFormDto):
         raise UserExistsError()
 
 
-def get_user(user_id: str):
+def get_user(user_id: str) -> User:
     """
     Fetches existing user resource.
 

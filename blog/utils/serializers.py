@@ -1,3 +1,4 @@
+import json
 import re
 from r2dto import Serializer, ValidationError
 from blog.constants import EMAIL_REGEX
@@ -26,7 +27,7 @@ def from_json(serializer: Serializer, payload: str):
     :param payload: Payload to deserialize.
     :type payload: str
     """
-    base = serializer(data=payload)
+    base = serializer(data=json.loads(payload))
     base.validate()
     return base.object
 

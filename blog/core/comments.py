@@ -22,7 +22,7 @@ def get_post_comments(post_id: str):
     return comments
 
 
-def get_comment(comment_id: str):
+def get_comment(comment_id: str) -> Comment:
     """
     Fetch existing comment resource.
 

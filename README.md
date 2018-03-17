@@ -14,6 +14,10 @@ py-blog is composed of a simple RESTful api built on top of [Falcon](https://fal
 
 This project was designed with containerization in mind and provides Dockerfile for custom deployments. You can also find docker-compose and ansible configurations in the [here]().
 
+**Security**
+
+By design this blog encrypts any and all post or comment content within the given database. Blog content secret keys can be defined by the administrator, and will be hashed into a 32 bit key for AES encryption/decryption.
+
 ## Configuration
 
 ...
