@@ -34,7 +34,6 @@ BLOG_PORT = os.environ.get('BLOG_PORT', 8080)
 
 BLOG_AWS_ACCESS_KEY_ID = os.environ.get('', '')
 BLOG_AWS_SECRET_ACCESS_KEY = os.environ.get('', '')
-BLOG_AWS_SESSION_TOKEN = os.environ.get('', '')
 BLOG_AWS_S3_BUCKET = os.environ.get('', 'pyblog')
 
 # used to encrypt jwt secret key

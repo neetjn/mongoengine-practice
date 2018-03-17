@@ -8,7 +8,7 @@ This project provides a seamless REST api for your blog. py-blog has the capabil
 
 **Project Size**
 
-py-blog is composed of a simple RESTful api built on top of [Falcon](https://falconframework.org/) and [Gunicorn](http://gunicorn.org/) and supports [resource expansion](https://stormpath.com/blog/linking-and-resource-expansion-rest-api-tips).
+py-blog is composed of a simple RESTful api built on top of [Falcon](https://falconframework.org/), [Gunicorn](http://gunicorn.org/) WSGI and supports [resource expansion](https://stormpath.com/blog/linking-and-resource-expansion-rest-api-tips).
 
 **Flexbility**
 
@@ -20,23 +20,75 @@ By design this blog encrypts any and all post or comment content within the give
 
 ## Configuration
 
-...
+This project is highly configurable, all blog constants can be found in `blog/constants.py`.
+
+**General**
+
+* **BLOG_USER_USERNAME_MIN_CHAR**: Minimum number of characters for usernames.
+* **BLOG_USER_USERNAME_MAX_CHAR**: Maximum number of characters for usernames.
+* **BLOG_USER_FNAME_MIN_CHAR**: Minimum number of characters for user full names.
+* **BLOG_USER_FNAME_MAX_CHAR**: Maximum number of characters for user full names.
+* **BLOG_POST_TITLE_MIN_CHAR**: Minimum number of characters for post titles.
+* **BLOG_POST_TITLE_MAX_CHAR**: Maximum number of characters for post titles.
+* **BLOG_POST_CONTENT_MIN_CHAR**: Minimum number of characters for post content.
+* **BLOG_POST_COMMENT_MIN_CHAR**: Minimum number of characters for post comments.
+* **BLOG_POST_COMMENT_MAX_CHAR**: Maximum number of characters for post comments.
+
+**Environmental**
+
+> Note: If AWS credentials are not provided, api will alternatively store avatars ase base64 encoded binaries in mongodb.
+
+* ***BLOG_HOST**: Host blog will be served on for Gunicorn.
+* ***BLOG_PORT**: Port blog will be served on for Gunicorn.
+* ***BLOG_CONTENT_KEY**: Key used to encrypt/decrypt blog content.
+* ***BLOG_JWT_SECRET_KEY**: Key used to encrypt/decrypt session JWT.
+* **BLOG_AWS_ACCESS_KEY_ID**: AWS access key id for s3.
+* **BLOG_AWS_SECRET_ACCESS_KEY**: AWS secret access key for s3.
+* **BLOG_AWS_S3_BUCKET**: AWS s3 bucket for storing avatars.
 
 ## Setting Up
 
-...
+
+
+**Docker**
+
+TODO: add docker setup example with sample docker-compose for setting up mongo.
 
 ## Testing
 
-...
+> Note: Testing will require an instance of mongodb.
+> Note: CI tests s3 functionality using [fakes3](https://github.com/jubos/fake-s3) project.
+
+The test suite is composed of operational tests exercising the blog's core, as well as mocked requests against the provided API.
+
+To install test dependencies in your local development environment using pipenv:
+
+```bash
+pipenv install --dev
+```
+
+For running the test suite with pytest:
+
+```bash
+# without coverage
+pipenv run pytest tests
+# with coverage
+pipenv run pytest --cov blog.core tests
+```
 
 ## Deployment
 
-...
+TODO: cover different deployment strategies and how to use with heroku or aws ec2.
 
-## Contributing
+## Contributors
 
-...
+* **John Nolette** (john@neetgroup.net)
+
+Basic contributing guidelines are as follows,
+
+* Any new features must be tested properly, both from an operational level and via mocked interaction.
+* Branches for bugs and features should be structured like so, `issue-x-username`.
+* Include your name and email in the contributors list.
 
 ---
 
