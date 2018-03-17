@@ -36,6 +36,12 @@ class PostView(mongoengine.EmbeddedDocument):
     seen = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
 
 
+class PostQuerySet(mongoengine.QuerySet):
+
+    def get_public(self):
+        return self.filter(private=True)
+
+
 class Post(mongoengine.Document):
 
     title = mongoengine.StringField(required=True)
@@ -48,6 +54,8 @@ class Post(mongoengine.Document):
     edited = mongoengine.DateTimeField()
     likes = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PostLike))
     views = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PostView))
+
+    meta = {'queryset_class': PostQuerySet}
 
 
 class CommentLike(mongoengine.EmbeddedDocument):

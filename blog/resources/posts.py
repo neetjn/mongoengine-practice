@@ -41,6 +41,7 @@ class PostCollectionResource(object):
             posts=[post_to_dto(post, comments=False) for post in get_posts(
                 start=req.params.get('start', None), count=req.params.get('count', None)
             )])
+
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 
     def on_post(self, req, resp):
