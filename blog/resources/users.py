@@ -1,14 +1,22 @@
 import jwt
 import falcon
+from blog.constants import BLOG_JWT_SECRET_KEY
 from blog.core.users import authenticate, get_user
-from blog.mediatypes import TokenDto, TokenDtoSerializer
+from blog.mediatypes import UserAuthDtoSerializer, TokenDto, TokenDtoSerializer
+from blog.utils.serializers import from_json, to_json
 
 
 class UserLogin(object):
 
     def on_get(self, req, resp):
-        # TODO: finish authentication, add jwt generation and return as serialized token
         resp.status = falcon.HTTP_200
+        payload = req.stream.read()
+        user = authenticate(from_json(UserAuthDtoSerializer, payload), req.access_route)
+        if user:
+            jwt_token = jwt.encode({'user': ''}, BLOG_JWT_SECRET_KEY, algorithm='HS256')
+            resp.body = to_json(TokenDtoSerializer, TokenDto(token=jwt_token))
+        else:
+            resp.body = 'false'
 
 
 class UserResource(object):

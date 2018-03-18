@@ -1,24 +1,36 @@
 import datetime
+import time
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from mongoengine.queryset.visitor import Q
-from blog.constants import BLOG_WEBMASTER_EMAIL
-from blog.db import User
-from blog.errors import UserNotFoundError, UserExistsError
+from blog.constants import BLOG_MAX_FAILED_LOGIN, BLOG_FAILED_LOGIN_TIMEOUT
+from blog.db import User, FailedLogin
+from blog.errors import UserNotFoundError, UserExistsError, UserForbiddenRequest
 from blog.mediatypes import UserDto, UserAuthDto, UserFormDto, UserRoles
 from blog.utils.crypto import hash_password, compare_passwords
 
 
-def authenticate(user_auth_dto: UserAuthDto) -> bool:
+def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
     """
     Validates user login credentials.
 
     :param user_auth_dto: User login credentials.
     :type user_auth_dto: UserAuthDto
-    :return: bool
+    :param client: Access route from client (ip address).
+    :type client: str
+    :return: User
     """
     try:
         user = User.objects.get(username=user_auth_dto.username)
-        return compare_passwords(user.password, user_auth_dto.password, user.salt)
+        rfl = FailedLogin.objects(username=user_auth_dto.username)[-1 * BLOG_MAX_FAILED_LOGIN:None]
+        now = int(time.time())
+        failed_logins = [fl for fl in rfl if now - time.mktime(fl.time.timetuple()) > BLOG_FAILED_LOGIN_TIMEOUT]
+        if len(failed_logins) >= 5:
+            raise UserForbiddenRequest()
+        if compare_passwords(user.password, user_auth_dto.password, user.salt):
+            return user
+        # create new failed login document
+        FailedLogin(username=user_auth_dto.username, ip_address=client).save()
+        return None
     except (DoesNotExist, ValidationError):
         raise UserNotFoundError()
 

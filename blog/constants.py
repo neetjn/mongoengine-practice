@@ -41,9 +41,13 @@ BLOG_AWS_S3_BUCKET = os.environ.get('', 'pyblog')
 BLOG_JWT_SECRET_KEY = os.environ.get('BLOG_JWT_SECRET_KEY', 'R3BdYF8cXJdByJWgZPZmemsN')
 
 # used for sending emails
-
 # TODO: add blog options, setup email verification, create email updates/alerts
 
 BLOG_EMAIL_SMTP_HOST = os.environ.get('BLOG_EMAIL_SMTP_HOST', '0.0.0.0')
 BLOG_EMAIL_SMTP_PORT = os.environ.get('BLOG_EMAIL_SMTP_PORT', 25)
 BLOG_EMAIL_WEBMASTER_ADDRESS = os.environ.get('BLOG_EMAIL_WEBMASTER_ADDRESS', 'do-not-reply@mysite.com')
+
+# configurations for login behavior
+
+BLOG_MAX_FAILED_LOGIN = 5
+BLOG_FAILED_LOGIN_TIMEOUT = 300

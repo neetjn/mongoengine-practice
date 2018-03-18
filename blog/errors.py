@@ -1,4 +1,12 @@
-from falcon import HTTPNotFound, HTTPConflict, HTTPUnauthorized
+from falcon import HTTPNotFound, HTTPConflict, HTTPUnauthorized, HTTPForbidden
+
+
+class UserForbiddenRequest(HTTPForbidden):
+
+    def __init__(self):
+        super().__init__(
+            description='User has been temporarily disabled due to failed logins.'
+                        'Try again at a later time.')
 
 
 class UnauthorizedRequest(HTTPUnauthorized):

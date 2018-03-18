@@ -2,6 +2,13 @@ from datetime import datetime
 import mongoengine
 
 
+class FailedLogin(mongoengine.Document):
+
+    username = mongoengine.StringField()
+    ip_address = mongoengine.StringField()
+    time = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
+
+
 class UserValidation(mongoengine.Document):
 
     user_id = mongoengine.StringField(required=True)
