@@ -20,7 +20,7 @@ def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
     :return: User
     """
     try:
-        user = User.objects.get(username=user_auth_dto.username)
+        user = User.objects.get(username=user_auth_dto.username, ip_address=client)
         rfl = FailedLogin.objects(username=user_auth_dto.username)[-1 * BLOG_MAX_FAILED_LOGIN:None]
         now = int(time.time())
         failed_logins = [fl for fl in rfl if now - time.mktime(fl.time.timetuple()) > BLOG_FAILED_LOGIN_TIMEOUT]

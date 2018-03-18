@@ -9,11 +9,12 @@ from blog.utils.serializers import from_json, to_json
 class UserLogin(object):
 
     def on_get(self, req, resp):
+        """Fetch Session JWT"""
         resp.status = falcon.HTTP_200
         payload = req.stream.read()
         user = authenticate(from_json(UserAuthDtoSerializer, payload), req.access_route)
         if user:
-            jwt_token = jwt.encode({'user': ''}, BLOG_JWT_SECRET_KEY, algorithm='HS256')
+            jwt_token = jwt.encode({'user': user._id}, BLOG_JWT_SECRET_KEY, algorithm='HS256')
             resp.body = to_json(TokenDtoSerializer, TokenDto(token=jwt_token))
         else:
             resp.body = 'false'
