@@ -92,14 +92,20 @@ def delete_post(post_id: str):
     get_post(post_id).delete()
 
 
-def post_to_dto(post: Post, comments: bool = True) -> PostDto:
+def post_to_dto(post: Post, href: str = None, comments: bool = True) -> PostDto:
     """
     Converts post resource into data transfer object.
 
     :param post: Post resource to convert.
     :type post: Post
+    :param href: Post resource href link.
+    :type href: str
+    :param comments: Include post comments.
+    :type comments: bool
+    :return: PostDto
     """
     return PostDto(
+        href=href,
         title=post.title,
         author=get_user(post.author).username,
         content=post.content,
