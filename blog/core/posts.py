@@ -25,16 +25,16 @@ def get_posts(start=None, count=None):
     return posts
 
 
-def create_post(author_id: str, post_form_dto: PostFormDto):
+def create_post(user_id: str, post_form_dto: PostFormDto):
     """
     Creates a new post resource.
 
-    :param author_id: Post author identifier.
-    :type author_id: User
+    :param user_id: Post author identifier.
+    :type user_id: User
     :param post_form_dto: Data transfer object with post details.
     :type post_form_dto: PostFormDto
     """
-    author = get_user(author_id)
+    author = get_user(user_id)
     post_time = datetime.datetime.utcnow()
     author.last_activity = post_time
     author.last_posted = post_time
@@ -90,6 +90,40 @@ def delete_post(post_id: str):
     :type post_id: str
     """
     get_post(post_id).delete()
+
+
+def get_user_posts(user_id: str, start: int = None, count: int = None):
+    """
+    Find all posts belonging to given user.
+
+    :param user_id: Identifier of author.
+    :type user_id: str
+    :param start: Used for pagination, specify where to start.
+    :type start: int
+    :param count: Used for pagination, specify number of posts to find.
+    :type count: int
+    :return: [Post, ...]
+    """
+    posts = Post.objects(author=user_id)[start:count]
+    for post in posts:
+        post.description = decrypt_content(post.description)
+        post.content = decrypt_content(post.content)
+    return posts
+
+
+def get_user_liked_posts(user_id: str, start: int = None, count: int = None):
+    """
+    Find all posts liked by given user.
+
+    :param user_id: Identifier of user.
+    :type user_id: str
+    :param start: Used for pagination, specify where to start.
+    :type start: int
+    :param count: Used for pagination, specify number of posts to find.
+    :type count: int
+    :return: [Post, ...]
+    """
+    pass
 
 
 def post_to_dto(post: Post, href: str = None, comments: bool = True) -> PostDto:

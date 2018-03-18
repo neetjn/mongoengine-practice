@@ -1,6 +1,8 @@
 import os
 
 
+# TODO: remove non environmental constants, add to settings.cfg and use configloader
+
 # constants for r2dto serializer validators
 
 EMAIL_REGEX = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'

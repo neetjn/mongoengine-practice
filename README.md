@@ -65,6 +65,8 @@ This project is highly configurable, all blog constants can be found in `blog/co
 * **BLOG_POST_CONTENT_MIN_CHAR**: Minimum number of characters for post content.
 * **BLOG_POST_COMMENT_MIN_CHAR**: Minimum number of characters for post comments.
 * **BLOG_POST_COMMENT_MAX_CHAR**: Maximum number of characters for post comments.
+* **BLOG_MAX_FAILED_LOGIN**: Maximum number of consecutive failed logins.
+* **BLOG_FAILED_LOGIN_TIMEOUT**: Time in seconds to timeout after consecutive failed logins.
 
 **Environmental**
 

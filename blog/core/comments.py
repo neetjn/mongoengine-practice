@@ -7,21 +7,6 @@ from blog.mediatypes import CommentDto, CommentFormDto
 from blog.utils.crypto import encrypt_content, decrypt_content
 
 
-def get_post_comments(post_id: str):
-    """
-    Fetch collection of comments given post.
-
-    :param post_id: Identifier of post to target.
-    :type post_id: str
-    :return: [Comment, ...]
-    """
-    # TODO: add ability to paginate post comments
-    comments = Comment.objects(post_id=post_id)
-    for comment in comments:
-        comment.content = decrypt_content(comment.content)
-    return comments
-
-
 def get_comment(comment_id: str) -> Comment:
     """
     Fetch existing comment resource.
@@ -58,3 +43,39 @@ def delete_comment(comment_id: str):
     :type comment_id: str
     """
     get_comment(comment_id).delete()
+
+
+def get_post_comments(post_id: str, start: int = None, count: int = None):
+    """
+    Fetch collection of comments given post.
+
+    :param post_id: Identifier of post to target.
+    :type post_id: str
+    :param start: Used for pagination, specify where to start.
+    :type start: int
+    :param count: Used for pagination, specify number of posts to find.
+    :type count: int
+    :return: [Comment, ...]
+    """
+    comments = Comment.objects(post_id=post_id)[start:count]
+    for comment in comments:
+        comment.content = decrypt_content(comment.content)
+    return comments
+
+
+def get_user_comments(user_id: str, start: int = None, count: int = None):
+    """
+    Fetch collection of comments given post.
+
+    :param post_id: Identifier of post to target.
+    :type post_id: str
+    :param start: Used for pagination, specify where to start.
+    :type start: int
+    :param count: Used for pagination, specify number of posts to find.
+    :type count: int
+    :return: [Comment, ...]
+    """
+    comments = Comment.objects(author=user_id)[start:count]
+    for comment in comments:
+        comment.content = decrypt_content(comment.content)
+    return comments

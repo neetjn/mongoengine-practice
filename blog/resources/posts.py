@@ -60,7 +60,6 @@ class PostCollectionResource(BaseResource):
         post_collection_dto = PostCollectionDto(
             posts=[post_to_dto(post, href=PostResource.url_to(req.host, post_id=post._id), comments=False)
             for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
-
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 
     @falcon.before(require_login)

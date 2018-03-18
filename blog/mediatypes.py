@@ -60,94 +60,6 @@ class TokenDtoSerializer(Serializer):
         model = TokenDto
 
 
-class UserDto(object):
-
-    def __init__(self, **kwargs):
-        self.href = kwargs.get('href', '')
-        self.username = kwargs.get('username', '')
-        self.email = kwargs.get('email', '')
-        self.full_name = kwargs.get('full_name', '')
-        self.comments = kwargs.get('comments', [])
-        self.total_likes = kwargs.get('total_links', 0)
-        self.last_posted = kwargs.get('last_posted', None)
-        self.last_activity = kwargs.get('last_activity', None)
-        self.links = kwargs.get('links', [])
-
-
-class UserDtoSerializer(object):
-
-    href = fields.StringField()
-    username = fields.StringField(validators=[
-        NotEmptyValidator(),
-        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
-        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
-    ])
-    full_name = fields.StringField(name='fullName', validators=[
-        NotEmptyValidator(),
-        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
-    ])
-    email = fields.StringField(validators=[NotEmptyValidator(), EmailValidator()])
-    posts = fields.ListField(fields.StringField)
-    comments = fields.ListField(fields.StringField)
-    total_likes = fields.IntegerField(name='totalLikes')
-    last_posted = fields.DateTimeField(name='lastPosted')
-    last_activity = fields.DateTimeField(name='lastActivity')
-    links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
-
-    class Meta(object):
-        model = UserDto
-
-
-class UserFormDto(object):
-
-    def __init__(self, **kwargs):
-        self.username = kwargs.get('username', '')
-        self.avatar_href = kwargs.get('avatar_href', '')
-        self.password = kwargs.get('password', '')
-        self.email = kwargs.get('email', '')
-        self.full_name = kwargs.get('full_name', '')
-
-
-class UserFormDtoSerializer(Serializer):
-
-    username = fields.StringField(validators=[
-        NotEmptyValidator(),
-        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
-        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
-    ])
-    avatar_href = fields.StringField(name='avatarHref')
-    password = fields.StringField()
-    full_name = fields.StringField(name='fullName', validators=[
-        NotEmptyValidator(),
-        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
-    ])
-    email = fields.StringField(validators=[EmailValidator()])
-
-    class Meta(object):
-
-        model = UserFormDto
-
-
-class UserAuthDto(object):
-
-    def __init__(self, **kwargs):
-        self.username = kwargs.get('username', '')
-        self.password = kwargs.get('password', '')
-
-
-class UserAuthDtoSerializer(Serializer):
-
-    username = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
-        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
-    ])
-    password = fields.StringField()
-
-    class Meta(object):
-
-        model = UserAuthDto
-
-
 class CommentDto(object):
 
     def __init__(self, **kwargs):
@@ -312,3 +224,93 @@ class PostFormDtoSerializer(Serializer):
     class Meta(object):
 
         model = PostFormDto
+
+
+class UserProfileDto(object):
+
+    def __init__(self, **kwargs):
+        self.href = kwargs.get('href', '')
+        self.username = kwargs.get('username', '')
+        self.email = kwargs.get('email', '')
+        self.full_name = kwargs.get('full_name', '')
+        self.comments = kwargs.get('comments', [])
+        self.liked_posts = kwargs.get('liked_posts', [])
+        self.last_posted = kwargs.get('last_posted', None)
+        self.last_activity = kwargs.get('last_activity', None)
+        self.register_date = kwargs.get('register_date', None)
+        self.links = kwargs.get('links', [])
+
+
+class UserProfileDtoSerializer(object):
+
+    href = fields.StringField()
+    username = fields.StringField(validators=[
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
+        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
+    ])
+    full_name = fields.StringField(name='fullName', validators=[
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+    ])
+    email = fields.StringField(validators=[NotEmptyValidator(), EmailValidator()])
+    posts = fields.ListField(fields.StringField)
+    comments = fields.ListField(fields.StringField)
+    liked_posts = fields.ListField(fields.ObjectField(PostDtoSerializer), name='likedPosts')
+    last_posted = fields.DateTimeField(name='lastPosted')
+    last_activity = fields.DateTimeField(name='lastActivity')
+    register_date = fields.DateTimeField(name='registerDate')
+    links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
+
+    class Meta(object):
+        model = UserProfileDto
+
+
+class UserFormDto(object):
+
+    def __init__(self, **kwargs):
+        self.username = kwargs.get('username', '')
+        self.avatar_href = kwargs.get('avatar_href', '')
+        self.password = kwargs.get('password', '')
+        self.email = kwargs.get('email', '')
+        self.full_name = kwargs.get('full_name', '')
+
+
+class UserFormDtoSerializer(Serializer):
+
+    username = fields.StringField(validators=[
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
+        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
+    ])
+    avatar_href = fields.StringField(name='avatarHref')
+    password = fields.StringField()
+    full_name = fields.StringField(name='fullName', validators=[
+        NotEmptyValidator(),
+        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+    ])
+    email = fields.StringField(validators=[EmailValidator()])
+
+    class Meta(object):
+
+        model = UserFormDto
+
+
+class UserAuthDto(object):
+
+    def __init__(self, **kwargs):
+        self.username = kwargs.get('username', '')
+        self.password = kwargs.get('password', '')
+
+
+class UserAuthDtoSerializer(Serializer):
+
+    username = fields.StringField(validators=[
+        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
+        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
+    ])
+    password = fields.StringField()
+
+    class Meta(object):
+
+        model = UserAuthDto
