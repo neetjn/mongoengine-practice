@@ -4,8 +4,23 @@ from mongoengine.queryset.visitor import Q
 from blog.constants import BLOG_WEBMASTER_EMAIL
 from blog.db import User
 from blog.errors import UserNotFoundError, UserExistsError
-from blog.mediatypes import UserDto, UserFormDto, UserRoles
-from blog.utils.crypto import hash_password
+from blog.mediatypes import UserDto, UserAuthDto, UserFormDto, UserRoles
+from blog.utils.crypto import hash_password, compare_passwords
+
+
+def authenticate(user_auth_dto: UserAuthDto) -> bool:
+    """
+    Validates user login credentials.
+
+    :param user_auth_dto: User login credentials.
+    :type user_auth_dto: UserAuthDto
+    :return: bool
+    """
+    try:
+        user = User.objects.get(username=user_auth_dto.username)
+        return compare_passwords(user.password, user_auth_dto.password, user.salt)
+    except (DoesNotExist, ValidationError):
+        raise UserNotFoundError()
 
 
 def get_users(start=None, count=None):

@@ -1,10 +1,17 @@
 import falcon
-from blog.core.posts import get_posts, get_post, create_post, delete_post, post_to_dto
+from blog.core.posts import get_posts, get_post, create_post, edit_post delete_post, \
+    post_to_dto
+from blog.errors import UnauthorizedRequest
 from blog.hooks.users import require_login
 from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
-    PostFormDtoSerializer, PostCollectionDto
+    PostFormDtoSerializer, PostCollectionDto, UserRoles
 from blog.resources.base import BaseResource
 from blog.utils.serializers import from_json, to_json
+
+
+def user_has_post_access(user, post_id):
+    return get_post(post_id).author != user._id and \
+        user.role not in (UserRoles.admin, UserRoles.moderator)
 
 
 class PostResource(BaseResource):
@@ -20,16 +27,23 @@ class PostResource(BaseResource):
         resp.body = to_json(PostDtoSerializer, post_dto)
 
     @falcon.before(require_login)
-    def on_put(self, req, resp, post):
+    def on_put(self, req, resp, post_id):
         """Update single post resource."""
         resp.status = falcon.HTTP_204
-        resp.body = ''
+        user = req.context.get('user')
+        if not user_has_post_access():
+            raise UnauthorizedRequest(user)
+        payload = req.stream.read()
+        edit_post(post_id, from_json(PostFormDtoSerializer, payload))
 
     @falcon.before(require_login)
-    def on_delete(self, req, resp, post):
+    def on_delete(self, req, resp, post_id):
         """Delete single post resource."""
         resp.status = falcon.HTTP_204
-        resp.body = ''
+        user = req.context.get('user')
+        if not user_has_post_access():
+            raise UnauthorizedRequest(user)
+        delete_post(post_id)
 
 
 class PostCollectionResource(BaseResource):

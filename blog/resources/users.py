@@ -1,9 +1,17 @@
+import jwt
 import falcon
-from blog.core.users import get_user
+from blog.core.users import authenticate, get_user
+from blog.mediatypes import TokenDto, TokenDtoSerializer
 
-# TODO: create endpoint for authentication, create jwt session
 
-class PostResource(object):
+class UserLogin(object):
+
+    def on_get(self, req, resp):
+        # TODO: finish authentication, add jwt generation and return as serialized token
+        resp.status = falcon.HTTP_200
+
+
+class UserResource(object):
 
     def on_get(self, req, resp):
         """Fetch single post resource."""
@@ -18,21 +26,4 @@ class PostResource(object):
     def on_delete(self, req, resp):
         """Delete single post resource."""
         resp.status = falcon.HTTP_204
-        resp.body = ''
-
-
-class PostCollectionResource(object):
-
-    def on_get(self, req, resp):
-        """
-        Fetch grid view for all post resources.
-
-        Note: This endpoint support pagination, pagination arguments must be provided via query args.
-        """
-        resp.status = falcon.HTTP_200
-        resp.body = ''
-
-    def on_post(self, req, resp):
-        """Create a new post resource."""
-        resp.status = falcon.HTTP_201
         resp.body = ''

@@ -62,6 +62,20 @@ def hash_password(password: str):
     return (hashed_password, salt)
 
 
+def compare_passwords(hashed: str, password: str, salt: str) -> bool:
+    """
+    Compares hashed password for authentication.
+
+    :param hashed: Hashed password to compare.
+    :type hashed: str
+    :param password: Plain text password to hash.
+    :type password: str
+    :param salt: Password salt.
+    :type salt: str
+    """
+    return hashed == hashlib.sha256(password + salt).hexdigest()
+
+
 def encrypt_content(content: str):
     """
     Encrypt blog post and comment content.

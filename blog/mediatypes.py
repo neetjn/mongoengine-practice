@@ -46,6 +46,20 @@ class ServiceDescriptionDtoSerializer(Serializer):
         model = ServiceDescriptionDto
 
 
+class TokenDto(object):
+
+    def __init__(self, **kwargs):
+        self.token = kwargs.get('token', '')
+
+
+class TokenDtoSerializer(Serializer):
+
+    token = fields.StringField()
+
+    class Meta(object):
+        model = TokenDto
+
+
 class UserDto(object):
 
     def __init__(self, **kwargs):
