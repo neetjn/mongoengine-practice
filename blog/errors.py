@@ -1,4 +1,12 @@
-from falcon import HTTPNotFound, HTTPConflict
+from falcon import HTTPNotFound, HTTPConflict, HTTPUnauthorized
+
+
+class UnauthorizedRequest(HTTPUnauthorized):
+
+    def __init__(self, user=None):
+        super().__init__(
+            description=f'User "{user.username}" is not authorized for this resource.' if user else
+                         'Requested resource requires user authentication.')
 
 
 class ResourceNotFoundError(HTTPNotFound):

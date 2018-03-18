@@ -19,11 +19,13 @@ class PostResource(BaseResource):
         post_dto.href = req.uri
         resp.body = to_json(PostDtoSerializer, post_dto)
 
+    @falcon.before(require_login)
     def on_put(self, req, resp, post):
         """Update single post resource."""
         resp.status = falcon.HTTP_204
         resp.body = ''
 
+    @falcon.before(require_login)
     def on_delete(self, req, resp, post):
         """Delete single post resource."""
         resp.status = falcon.HTTP_204
@@ -43,10 +45,11 @@ class PostCollectionResource(BaseResource):
         resp.status = falcon.HTTP_200
         post_collection_dto = PostCollectionDto(
             posts=[post_to_dto(post, href=PostResource.url_to(req.host, post_id=post._id), comments=False)
-            for post in get_posts(start=req.params.get('start', None), count=req.params.get('count', None))])
+            for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
 
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 
+    @falcon.before(require_login)
     def on_post(self, req, resp):
         """Create a new post resource."""
         resp.status = falcon.HTTP_201
