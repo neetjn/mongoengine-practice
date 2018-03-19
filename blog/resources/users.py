@@ -16,7 +16,7 @@ from blog.utils.serializers import from_json, to_json
 
 # TODO: add user posts to userprofiledto
 
-class UserLogin(BaseResource):
+class AuthResource(BaseResource):
 
     route = '/v1/user/authenticate/'
 
