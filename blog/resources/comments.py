@@ -1,9 +1,14 @@
 import falcon
 from blog.core.comments import get_comment, edit_comment, delete_comment, comment_to_dto
 from blog.db import User
+from blog.errors import UnauthorizedRequest
 from blog.hooks.users import require_login
-from blog.mediatypes import UserRoles
+from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSerializer
 from blog.resources.base import BaseResource
+from blog.utils.serializers import from_json, to_json
+
+# TODO: include functionality and endpoint for liking comment
+# can include like endpoint in comment links
 
 
 def user_has_comment_access(user: User, comment_id: str):
@@ -13,18 +18,31 @@ def user_has_comment_access(user: User, comment_id: str):
 
 class CommentResource(BaseResource):
 
-    route = '/v1/blog/comment/{comment_id}'
+    route = '/v1/blog/comment/{comment_id}/'
 
     def on_get(self, req, resp, comment_id):
         """Fetch single comment resource."""
-        resp.body = ''
+        resp.status = falcon.HTTP_200
+        comment_dto = comment_to_dto(get_comment(comment_id))
+        # no need to construct url, pull from request
+        comment_dto.href = req.uri
+        resp.body = to_json(CommentDtoSerializer, comment_dto)
 
     @falcon.before(require_login)
     def on_put(self, req, resp, comment_id):
         """Update single comment resource."""
-        resp.body = ''
+        resp.status = falcon.HTTP_204
+        user = req.context.get('user')
+        if not user_has_comment_access(user, comment_id):
+            raise UnauthorizedRequest()
+        payload = req.stream.read()
+        edit_comment(comment_id, from_json(CommentFormDtoSerializer, payload))
 
     @falcon.before(require_login)
     def on_delete(self, req, resp, comment_id):
         """Delete single comment resource."""
-        resp.body = ''
+        resp.status = falcon.HTTP_204
+        user = req.context.get('user')
+        if not user_has_comment_access(user, comment_id):
+            raise UnauthorizedRequest()
+        delete_comment(comment_id)

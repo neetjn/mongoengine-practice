@@ -8,6 +8,9 @@ from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
 from blog.resources.base import BaseResource
 from blog.utils.serializers import from_json, to_json
 
+# TODO: include functionality and endpoint for liking post
+# can include like endpoint in post link
+
 
 def user_has_post_access(user: User, post_id: str) -> bool:
     return get_post(post_id).author != user._id and \
@@ -16,7 +19,7 @@ def user_has_post_access(user: User, post_id: str) -> bool:
 
 class PostResource(BaseResource):
 
-    route = '/v1/post/{post_id}'
+    route = '/v1/post/{post_id}/'
 
     def on_get(self, req, resp, post_id):
         """Fetch single post resource."""
@@ -31,7 +34,7 @@ class PostResource(BaseResource):
         """Update single post resource."""
         resp.status = falcon.HTTP_204
         user = req.context.get('user')
-        if not user_has_post_access():
+        if not user_has_post_access(user, post_id):
             raise UnauthorizedRequest(user)
         payload = req.stream.read()
         edit_post(post_id, from_json(PostFormDtoSerializer, payload))
@@ -41,14 +44,14 @@ class PostResource(BaseResource):
         """Delete single post resource."""
         resp.status = falcon.HTTP_204
         user = req.context.get('user')
-        if not user_has_post_access():
+        if not user_has_post_access(user, post_id):
             raise UnauthorizedRequest(user)
         delete_post(post_id)
 
 
 class PostCollectionResource(BaseResource):
 
-    route = '/v1/posts'
+    route = '/v1/posts/'
 
     def on_get(self, req, resp):
         """

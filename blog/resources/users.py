@@ -18,7 +18,7 @@ from blog.utils.serializers import from_json, to_json
 
 class UserLogin(BaseResource):
 
-    route = '/v1/user/authenticate'
+    route = '/v1/user/authenticate/'
 
     def on_get(self, req, resp):
         """Fetch serialized session JWT."""
