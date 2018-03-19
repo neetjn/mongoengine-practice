@@ -2,7 +2,7 @@ import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from blog.core.comments import get_post_comments
 from blog.core.users import get_user
-from blog.db import Post
+from blog.db import Post, PostLike, PostView
 from blog.errors import PostNotFoundError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto
 from blog.utils.crypto import encrypt_content, decrypt_content
@@ -123,7 +123,8 @@ def get_user_liked_posts(user_id: str, start: int = None, count: int = None):
     :type count: int
     :return: [Post, ...]
     """
-    pass
+    post_likes = PostLike.objects(user_id=user_id)[start:count]
+    return [Post.objects.get(post_id=pl.post_id) for pl in post_likes]
 
 
 def post_to_dto(post: Post, href: str = None, comments: bool = True) -> PostDto:
@@ -138,15 +139,18 @@ def post_to_dto(post: Post, href: str = None, comments: bool = True) -> PostDto:
     :type comments: bool
     :return: PostDto
     """
+    likes = PostLike.objects(post_id=post._id)
+    views = PostView.objects(post_id=post._id)
     return PostDto(
         href=href,
-        title=post.title,
         author=get_user(post.author).username,
+        title=post.title,
+        description=post.description,
         content=post.content,
         tags=post.tags,
         private=post.private,
         created=post.created,
         edited=post.edited,
         comments=get_post_comments(post.post_id) if comments else [],
-        likes=len(post.likes),
-        views=len(post.views))
+        likes=len(likes),
+        views=len(views))

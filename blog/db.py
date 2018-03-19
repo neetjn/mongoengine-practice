@@ -31,14 +31,17 @@ class User(mongoengine.Document):
     register_date = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
 
 
-class PostLike(mongoengine.EmbeddedDocument):
+class PostLike(mongoengine.Document):
 
+    post_id = mongoengine.StringField(required=True)
     user_id = mongoengine.StringField(required=True)
     time = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
 
 
-class PostView(mongoengine.EmbeddedDocument):
+class PostView(mongoengine.Document):
 
+    post_id = mongoengine.StringField(required=True)
+    user_id = mongoengine.StringField(required=True)
     ip_address = mongoengine.StringField(required=True)
     seen = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
 
@@ -59,23 +62,21 @@ class Post(mongoengine.Document):
     private = mongoengine.BooleanField(default=False)
     created = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
     edited = mongoengine.DateTimeField()
-    likes = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PostLike))
-    views = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PostView))
 
     meta = {'queryset_class': PostQuerySet}
 
 
-class CommentLike(mongoengine.EmbeddedDocument):
+class CommentLike(mongoengine.Document):
 
+    comment_id = mongoengine.StringField(required=True)
     user_id = mongoengine.StringField(required=True)
     time = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
 
 
-class Comment(mongoengine.EmbeddedDocument):
+class Comment(mongoengine.Document):
 
     post_id = mongoengine.StringField(required=True)
     author = mongoengine.StringField(required=True)
     content = mongoengine.StringField(required=True)
     created = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
     edited = mongoengine.DateTimeField()
-    likes = mongoengine.ListField(mongoengine.EmbeddedDocumentField(CommentLike))

@@ -9,6 +9,7 @@ from blog.hooks.users import require_login
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
     TokenDtoSerializer, UserProfileDtoSerializer
 from blog.resources.base import BaseResource
+from blog.resources.comments import CommentResource
 from blog.resources.posts import PostResource
 from blog.utils.serializers import from_json, to_json
 

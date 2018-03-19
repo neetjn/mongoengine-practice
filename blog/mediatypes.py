@@ -146,8 +146,9 @@ class PostDto(object):
 
     def __init__(self, **kwargs):
         self.href = kwargs.get('href', '')
-        self.title = kwargs.get('title', '')
         self.author = kwargs.get('author', '')
+        self.title = kwargs.get('title', '')
+        self.description = kwargs.get('description', '')
         self.content = kwargs.get('content', '')
         self.tags = kwargs.get('tags', [])
         self.private = kwargs.get('private', False)
@@ -162,6 +163,7 @@ class PostDto(object):
 class PostDtoSerializer(Serializer):
 
     href = fields.StringField()
+    author = fields.StringField()
     title = fields.StringField(validators=[
         NotEmptyValidator(),
         CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
@@ -170,7 +172,6 @@ class PostDtoSerializer(Serializer):
         NotEmptyValidator(),
         CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
     ])
-    author = fields.StringField()
     content = fields.StringField(validators=[NotEmptyValidator()])
     tags = fields.ListField(fields.StringField)
     created = fields.DateTimeField()

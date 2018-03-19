@@ -1,7 +1,8 @@
 import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from blog.constants import BLOG_CONTENT_KEY
-from blog.db import Comment
+from blog.core.users import get_user
+from blog.db import Comment, CommentLike
 from blog.errors import CommentNotFoundError
 from blog.mediatypes import CommentDto, CommentFormDto
 from blog.utils.crypto import encrypt_content, decrypt_content
@@ -79,3 +80,21 @@ def get_user_comments(user_id: str, start: int = None, count: int = None):
     for comment in comments:
         comment.content = decrypt_content(comment.content)
     return comments
+
+
+def comment_to_dto(comment: Comment) -> CommentDto:
+    """
+    Convert comment resource to data transfer object.
+
+    :param comment: Comment resource to convert.
+    :type comment: Comment
+    :return: CommentDto
+    """
+    likes = CommentLike.objects(comment_id=comment._id)
+    return CommentDto(
+        author=get_user(comment.author).username,
+        content=comment.content,
+        tags=comment.tags,
+        created=comment.created,
+        edited=comment.edited,
+        likes=len(likes))

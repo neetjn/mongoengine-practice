@@ -123,5 +123,4 @@ def user_to_dto(user: User, comments: bool = True) -> UserProfileDto:
         full_name=user.full_name,
         last_posted=user.last_posted,
         last_activity=user.last_activity,
-        register_date=user.register_date
-    )
+        register_date=user.register_date)

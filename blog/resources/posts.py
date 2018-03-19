@@ -9,7 +9,7 @@ from blog.resources.base import BaseResource
 from blog.utils.serializers import from_json, to_json
 
 
-def user_has_post_access(user, post_id):
+def user_has_post_access(user: User, post_id: str) -> bool:
     return get_post(post_id).author != user._id and \
         user.role not in (UserRoles.admin, UserRoles.moderator)
 
