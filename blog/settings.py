@@ -109,6 +109,8 @@ with open('blog/settings.yml', 'r') as data:
     # to retain changes, use save_settings
     settings = s.object
 
+
+# TODO: create admin endpoint to change and save settings on the fly
 def save_settings():
     """Saves local settings given provided settings object."""
     global settings
