@@ -4,7 +4,7 @@ from r2dto import fields, Serializer
 from blog.utils.serializers import from_json, to_json
 
 
-__all__ = ['Settings', 'SettingsSerializer', 'get_settings', 'set_settings']
+__all__ = ['Settings', 'SettingsSerializer', 'settings', 'save_settings']
 
 
 class LoginSettings(object):
@@ -44,12 +44,14 @@ class PostRules(object):
         self.title_min_char = 0
         self.title_max_char = 0
         self.content_min_char = 0
+        self.content_max_char = 0
 
 
 class PostRulesSerializer(Serializer):
     title_min_char = fields.IntegerField()
     title_max_char = fields.IntegerField()
     content_min_char = fields.IntegerField()
+    content_max_char = fields.IntegerField()
 
     class Meta(object):
         model = PostRules
@@ -99,22 +101,17 @@ class SettingsSerializer(Serializer):
         model = Settings
 
 
-def get_settings() -> Settings:
-    """Fetches local settings and returns serialized object."""
-    with open('blog/settings.yml', 'r') as data:
-        raw = yaml.load(data.read())
-    settings = SettingsSerializer(data=raw)
-    settings.validate()
-    return settings.object
+with open('blog/settings.yml', 'r') as data:
+    s = SettingsSerializer(data=yaml.load(data.read()))
+    s.validate()
+    # settings object will be stored in memory from first import
+    # any changes will effect entire api instantly
+    # to retain changes, use save_settings
+    settings = s.object
 
-
-def set_settings(settings: Settings):
-    """
-    Saves local settings given provided settings object.
-
-    :param settings: Settings object to deserialize and save.
-    :type settings: Settings
-    """
+def save_settings():
+    """Saves local settings given provided settings object."""
+    global settings
     with open('blog/settings.yml', 'w') as data:
         s = SettingsSerializer(object=settings)
         s.validate()

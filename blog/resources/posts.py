@@ -1,6 +1,7 @@
 import falcon
-from blog.core.posts import get_posts, get_post, create_post, edit_post delete_post, \
+from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
     post_to_dto
+from blog.db import User
 from blog.errors import UnauthorizedRequest
 from blog.hooks.users import require_login
 from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \

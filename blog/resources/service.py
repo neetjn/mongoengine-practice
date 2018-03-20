@@ -13,9 +13,9 @@ class ServiceDescriptionResource(BaseResource):
     def on_get(self, req, resp):
         """Fetch blog service description."""
         resp.status = falcon.HTTP_200
-        resp.body = from_json(ServiceDescriptionDtoSerializer, ServiceDescriptionDto(
+        resp.body = to_json(ServiceDescriptionDtoSerializer, ServiceDescriptionDto(
             links=[
-                LinkDto(rel='post-collection', href=PostCollectionResource.url_to(req.host)),
-                LinkDto(rel='auth', href=AuthResource.url_to(req.host)),
-                LinkDto(rel='user', href=UserResource.url_to(req.host))
+                LinkDto(rel='post-collection', href=PostCollectionResource.url_to(req.netloc)),
+                LinkDto(rel='auth', href=AuthResource.url_to(req.netloc)),
+                LinkDto(rel='user', href=UserResource.url_to(req.netloc))
             ]))

@@ -13,6 +13,7 @@ rules:
     title_min_char: 3
     title_max_char: 124
     content_min_char: 124
+    content_max_char: 10000
   comment:
     content_min_char: 10
     content_max_char: 124

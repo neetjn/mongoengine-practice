@@ -1,8 +1,7 @@
 import datetime
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
-from blog.core.comments import get_post_comments
-from blog.core.users import get_user
-from blog.db import Post, PostLike, PostView
+from blog.core.users import get_user, get_user_comments
+from blog.db import Post, PostLike, PostView, Comment
 from blog.errors import PostNotFoundError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto
 from blog.utils.crypto import encrypt_content, decrypt_content
@@ -92,23 +91,22 @@ def delete_post(post_id: str):
     get_post(post_id).delete()
 
 
-def get_user_posts(user_id: str, start: int = None, count: int = None):
+def get_post_comments(post_id: str, start: int = None, count: int = None):
     """
-    Find all posts belonging to given user.
+    Fetch collection of comments given post.
 
-    :param user_id: Identifier of author.
-    :type user_id: str
+    :param post_id: Identifier of post to target.
+    :type post_id: str
     :param start: Used for pagination, specify where to start.
     :type start: int
     :param count: Used for pagination, specify number of posts to find.
     :type count: int
-    :return: [Post, ...]
+    :return: [Comment, ...]
     """
-    posts = Post.objects(author=user_id)[start:count]
-    for post in posts:
-        post.description = decrypt_content(post.description)
-        post.content = decrypt_content(post.content)
-    return posts
+    comments = Comment.objects(post_id=post_id)[start:count]
+    for comment in comments:
+        comment.content = decrypt_content(comment.content)
+    return comments
 
 
 def get_user_liked_posts(user_id: str, start: int = None, count: int = None):

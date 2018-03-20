@@ -1,10 +1,10 @@
 import jwt
 import falcon
 from blog.constants import BLOG_JWT_SECRET_KEY
-from blog.core.comments import get_user_comments, comment_to_dto
+from blog.core.comments import comment_to_dto
 from blog.core.posts import get_user_liked_posts, post_to_dto
 from blog.core.users import authenticate, get_user, create_user, edit_user, \
-    user_to_dto
+    user_to_dto, get_user_comments
 from blog.hooks.users import require_login
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
     TokenDtoSerializer, UserProfileDtoSerializer

@@ -1,12 +1,9 @@
 import re
 from r2dto import fields, validators, Serializer, ValidationError
 from blog.constants import USERNAME_PATTERN
-from blog.settings import get_settings
+from blog.settings import settings
 from blog.utils.serializers import CharLenValidator, EmailValidator, RegexValidator, \
     NotEmptyValidator
-
-
-settings = get_settings()
 
 
 class UserRoles(object):
@@ -86,7 +83,7 @@ class CommentDtoSerializer(Serializer):
             max=settings.rules.comment.content_max_char
         )
     ])
-    tags = fields.ListField(fields.StringField)
+    tags = fields.ListField(fields.ObjectField(fields.StringField))
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
     likes = fields.IntegerField()
@@ -120,9 +117,12 @@ class CommentFormDtoSerializer(Serializer):
 
     content = fields.StringField(validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_POST_COMMENT_MIN_CHAR, max=BLOG_POST_COMMENT_MAX_CHAR)
+        CharLenValidator(
+            min=settings.rules.post.content_min_char,
+            max=settings.rules.post.content_max_char
+        )
     ])
-    tags = fields.ListField(fields.StringField)
+    tags = fields.ListField(fields.ObjectField(fields.StringField))
 
     class Meta(object):
 
@@ -170,19 +170,25 @@ class PostDtoSerializer(Serializer):
     author = fields.StringField()
     title = fields.StringField(validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
+        CharLenValidator(
+            min=settings.rules.post.title_min_char,
+            max=settings.rules.post.title_max_char
+        )
     ])
     description = fields.StringField(validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
+        CharLenValidator(
+            min=settings.rules.post.title_min_char,
+            max=settings.rules.post.title_max_char
+        )
     ])
     content = fields.StringField(validators=[NotEmptyValidator()])
-    tags = fields.ListField(fields.StringField)
+    tags = fields.ListField(fields.ObjectField(fields.StringField))
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
-    comments = fields.ListField(CommentDtoSerializer)
+    comments = fields.ListField(fields.ObjectField(CommentDtoSerializer))
     likes = fields.IntegerField()
-    views = fields.ListField(PostViewDtoSerializer)
+    views = fields.ListField(fields.ObjectField(PostViewDtoSerializer))
     links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
 
     class Meta(object):
@@ -217,14 +223,20 @@ class PostFormDtoSerializer(Serializer):
 
     title = fields.StringField(validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
+        CharLenValidator(
+            min=settings.rules.post.title_min_char,
+            max=settings.rules.post.title_max_char
+        )
     ])
     description = fields.StringField(validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_POST_TITLE_MIN_CHAR, max=BLOG_POST_TITLE_MAX_CHAR)
+        CharLenValidator(
+            min=settings.rules.post.title_min_char,
+            max=settings.rules.post.title_max_char
+        )
     ])
     content = fields.StringField(validators=[NotEmptyValidator()])
-    tags = fields.ListField(fields.StringField)
+    tags = fields.ListField(fields.ObjectField(fields.StringField))
 
     class Meta(object):
 
@@ -251,16 +263,22 @@ class UserProfileDtoSerializer(object):
     href = fields.StringField()
     username = fields.StringField(validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
-        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
+        CharLenValidator(
+            min=settings.rules.user.username_min_char,
+            max=settings.rules.user.username_max_char
+        ),
+        RegexValidator(pattern=USERNAME_PATTERN)
     ])
     full_name = fields.StringField(name='fullName', validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+        CharLenValidator(
+            min=settings.rules.user.name_min_char,
+            max=settings.rules.user.name_max_char
+        )
     ])
     email = fields.StringField(validators=[NotEmptyValidator(), EmailValidator()])
-    posts = fields.ListField(fields.StringField)
-    comments = fields.ListField(fields.StringField)
+    posts = fields.ListField(fields.ObjectField(fields.StringField))
+    comments = fields.ListField(fields.ObjectField(fields.StringField))
     liked_posts = fields.ListField(fields.ObjectField(PostDtoSerializer), name='likedPosts')
     last_posted = fields.DateTimeField(name='lastPosted')
     last_activity = fields.DateTimeField(name='lastActivity')
@@ -285,16 +303,22 @@ class UserFormDtoSerializer(Serializer):
 
     username = fields.StringField(validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
-        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
+        CharLenValidator(
+            min=settings.rules.user.username_min_char,
+            max=settings.rules.user.username_max_char
+        ),
+        RegexValidator(pattern=USERNAME_PATTERN)
     ])
-    avatar_href = fields.StringField(name='avatarHref')
-    password = fields.StringField()
     full_name = fields.StringField(name='fullName', validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_USER_FNAME_MIN_CHAR, max=BLOG_USER_FNAME_MAX_CHAR)
+        CharLenValidator(
+            min=settings.rules.user.name_min_char,
+            max=settings.rules.user.name_max_char
+        )
     ])
     email = fields.StringField(validators=[EmailValidator()])
+    password = fields.StringField()
+    avatar_href = fields.StringField(name='avatarHref')
 
     class Meta(object):
 
@@ -311,8 +335,12 @@ class UserAuthDto(object):
 class UserAuthDtoSerializer(Serializer):
 
     username = fields.StringField(validators=[
-        CharLenValidator(min=BLOG_USER_USERNAME_MIN_CHAR, max=BLOG_USER_USERNAME_MAX_CHAR),
-        RegexValidator(pattern=BLOG_USER_USERNAME_PATTERN)
+        NotEmptyValidator(),
+        CharLenValidator(
+            min=settings.rules.user.username_min_char,
+            max=settings.rules.user.username_max_char
+        ),
+        RegexValidator(pattern=USERNAME_PATTERN)
     ])
     password = fields.StringField()
 

@@ -2,11 +2,10 @@ import datetime
 import time
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from mongoengine.queryset.visitor import Q
-from blog.constants import BLOG_MAX_FAILED_LOGIN, BLOG_FAILED_LOGIN_TIMEOUT
-from blog.core.comments import get_user_comments
-from blog.db import User, FailedLogin
+from blog.db import User, FailedLogin, Comment, Post
 from blog.errors import UserNotFoundError, UserExistsError, UserForbiddenRequest
 from blog.mediatypes import UserProfileDto, UserAuthDto, UserFormDto, UserRoles
+from blog.settings import settings
 from blog.utils.crypto import hash_password, compare_passwords
 
 
@@ -22,9 +21,9 @@ def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
     """
     try:
         user = User.objects.get(username=user_auth_dto.username, ip_address=client)
-        rfl = FailedLogin.objects(username=user_auth_dto.username)[-1 * BLOG_MAX_FAILED_LOGIN:None]
+        rfl = FailedLogin.objects(username=user_auth_dto.username)[-1 * settings.login.max_failed_login:None]
         now = int(time.time())
-        failed_logins = [fl for fl in rfl if now - time.mktime(fl.time.timetuple()) > BLOG_FAILED_LOGIN_TIMEOUT]
+        failed_logins = [fl for fl in rfl if now - time.mktime(fl.time.timetuple()) > settings.login.failed_login_timeout]
         if len(failed_logins) >= 5:
             raise UserForbiddenRequest()
         if compare_passwords(user.password, user_auth_dto.password, user.salt):
@@ -105,6 +104,43 @@ def edit_user(user_id: str, user_form_dto: UserFormDto):
     user.full_name = user_form_dto.full_name
     user.email = user_form_dto.email
     user.save()
+
+
+def get_user_posts(user_id: str, start: int = None, count: int = None):
+    """
+    Find all posts belonging to given user.
+
+    :param user_id: Identifier of author.
+    :type user_id: str
+    :param start: Used for pagination, specify where to start.
+    :type start: int
+    :param count: Used for pagination, specify number of posts to find.
+    :type count: int
+    :return: [Post, ...]
+    """
+    posts = Post.objects(author=user_id)[start:count]
+    for post in posts:
+        post.description = decrypt_content(post.description)
+        post.content = decrypt_content(post.content)
+    return posts
+
+
+def get_user_comments(user_id: str, start: int = None, count: int = None):
+    """
+    Fetch collection of comments given post.
+
+    :param post_id: Identifier of post to target.
+    :type post_id: str
+    :param start: Used for pagination, specify where to start.
+    :type start: int
+    :param count: Used for pagination, specify number of posts to find.
+    :type count: int
+    :return: [Comment, ...]
+    """
+    comments = Comment.objects(author=user_id)[start:count]
+    for comment in comments:
+        comment.content = decrypt_content(comment.content)
+    return comments
 
 
 def user_to_dto(user: User, comments: bool = True) -> UserProfileDto:
