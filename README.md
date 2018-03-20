@@ -52,23 +52,9 @@ By design this blog encrypts any and all post or comment content within the give
 
 ## Configuration
 
-This project is highly configurable, all blog constants can be found in `blog/constants.py`.
+This project is highly configurable, all blog constants can be found in `blog/constants.py` and all settings can be found in `blog/settings.yml`.
 
-**General**
-
-* **BLOG_USER_USERNAME_MIN_CHAR**: Minimum number of characters for usernames.
-* **BLOG_USER_USERNAME_MAX_CHAR**: Maximum number of characters for usernames.
-* **BLOG_USER_FNAME_MIN_CHAR**: Minimum number of characters for user full names.
-* **BLOG_USER_FNAME_MAX_CHAR**: Maximum number of characters for user full names.
-* **BLOG_POST_TITLE_MIN_CHAR**: Minimum number of characters for post titles.
-* **BLOG_POST_TITLE_MAX_CHAR**: Maximum number of characters for post titles.
-* **BLOG_POST_CONTENT_MIN_CHAR**: Minimum number of characters for post content.
-* **BLOG_POST_COMMENT_MIN_CHAR**: Minimum number of characters for post comments.
-* **BLOG_POST_COMMENT_MAX_CHAR**: Maximum number of characters for post comments.
-* **BLOG_MAX_FAILED_LOGIN**: Maximum number of consecutive failed logins.
-* **BLOG_FAILED_LOGIN_TIMEOUT**: Time in seconds to timeout after consecutive failed logins.
-
-**Environmental**
+**Constants** (Environmental)
 
 * **BLOG_HOST**: Host blog will be served on for Gunicorn.
 * **BLOG_PORT**: Port blog will be served on for Gunicorn.
@@ -80,6 +66,25 @@ This project is highly configurable, all blog constants can be found in `blog/co
 * **BLOG_AWS_ACCESS_KEY_ID**: AWS access key id for s3.
 * **BLOG_AWS_SECRET_ACCESS_KEY**: AWS secret access key for s3.
 * **BLOG_AWS_S3_BUCKET**: AWS s3 bucket for storing avatars.
+
+**Settings**
+
+* **login**
+  * **max_failed_login**: Minimum number of characters for usernames.
+  * **failed_login_timeout**: Maximum number of characters for usernames.
+* **rules**
+  * **user**
+    * **username_min_char**: Minimum number of characters for user full names.
+    * **username_max_char**: Maximum number of characters for user full names.
+    * **name_min_char**: Minimum number of characters for post titles.
+    * **name_max_char**: Maximum number of characters for post titles.
+  * **post**
+    * **title_min_char**: Minimum number of characters for post content.
+    * **title_max_char**: Minimum number of characters for post comments.
+    * **content_min_char**: Maximum number of characters for post comments.
+  * **comment**
+    * **content_min_char**: Maximum number of consecutive failed logins.
+    * **content_max_char**: Time in seconds to timeout after consecutive failed logins.
 
 ## Setting Up
 

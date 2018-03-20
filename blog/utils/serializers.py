@@ -1,10 +1,10 @@
 import json
 import re
 from r2dto import Serializer, ValidationError
-from blog.constants import EMAIL_REGEX
+from blog.constants import EMAIL_PATTERN
 
 
-def to_json(serializer: Serializer, dto: object):
+def to_json(serializer: Serializer, dto: object) -> str:
     """
     Serializes data transfer object with r2dto.
 
@@ -12,10 +12,11 @@ def to_json(serializer: Serializer, dto: object):
     :type serializer: Serializer
     :param dto: Data transfer object to serialize.
     :type dto: object
+    :return: str
     """
     base = serializer(object=dto)
     base.validate()
-    return base.data
+    return json.dumps(base.data)
 
 
 def from_json(serializer: Serializer, payload: str):
@@ -58,7 +59,7 @@ class EmailValidator(object):
     Email validator for r2dto serializer fields.
     """
     def validate(self, field, data):
-        if not re.match(EMAIL_REGEX, data):
+        if not re.match(EMAIL_PATTERN, data):
             raise ValidationError('"f{data}" is not a valid email.')
 
 

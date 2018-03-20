@@ -1,0 +1,18 @@
+---
+login:
+  max_failed_login: 5
+  # time in seconds to timeout after consecutive login failres
+  failed_login_timeout: 300
+rules:
+  user:
+    username_min_char: 3
+    username_max_char: 20
+    name_min_char: 3
+    name_max_char: 20
+  post:
+    title_min_char: 3
+    title_max_char: 124
+    content_min_char: 124
+  comment:
+    content_min_char: 10
+    content_max_char: 124

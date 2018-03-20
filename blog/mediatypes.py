@@ -1,11 +1,12 @@
 import re
 from r2dto import fields, validators, Serializer, ValidationError
-from blog.constants import BLOG_POST_TITLE_MIN_CHAR, BLOG_POST_TITLE_MAX_CHAR, \
-    BLOG_POST_CONTENT_MIN_CHAR, BLOG_POST_COMMENT_MIN_CHAR, BLOG_POST_COMMENT_MAX_CHAR, \
-    BLOG_USER_FNAME_MIN_CHAR, BLOG_USER_FNAME_MAX_CHAR, BLOG_USER_USERNAME_MIN_CHAR, \
-    BLOG_USER_USERNAME_MAX_CHAR, BLOG_USER_USERNAME_PATTERN
+from blog.constants import USERNAME_PATTERN
+from blog.settings import get_settings
 from blog.utils.serializers import CharLenValidator, EmailValidator, RegexValidator, \
     NotEmptyValidator
+
+
+settings = get_settings()
 
 
 class UserRoles(object):
@@ -80,7 +81,10 @@ class CommentDtoSerializer(Serializer):
     author = fields.StringField()
     content = fields.StringField(validators=[
         NotEmptyValidator(),
-        CharLenValidator(min=BLOG_POST_COMMENT_MIN_CHAR, max=BLOG_POST_COMMENT_MAX_CHAR)
+        CharLenValidator(
+            min=settings.rules.comment.content_min_char,
+            max=settings.rules.comment.content_max_char
+        )
     ])
     tags = fields.ListField(fields.StringField)
     created = fields.DateTimeField()
