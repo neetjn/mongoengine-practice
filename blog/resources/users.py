@@ -23,10 +23,7 @@ def get_auth_jwt(user: User) -> str:
     :param user: User mongo document to pull information from.
     :type user: User
     """
-    return jwt.encode({
-        'user': str(user.id),
-        'created': int(time.time())
-    }, BLOG_JWT_SECRET_KEY, algorithm='HS256').decode('utf-8')
+    return jwt.encode({'user': str(user.id), 'created': int(time.time())}, BLOG_JWT_SECRET_KEY, algorithm='HS256').decode('utf-8')
 
 
 class AuthResource(BaseResource):
