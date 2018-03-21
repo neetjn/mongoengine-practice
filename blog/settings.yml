@@ -1,8 +1,8 @@
 ---
 login:
   max_failed_login: 5
-  # time in seconds to timeout after consecutive login failres
-  failed_login_timeout: 300
+  failed_login_timeout_seconds: 300
+  max_session_time_hours: 12
 rules:
   user:
     username_min_char: 3

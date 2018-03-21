@@ -71,21 +71,23 @@ This project is highly configurable, all blog constants can be found in `blog/co
 **Settings**
 
 * **login**
-  * **max_failed_login**: Minimum number of characters for usernames.
-  * **failed_login_timeout**: Maximum number of characters for usernames.
+  * **max_failed_login**: Maximum number of consecutive failed logins.
+  * **failed_login_timeout_seconds**: Time in seconds to timeout after consecutive failed logins.
+  * **max_session_time_hours**: Time in hours a session is valid after a token is generated.
 * **rules**
   * **user**
-    * **username_min_char**: Minimum number of characters for user full names.
-    * **username_max_char**: Maximum number of characters for user full names.
+    * **username_min_char**: Minimum number of characters for user names.
+    * **username_max_char**: Maximum number of characters for user names.
     * **name_min_char**: Minimum number of characters for post titles.
     * **name_max_char**: Maximum number of characters for post titles.
   * **post**
-    * **title_min_char**: Minimum number of characters for post content.
-    * **title_max_char**: Minimum number of characters for post comments.
-    * **content_min_char**: Maximum number of characters for post comments.
+    * **title_min_char**: Minimum number of characters for post titles.
+    * **title_max_char**: Maximum number of characters for post titles.
+    * **content_min_char**: Minimum number of characters for post content.
+    * **content_max_char**: Maximum number of characters for post content.
   * **comment**
-    * **content_min_char**: Maximum number of consecutive failed logins.
-    * **content_max_char**: Time in seconds to timeout after consecutive failed logins.
+    * **content_min_char**: Minimum number of characters for comments.
+    * **content_max_char**: Maximum number of characters for comments.
 
 ## Setting Up
 

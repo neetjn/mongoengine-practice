@@ -10,12 +10,14 @@ __all__ = ['Settings', 'SettingsSerializer', 'settings', 'save_settings']
 class LoginSettings(object):
     def __init__(self):
         self.max_failed_login = 0
-        self.failed_login_timeout = 0
+        self.failed_login_timeout_seconds = 0
+        self.max_session_time_hours = 0
 
 
 class LoginSettingsSerializer(Serializer):
     max_failed_login = fields.IntegerField()
-    failed_login_timeout = fields.IntegerField()
+    failed_login_timeout_seconds = fields.IntegerField()
+    max_session_time_hours = fields.IntegerField()
 
     class Meta(object):
         model = LoginSettings

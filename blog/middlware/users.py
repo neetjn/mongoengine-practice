@@ -1,7 +1,9 @@
+import time
 import jwt
 from blog.constants import BLOG_JWT_SECRET_KEY
-from blog.core.errors import UserNotFoundError
+from blog.errors import UserNotFoundError
 from blog.core.users import get_user
+from blog.settings import settings
 from blog.utils.logger import debug, warning
 
 
@@ -20,10 +22,13 @@ class UserProcessor(object):
         """
         payload = jwt.decode(req.auth, BLOG_JWT_SECRET_KEY, algorithms=['HS256']) if req.auth else None
         if payload:
-            try:
-                # add our user to the request context
-                req.context.set_default('user', get_user(payload['userId']))
-            except UserNotFoundError:
-                warning(req, 'JWT payload found with invalid username.')
+            if int(payload.get('created')) + (60 * settings.login.max_session_time_hours) <= int(time.time()):
+                warning(req, 'JWT created over %s hours ago.' % settings.login.max_session_time_hours)
+            else:
+                try:
+                    # add our user to the request context
+                    req.context.set_default('user', get_user(payload.get('userId')))
+                except UserNotFoundError:
+                    warning(req, 'JWT payload found with invalid username.')
 
         req.blog_user = None

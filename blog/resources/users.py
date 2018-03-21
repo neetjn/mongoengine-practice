@@ -1,7 +1,9 @@
+import time
 import jwt
 import falcon
 from blog.constants import BLOG_JWT_SECRET_KEY
 from blog.core.comments import comment_to_dto
+from blog.db import User
 from blog.core.posts import get_user_liked_posts, post_to_dto
 from blog.core.users import authenticate, get_user, create_user, edit_user, \
     user_to_dto, get_user_comments
@@ -14,7 +16,18 @@ from blog.resources.posts import PostResource
 from blog.utils.serializers import from_json, to_json
 
 
-# TODO: add user posts to userprofiledto
+def get_auth_jwt(user: User) -> str:
+    """
+    Construct jwt for authentication.
+
+    :param user: User mongo document to pull information from.
+    :type user: User
+    """
+    return jwt.encode({
+        'user': str(user.id),
+        'created': int(time.time())
+    }, BLOG_JWT_SECRET_KEY, algorithm='HS256').decode('utf-8')
+
 
 class AuthResource(BaseResource):
 
@@ -25,11 +38,7 @@ class AuthResource(BaseResource):
         resp.status = falcon.HTTP_200
         payload = req.stream.read()
         user = authenticate(from_json(UserAuthDtoSerializer, payload), req.access_route)
-        if user:
-            jwt_token = jwt.encode({'user': user_id}, BLOG_JWT_SECRET_KEY, algorithm='HS256')
-            resp.body = to_json(TokenDtoSerializer, TokenDto(token=jwt_token))
-        else:
-            resp.body = 'false'
+        resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user))) if user else 'false'
 
 
 class UserResource(BaseResource):
@@ -41,8 +50,7 @@ class UserResource(BaseResource):
         resp.status = falcon.HTTP_201
         payload = req.stream.read()
         user = create_user(from_json(UserFormDtoSerializer, payload))
-        jwt_token = jwt.encode({'user': user_id}, BLOG_JWT_SECRET_KEY, algorithm='HS256')
-        resp.body = to_json(TokenDtoSerializer, TokenDto(token=jwt_token))
+        resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user)))
 
     @falcon.before(require_login)
     def on_get(self, req, resp):
