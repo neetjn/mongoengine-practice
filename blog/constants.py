@@ -12,6 +12,9 @@ BLOG_CONTENT_KEY = os.environ.get('BLOG_CONTENT_KEY', 'mWmYSBcSzfhGuLCRvqc3A9xK'
 BLOG_HOST = os.environ.get('BLOG_HOST', '0.0.0.0')
 BLOG_PORT = os.environ.get('BLOG_PORT', 8080)
 
+# blog mongodb specifications
+BLOG_DB_HOST = os.environ.get('BLOG_DB_HOST', 'mongodb://127.0.0.1:27017/py-blog')
+
 # aws credentials for s3 bucket storage
 BLOG_AWS_ACCESS_KEY_ID = os.environ.get('', '')
 BLOG_AWS_SECRET_ACCESS_KEY = os.environ.get('', '')

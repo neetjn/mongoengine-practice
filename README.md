@@ -58,6 +58,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
 
 * **BLOG_HOST**: Host blog will be served on for Gunicorn.
 * **BLOG_PORT**: Port blog will be served on for Gunicorn.
+* **BLOG_DB_HOST**: Blog mongodb database host.
 * **BLOG_CONTENT_KEY**: Key used to encrypt/decrypt blog content.
 * **BLOG_JWT_SECRET_KEY**: Key used to encrypt/decrypt session JWT.
 
