@@ -72,8 +72,8 @@ This project is highly configurable, all blog constants can be found in `blog/co
 
 * **login**
   * **max_failed_login**: Maximum number of consecutive failed logins.
-  * **failed_login_timeout_seconds**: Time in seconds to timeout after consecutive failed logins.
-  * **max_session_time_hours**: Time in hours a session is valid after a token is generated.
+  * **failed_login_timeout**: Time in seconds to timeout after consecutive failed logins.
+  * **max_session_time**: Time in seconds a session is valid after a token is generated.
 * **rules**
   * **user**
     * **username_min_char**: Minimum number of characters for user names.
