@@ -12,7 +12,7 @@ from blog.utils.serializers import from_json, to_json
 
 
 def user_has_comment_access(user: User, comment_id: str):
-    return get_comment(comment_id).author != user._id and \
+    return get_comment(comment_id).author != user_id and \
         user.role not in (UserRoles.admin, UserRoles.moderator)
 
 

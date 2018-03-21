@@ -58,7 +58,7 @@ def hash_password(password: str):
     :return: (hashed_password, salt)
     """
     salt = str(uuid4())
-    hashed_password = hashlib.sha256(password + salt).hexdigest()
+    hashed_password = hashlib.sha256(password.encode('utf-8') + salt.encode('utf-8')).hexdigest()
     return (hashed_password, salt)
 
 

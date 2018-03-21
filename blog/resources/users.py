@@ -26,7 +26,7 @@ class AuthResource(BaseResource):
         payload = req.stream.read()
         user = authenticate(from_json(UserAuthDtoSerializer, payload), req.access_route)
         if user:
-            jwt_token = jwt.encode({'user': user._id}, BLOG_JWT_SECRET_KEY, algorithm='HS256')
+            jwt_token = jwt.encode({'user': user_id}, BLOG_JWT_SECRET_KEY, algorithm='HS256')
             resp.body = to_json(TokenDtoSerializer, TokenDto(token=jwt_token))
         else:
             resp.body = 'false'
@@ -41,7 +41,7 @@ class UserResource(BaseResource):
         resp.status = falcon.HTTP_201
         payload = req.stream.read()
         user = create_user(from_json(UserFormDtoSerializer, payload))
-        jwt_token = jwt.encode({'user': user._id}, BLOG_JWT_SECRET_KEY, algorithm='HS256')
+        jwt_token = jwt.encode({'user': user_id}, BLOG_JWT_SECRET_KEY, algorithm='HS256')
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=jwt_token))
 
     @falcon.before(require_login)
@@ -51,11 +51,11 @@ class UserResource(BaseResource):
         user = req.context.get('user')
         user_dto = user_to_dto(user)
         user_dto.comments = [
-            comment_to_dto(comment, href=CommentResource.url_to(req.host, comment_id=comment._id))
-            for comment in get_user_comments(user._id)]
+            comment_to_dto(comment, href=CommentResource.url_to(req.host, comment_id=comment_id))
+            for comment in get_user_comments(user_id)]
         user_dto.liked_posts = [
-            post_to_dto(post, href=PostResource.url_to(req.host, post_id=post._id), comments=False)
-            for post in get_user_liked_posts(user._id)]
+            post_to_dto(post, href=PostResource.url_to(req.host, post_id=post_id), comments=False)
+            for post in get_user_liked_posts(user_id)]
         # no need to construct url, pull from request
         user.href = req.uri
         resp.body = to_json(UserProfileDtoSerializer, user_dto)

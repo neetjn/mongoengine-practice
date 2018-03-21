@@ -54,7 +54,7 @@ def comment_to_dto(comment: Comment) -> CommentDto:
     :type comment: Comment
     :return: CommentDto
     """
-    likes = CommentLike.objects(comment_id=comment._id)
+    likes = CommentLike.objects(comment_id=comment_id)
     return CommentDto(
         author=get_user(comment.author).username,
         content=comment.content,

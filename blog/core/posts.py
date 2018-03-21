@@ -137,8 +137,8 @@ def post_to_dto(post: Post, href: str = None, comments: bool = True) -> PostDto:
     :type comments: bool
     :return: PostDto
     """
-    likes = PostLike.objects(post_id=post._id)
-    views = PostView.objects(post_id=post._id)
+    likes = PostLike.objects(post_id=post_id)
+    views = PostView.objects(post_id=post_id)
     return PostDto(
         href=href,
         author=get_user(post.author).username,
