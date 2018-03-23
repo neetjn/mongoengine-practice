@@ -20,10 +20,11 @@ def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
     :return: User
     """
     try:
-        user = User.objects.get(username=user_auth_dto.username, ip_address=client)
-        rfl = FailedLogin.objects(username=user_auth_dto.username)[-1 * settings.login.max_failed_login:None]
-        now = int(time.time())
-        failed_logins = [fl for fl in rfl if now - time.mktime(fl.time.timetuple()) > settings.login.failed_login_timeout]
+        user = User.objects.get(username=user_auth_dto.username)
+        rfl = FailedLogin.objects(username=user_auth_dto.username, ip_address=client).order_by('-time')[5:]
+        now = time.time()
+        failed_logins = [
+            fl for fl in rfl if now - time.mktime(fl.time.timetuple()) <= settings.login.failed_login_timeout ]
         if len(failed_logins) >= 5:
             raise UserForbiddenRequest()
         if compare_passwords(user.password, user_auth_dto.password, user.salt):
@@ -31,7 +32,7 @@ def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
         # create new failed login document
         FailedLogin(username=user_auth_dto.username, ip_address=client).save()
         return None
-    except (DoesNotExist, ValidationError):
+    except (DoesNotExist):
         raise UserNotFoundError()
 
 

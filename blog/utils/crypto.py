@@ -73,7 +73,7 @@ def compare_passwords(hashed: str, password: str, salt: str) -> bool:
     :param salt: Password salt.
     :type salt: str
     """
-    return hashed == hashlib.sha256(password + salt).hexdigest()
+    return hashed == hashlib.sha256(password.encode('utf-8') + salt.encode('utf-8')).hexdigest()
 
 
 def encrypt_content(content: str):

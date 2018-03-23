@@ -30,11 +30,11 @@ class AuthResource(BaseResource):
 
     route = '/v1/user/authenticate/'
 
-    def on_get(self, req, resp):
+    def on_post(self, req, resp):
         """Fetch serialized session JWT."""
         resp.status = falcon.HTTP_200
         payload = req.stream.read()
-        user = authenticate(from_json(UserAuthDtoSerializer, payload), req.access_route)
+        user = authenticate(from_json(UserAuthDtoSerializer, payload), req.access_route[0])
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user))) if user else 'false'
 
 
