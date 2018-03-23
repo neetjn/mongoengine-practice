@@ -6,7 +6,7 @@ from blog.core.comments import comment_to_dto
 from blog.db import User
 from blog.core.posts import get_user_liked_posts, post_to_dto
 from blog.core.users import authenticate, get_user, create_user, edit_user, \
-    user_to_dto, get_user_comments
+    user_to_dto, get_user_comments, get_user_posts
 from blog.hooks.users import require_login
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
     TokenDtoSerializer, UserProfileDtoSerializer
@@ -49,18 +49,21 @@ class UserResource(BaseResource):
         user = create_user(from_json(UserFormDtoSerializer, payload))
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user)))
 
-    @falcon.before(require_login)
+    # @falcon.before(require_login)
     def on_get(self, req, resp):
         """Fetch user information for current session."""
         resp.status = falcon.HTTP_200
         user = req.context.get('user')
         user_dto = user_to_dto(user)
+        user_dto.posts = [
+            post_to_dto(post, href=PostResource.url_to(req.host, post_id=post.id), comments=False)
+            for post in get_user_posts(user.id)]
         user_dto.comments = [
-            comment_to_dto(comment, href=CommentResource.url_to(req.host, comment_id=comment_id))
-            for comment in get_user_comments(user_id)]
+            comment_to_dto(comment, href=CommentResource.url_to(req.host, comment_id=comment.id))
+            for comment in get_user_comments(user.id)]
         user_dto.liked_posts = [
-            post_to_dto(post, href=PostResource.url_to(req.host, post_id=post_id), comments=False)
-            for post in get_user_liked_posts(user_id)]
+            post_to_dto(post, href=PostResource.url_to(req.host, post_id=post.id), comments=False)
+            for post in get_user_liked_posts(user.id)]
         # no need to construct url, pull from request
         user.href = req.uri
         resp.body = to_json(UserProfileDtoSerializer, user_dto)

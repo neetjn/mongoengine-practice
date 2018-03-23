@@ -22,13 +22,11 @@ class UserProcessor(object):
         """
         payload = jwt.decode(req.auth, BLOG_JWT_SECRET_KEY, algorithms=['HS256']) if req.auth else None
         if payload:
-            if int(payload.get('created')) + (60 * settings.login.max_session_time_hours) <= int(time.time()):
+            if int(payload.get('created')) + (60 * settings.login.max_session_time) <= int(time.time()):
                 warning(req, 'JWT created over %s hours ago.' % settings.login.max_session_time_hours)
             else:
                 try:
                     # add our user to the request context
-                    req.context.set_default('user', get_user(payload.get('userId')))
+                    req.context.setdefault('user', get_user(payload.get('user')))
                 except UserNotFoundError:
                     warning(req, 'JWT payload found with invalid username.')
-
-        req.blog_user = None

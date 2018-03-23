@@ -24,8 +24,10 @@ def construct_log_message(req: Request, level: str, msg: str):
     time = datetime.datetime.utcnow()
     message = (f'({level}) time: ["{time}"]; sender: ["{req.forwarded_host}"]; resource: ["{req.path}"];'
                f' method: ["{req.method}"]; message: ["{msg}"];')
-    if req.blog_user:
-        return f'user: ["{req.blog_user.user_id}", "{req.blog_user.username}"]; ' + message
+
+    user = req.context.get('user')
+    if user:
+        return f'user: ["{user.id}", "{user.username}"]; ' + message
     return message
 
 

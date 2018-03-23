@@ -46,16 +46,19 @@ def delete_comment(comment_id: str):
     get_comment(comment_id).delete()
 
 
-def comment_to_dto(comment: Comment) -> CommentDto:
+def comment_to_dto(comment: Comment, href: str = None) -> CommentDto:
     """
     Convert comment resource to data transfer object.
 
     :param comment: Comment resource to convert.
     :type comment: Comment
+    :param href: Post resource href link.
+    :type href: str
     :return: CommentDto
     """
     likes = CommentLike.objects(comment_id=comment_id)
     return CommentDto(
+        href=href,
         author=get_user(comment.author).username,
         content=comment.content,
         tags=comment.tags,

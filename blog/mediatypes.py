@@ -250,6 +250,7 @@ class UserProfileDto(object):
         self.username = kwargs.get('username', '')
         self.email = kwargs.get('email', '')
         self.full_name = kwargs.get('full_name', '')
+        self.posts = kwargs.get('posts', [])
         self.comments = kwargs.get('comments', [])
         self.liked_posts = kwargs.get('liked_posts', [])
         self.last_posted = kwargs.get('last_posted', None)
@@ -258,7 +259,7 @@ class UserProfileDto(object):
         self.links = kwargs.get('links', [])
 
 
-class UserProfileDtoSerializer(object):
+class UserProfileDtoSerializer(Serializer):
 
     href = fields.StringField()
     username = fields.StringField(validators=[
@@ -277,8 +278,8 @@ class UserProfileDtoSerializer(object):
         )
     ])
     email = fields.StringField(validators=[NotEmptyValidator(), EmailValidator()])
-    posts = fields.ListField(fields.ObjectField(fields.StringField))
-    comments = fields.ListField(fields.ObjectField(fields.StringField))
+    posts = fields.ListField(fields.ObjectField(PostDtoSerializer))
+    comments = fields.ListField(fields.ObjectField(CommentDtoSerializer))
     liked_posts = fields.ListField(fields.ObjectField(PostDtoSerializer), name='likedPosts')
     last_posted = fields.DateTimeField(name='lastPosted')
     last_activity = fields.DateTimeField(name='lastActivity')

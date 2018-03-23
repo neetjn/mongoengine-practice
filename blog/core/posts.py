@@ -109,6 +109,21 @@ def get_post_comments(post_id: str, start: int = None, count: int = None):
     return comments
 
 
+def get_user_posts(user_id: str, start: int = None, count: int = None):
+    """
+    Find all posts by given user.
+
+    :param user_id: Identifier of user.
+    :type user_id: str
+    :param start: Used for pagination, specify where to start.
+    :type start: int
+    :param count: Used for pagination, specify number of posts to find.
+    :type count: int
+    :return: [Post, ...]
+    """
+    return Post.objects.get(author=user_id)[start:count]
+
+
 def get_user_liked_posts(user_id: str, start: int = None, count: int = None):
     """
     Find all posts liked by given user.
