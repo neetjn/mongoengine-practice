@@ -1,5 +1,5 @@
 import falcon
-from blog.middlware.users import UserProcessor
+from blog.middleware.users import UserProcessor
 from blog.resources.comments import CommentResource
 from blog.resources.posts import PostCollectionResource, PostResource
 from blog.resources.users import AuthResource, UserResource

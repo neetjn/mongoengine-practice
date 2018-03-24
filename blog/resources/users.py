@@ -49,7 +49,7 @@ class UserResource(BaseResource):
         user = create_user(from_json(UserFormDtoSerializer, payload))
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user)))
 
-    # @falcon.before(require_login)
+    @falcon.before(require_login)
     def on_get(self, req, resp):
         """Fetch user information for current session."""
         resp.status = falcon.HTTP_200

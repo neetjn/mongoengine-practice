@@ -1,7 +1,7 @@
 import time
 import jwt
 from blog.constants import BLOG_JWT_SECRET_KEY
-from blog.errors import UserNotFoundError
+from blog.errors import UserNotFoundError, UnauthorizedRequest
 from blog.core.users import get_user
 from blog.settings import settings
 from blog.utils.logger import debug, warning
@@ -9,17 +9,13 @@ from blog.utils.logger import debug, warning
 
 class UserProcessor(object):
 
-    # Note: RFC6648 recommends application headers prefixed with 'X-'
-    # should be depracated
-    # Source: https://tools.ietf.org/html/rfc6648
+    def process_resource(self, req, resp, resource, params):
+        """Process the request for user session before routing it."""
 
-    def process_request(self, req, resp):
-        """
-        Process the request for user session before routing it.
+        # Note: RFC6648 recommends application headers prefixed with 'X-'
+        # should be depracated
+        # Source: https://tools.ietf.org/html/rfc6648
 
-        param req: Request object that will have user details
-        attached to it.
-        """
         payload = jwt.decode(req.auth, BLOG_JWT_SECRET_KEY, algorithms=['HS256']) if req.auth else None
         if payload:
             if int(payload.get('created')) + (60 * settings.login.max_session_time) <= int(time.time()):
@@ -27,6 +23,7 @@ class UserProcessor(object):
             else:
                 try:
                     # add our user to the request context
-                    req.context.setdefault('user', get_user(payload.get('user')))
+                    user = get_user(payload.get('user'))
+                    req.context.setdefault('user', user)
                 except UserNotFoundError:
                     warning(req, 'JWT payload found with invalid username.')
