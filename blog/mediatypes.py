@@ -188,7 +188,7 @@ class PostDtoSerializer(Serializer):
     edited = fields.DateTimeField()
     comments = fields.ListField(fields.ObjectField(CommentDtoSerializer))
     likes = fields.IntegerField()
-    views = fields.ListField(fields.ObjectField(PostViewDtoSerializer))
+    views = fields.IntegerField()
     links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
 
     class Meta(object):
@@ -204,7 +204,7 @@ class PostCollectionDto(object):
 
 class PostCollectionDtoSerializer(Serializer):
 
-    posts = fields.ObjectField(PostDtoSerializer)
+    posts = fields.ListField(fields.ObjectField(PostDtoSerializer))
 
     class Model(object):
 

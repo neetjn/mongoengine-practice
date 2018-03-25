@@ -39,7 +39,7 @@ def create_post(user_id: str, post_form_dto: PostFormDto):
     author.last_posted = post_time
     # create post resource
     post = Post()
-    post.author = author.author_id
+    post.author = str(author.id)
     post.title = post_form_dto.title
     post.description = encrypt_content(post_form_dto.description)
     post.content = encrypt_content(post_form_dto.content)
@@ -152,8 +152,8 @@ def post_to_dto(post: Post, href: str = None, comments: bool = True) -> PostDto:
     :type comments: bool
     :return: PostDto
     """
-    likes = PostLike.objects(post_id=post_id)
-    views = PostView.objects(post_id=post_id)
+    likes = PostLike.objects(post_id=post.id)
+    views = PostView.objects(post_id=post.id)
     return PostDto(
         href=href,
         author=get_user(post.author).username,

@@ -14,7 +14,7 @@ from blog.utils.serializers import from_json, to_json
 
 
 def user_has_post_access(user: User, post_id: str) -> bool:
-    return get_post(post_id).author != user_id and \
+    return get_post(post_id).author != user.id and \
         user.role not in (UserRoles.admin, UserRoles.moderator)
 
 
@@ -62,7 +62,7 @@ class PostCollectionResource(BaseResource):
         """
         resp.status = falcon.HTTP_200
         post_collection_dto = PostCollectionDto(
-            posts=[post_to_dto(post, href=PostResource.url_to(req.host, post_id=post_id), comments=False)
+            posts=[post_to_dto(post, href=PostResource.url_to(req.host, post_id=post.id), comments=False)
             for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 
@@ -72,6 +72,6 @@ class PostCollectionResource(BaseResource):
         resp.status = falcon.HTTP_201
         payload = req.stream.read()
         user = req.context.get('user')
-        create_post(user_id, from_json(PostFormDtoSerializer, payload))
+        create_post(user.id, from_json(PostFormDtoSerializer, payload))
         # link to grid view
         resp.set_header('Location', req.uri)

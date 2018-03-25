@@ -27,7 +27,7 @@ class AESCipher(object):
         raw = self._pad(raw)
         iv = Random.new().read(AES.block_size)
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt(raw))
+        return base64.b64encode(iv + cipher.encrypt(raw)).decode('utf-8')
 
     def decrypt(self, enc: str):
         """
@@ -93,4 +93,4 @@ def decrypt_content(content: str):
     :param content: Blog content to decrypt.
     :type content: str
     """
-    return AESCipher(BLOG_CONTENT_KEY).encrypt(content)
+    return AESCipher(BLOG_CONTENT_KEY).decrypt(content)

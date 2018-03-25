@@ -53,14 +53,14 @@ class PostView(mongoengine.Document):
 class PostQuerySet(mongoengine.QuerySet):
 
     def get_public(self):
-        return self.filter(private=True)
+        return self.filter(private=False)
 
 
 class Post(mongoengine.Document):
 
+    author = mongoengine.StringField(required=True)
     title = mongoengine.StringField(required=True)
     description = mongoengine.StringField()
-    author = mongoengine.StringField(required=True)
     content = mongoengine.StringField(required=True)
     tags = mongoengine.ListField(mongoengine.StringField())
     private = mongoengine.BooleanField(default=False)

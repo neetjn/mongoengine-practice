@@ -73,4 +73,5 @@ class UserResource(BaseResource):
         """Updates user resource for current session."""
         resp.status = falcon.HTTP_204
         payload = req.stream.read()
-        edit_user(req.context.get('user'), from_json(UserFormDtoSerializer, payload))
+        user = req.context.get('user')
+        edit_user(user.id, from_json(UserFormDtoSerializer, payload))
