@@ -217,6 +217,7 @@ class PostFormDto(object):
         self.description = kwargs.get('description', '')
         self.content = kwargs.get('content', '')
         self.tags = kwargs.get('tags', [])
+        self.private = kwargs.get('private', False)
 
 
 class PostFormDtoSerializer(Serializer):
@@ -237,6 +238,7 @@ class PostFormDtoSerializer(Serializer):
     ])
     content = fields.StringField(validators=[NotEmptyValidator()])
     tags = fields.ListField(fields.ObjectField(fields.StringField))
+    private = fields.BooleanField()
 
     class Meta(object):
 

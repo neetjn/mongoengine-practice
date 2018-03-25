@@ -72,11 +72,11 @@ def edit_post(post_id: str, post_form_dto: PostFormDto):
     :type post_id: str
     """
     post = get_post(post_id)
-    post.title = post_form_dto.title
-    post.description = encrypt_content(post_form_dto.description)
-    post.content = encrypt_content(post_form_dto.content)
-    post.tags = post_form_dto.tags
-    post.private = post_form_dto.private
+    post.title = post_form_dto.title or post.title
+    post.description = encrypt_content(post_form_dto.description) or post.description
+    post.content = encrypt_content(post_form_dto.content) or post.content
+    post.tags = list(set(post.tags + post_form_dto.tags))
+    post.private = post_form_dto.private or post.private
     post.edited = datetime.datetime.utcnow()
     post.save()
 
