@@ -164,6 +164,6 @@ def post_to_dto(post: Post, href: str = None, comments: bool = True) -> PostDto:
         private=post.private,
         created=post.created,
         edited=post.edited,
-        comments=get_post_comments(post.post_id) if comments else [],
+        comments=get_post_comments(post.id) if comments else [],
         likes=len(likes),
         views=len(views))

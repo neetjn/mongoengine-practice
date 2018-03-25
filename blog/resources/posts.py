@@ -62,7 +62,7 @@ class PostCollectionResource(BaseResource):
         """
         resp.status = falcon.HTTP_200
         post_collection_dto = PostCollectionDto(
-            posts=[post_to_dto(post, href=PostResource.url_to(req.host, post_id=post.id), comments=False)
+            posts=[post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), comments=False)
             for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 

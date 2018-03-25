@@ -56,13 +56,13 @@ class UserResource(BaseResource):
         user = req.context.get('user')
         user_dto = user_to_dto(user)
         user_dto.posts = [
-            post_to_dto(post, href=PostResource.url_to(req.host, post_id=post.id), comments=False)
+            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), comments=False)
             for post in get_user_posts(user.id)]
         user_dto.comments = [
-            comment_to_dto(comment, href=CommentResource.url_to(req.host, comment_id=comment.id))
+            comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=comment.id))
             for comment in get_user_comments(user.id)]
         user_dto.liked_posts = [
-            post_to_dto(post, href=PostResource.url_to(req.host, post_id=post.id), comments=False)
+            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), comments=False)
             for post in get_user_liked_posts(user.id)]
         # no need to construct url, pull from request
         user.href = req.uri
