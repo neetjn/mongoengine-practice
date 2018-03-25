@@ -1,9 +1,11 @@
 import datetime
+import time
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from blog.core.users import get_user, get_user_comments
 from blog.db import Post, PostLike, PostView, Comment
 from blog.errors import PostNotFoundError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto
+from blog.settings import settings
 from blog.utils.crypto import encrypt_content, decrypt_content
 
 
@@ -92,11 +94,9 @@ def view_post(post_id: str, user_id: str, host: str):
     :param host: Host location post was viewed at.
     :type host: str
     """
-    try:
-        # TODO: add setting for time between last viewed post
-        # TODO: complete view_post core method
-        post_view = PostLike.objects.get(post_id=post_id, user_id=user_id, ip_address=host)
-    except DoesNotExist:
+    post_view = PostView.objects(post_id=post_id, user_id=user_id, ip_address=host).order_by('-id').first()
+    now = datetime.datetime.utcnow().timestamp()
+    if not post_view or now - post_view.seen.timestamp() >= settings.post.view_time_delay:
         PostView(post_id=post_id, user_id=user_id, ip_address=host).save()
 
 
