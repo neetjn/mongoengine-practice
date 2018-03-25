@@ -16,14 +16,19 @@ from blog.resources.posts import PostResource
 from blog.utils.serializers import from_json, to_json
 
 
-def get_auth_jwt(user: User) -> str:
+def get_auth_jwt(user: User, host: str) -> str:
     """
     Construct jwt for authentication.
 
     :param user: User mongo document to pull information from.
     :type user: User
+    :param host: Remote host to bind token to.
+    :type host: str
     """
-    return jwt.encode({'user': str(user.id), 'created': int(time.time())}, BLOG_JWT_SECRET_KEY, algorithm='HS256').decode('utf-8')
+    return jwt.encode(
+        {'user': str(user.id), 'created': time.time(), 'host': host},
+        BLOG_JWT_SECRET_KEY,
+        algorithm='HS256').decode('utf-8')
 
 
 class AuthResource(BaseResource):
@@ -34,8 +39,9 @@ class AuthResource(BaseResource):
         """Fetch serialized session JWT."""
         resp.status = falcon.HTTP_200
         payload = req.stream.read()
-        user = authenticate(from_json(UserAuthDtoSerializer, payload), req.access_route[0])
-        resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user))) if user else 'false'
+        host = req.access_route[0]
+        user = authenticate(from_json(UserAuthDtoSerializer, payload), host)
+        resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user, host))) if user else 'false'
 
 
 class UserResource(BaseResource):

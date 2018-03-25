@@ -16,10 +16,14 @@ class UserProcessor(object):
         # should be depracated
         # Source: https://tools.ietf.org/html/rfc6648
 
+        host = req.access_route[0]
         payload = jwt.decode(req.auth, BLOG_JWT_SECRET_KEY, algorithms=['HS256']) if req.auth else None
         if payload:
-            if int(payload.get('created')) + (60 * settings.login.max_session_time) <= int(time.time()):
-                warning(req, 'JWT created over %s hours ago.' % settings.login.max_session_time_hours)
+            if payload.get('host') != host:
+                warning(req, 'JWT host "{}" does not match the requestee "{}"'.format(payload.get('host'), host))
+                raise UnauthorizedRequest()
+            elif int(payload.get('created')) + (60 * settings.login.max_session_time) <= time.time():
+                warning(req, 'JWT created over {} hours ago.'.format(settings.login.max_session_time_hours))
             else:
                 try:
                     # add our user to the request context
@@ -27,3 +31,4 @@ class UserProcessor(object):
                     req.context.setdefault('user', user)
                 except UserNotFoundError:
                     warning(req, 'JWT payload found with invalid username.')
+                    raise UnauthorizedRequest()
