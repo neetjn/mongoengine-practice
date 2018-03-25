@@ -3,6 +3,8 @@ login:
   max_failed_login: 5
   failed_login_timeout: 300
   max_session_time: 43200
+post:
+  view_time_delay: 3600
 rules:
   user:
     username_min_char: 3

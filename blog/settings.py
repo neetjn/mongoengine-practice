@@ -14,6 +14,18 @@ class LoginSettings(object):
         self.max_session_time = 0
 
 
+class PostSettings(object):
+    def __init__(self):
+        self.view_time_delay = 0
+
+
+class PostSettingsSerializer(Serializer):
+    view_time_delay = fields.IntegerField()
+
+    class Meta(object):
+        model = PostSettings
+
+
 class LoginSettingsSerializer(Serializer):
     max_failed_login = fields.IntegerField()
     failed_login_timeout = fields.IntegerField()
@@ -92,11 +104,13 @@ class RulesSerializer(Serializer):
 class Settings(object):
     def __init__(self):
         self.login = LoginSettings()
+        self.post = PostSettings()
         self.rules = Rules()
 
 
 class SettingsSerializer(Serializer):
     login = fields.ObjectField(LoginSettingsSerializer)
+    post = fields.ObjectField(PostSettingsSerializer)
     rules = fields.ObjectField(RulesSerializer)
 
     class Meta(object):
