@@ -157,7 +157,7 @@ def get_user_liked_posts(user_id: str, start: int = None, count: int = None):
     return [Post.objects.get(post_id=pl.post_id) for pl in post_likes]
 
 
-def post_to_dto(post: Post, href: str = None, comments: bool = True) -> PostDto:
+def post_to_dto(post: Post, href: str = None, links: list = None, comments: bool = True) -> PostDto:
     """
     Converts post resource into data transfer object.
 
@@ -165,14 +165,17 @@ def post_to_dto(post: Post, href: str = None, comments: bool = True) -> PostDto:
     :type post: Post
     :param href: Post resource href link.
     :type href: str
+    :param links: Post resource links.
+    :type links: list
     :param comments: Include post comments.
     :type comments: bool
     :return: PostDto
     """
-    likes = PostLike.objects(post_id=post.id)
-    views = PostView.objects(post_id=post.id)
+    likes = PostLike.objects(post_id=str(post.id))
+    views = PostView.objects(post_id=str(post.id))
     return PostDto(
         href=href,
+        links=links or [],
         author=get_user(post.author).username,
         title=post.title,
         description=post.description,
