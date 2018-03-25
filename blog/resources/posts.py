@@ -1,6 +1,6 @@
 import falcon
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
-    post_to_dto
+    post_to_dto, like_post
 from blog.db import User
 from blog.errors import UnauthorizedRequest
 from blog.hooks.users import require_login
@@ -48,6 +48,20 @@ class PostResource(BaseResource):
         if not user_has_post_access(user, post_id):
             raise UnauthorizedRequest(user)
         delete_post(post_id)
+
+
+class PostLike(BaseResource):
+
+    route = '/v/1/post/{post_id}/like'
+
+    @falcon.before(require_login)
+    def on_put(self, req, resp, post_id):
+        """Like an existing post resource"""
+        resp.status = falcon.HTTP_204
+        user = req.context.get('user')
+        if not user_has_post_access(user, post_id):
+            raise UnauthorizedRequest(user)
+        like_post(post_id, user.id)
 
 
 class PostCollectionResource(BaseResource):

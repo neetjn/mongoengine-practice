@@ -81,6 +81,23 @@ def edit_post(post_id: str, post_form_dto: PostFormDto):
     post.save()
 
 
+def like_post(post_id: str, user_id: str):
+    """
+    Like or dislike existing post resource.
+
+    :param post_id:  Identifier of post to like or dislike.
+    :type post_id: str
+    :param user_id: Identifier of user to like or dislike post.
+    :type user_id: str
+    """
+    try:
+        post_like = PostLike.objects.get(post_id=post_id, user_id=user_id)
+    except DoesNotExist:
+        PostLike(post_id=post_id, user_id=user_id).save()
+    else:
+        post_like.delete()
+
+
 def delete_post(post_id: str):
     """
     Delete existing post resource.
