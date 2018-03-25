@@ -81,6 +81,25 @@ def edit_post(post_id: str, post_form_dto: PostFormDto):
     post.save()
 
 
+def view_post(post_id: str, user_id: str, host: str):
+    """
+    View existing post resource.
+
+    :param post_id:  Identifier of post to view.
+    :type post_id: str
+    :param user_id: Identifier of user to view post.
+    :type user_id: str
+    :param host: Host location post was viewed at.
+    :type host: str
+    """
+    try:
+        # TODO: add setting for time between last viewed post
+        # TODO: complete view_post core method
+        post_view = PostLike.objects.get(post_id=post_id, user_id=user_id, ip_address=host)
+    except DoesNotExist:
+        PostView(post_id=post_id, user_id=user_id, ip_address=host).save()
+
+
 def like_post(post_id: str, user_id: str):
     """
     Like or dislike existing post resource.
