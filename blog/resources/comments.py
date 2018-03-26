@@ -1,5 +1,6 @@
 import falcon
-from blog.core.comments import get_comment, edit_comment, delete_comment, comment_to_dto
+from blog.core.comments import get_comment, edit_comment, delete_comment, comment_to_dto, \
+    like_comment
 from blog.db import User
 from blog.errors import UnauthorizedRequest
 from blog.hooks.users import require_login
@@ -7,13 +8,22 @@ from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSeria
 from blog.resources.base import BaseResource
 from blog.utils.serializers import from_json, to_json
 
-# TODO: include functionality and endpoint for liking comment
-# can include like endpoint in comment links
-
 
 def user_has_comment_access(user: User, comment_id: str):
     return get_comment(comment_id).author != user_id and \
         user.role not in (UserRoles.admin, UserRoles.moderator)
+
+
+class CommentLikeResource(BaseResource):
+
+    route = '/v1/blog/comment/{comment_id}/like'
+
+    @falcon.before(require_login)
+    def on_put(self, req, resp, comment_id):
+        """Like an existing comment resource."""
+        resp.status = falcon.HTTP_204
+        user = req.context.get('user')
+        like_comment(comment_id, str(user.id))
 
 
 class CommentResource(BaseResource):

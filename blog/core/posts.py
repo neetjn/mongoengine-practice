@@ -94,6 +94,7 @@ def view_post(post_id: str, user_id: str, host: str):
     :param host: Host location post was viewed at.
     :type host: str
     """
+    get_post(post_id) # ensure post exists
     post_view = PostView.objects(post_id=post_id, user_id=user_id, ip_address=host).order_by('-id').first()
     now = datetime.datetime.utcnow().timestamp()
     if not post_view or now - post_view.seen.timestamp() >= settings.post.view_time_delay:
@@ -109,6 +110,7 @@ def like_post(post_id: str, user_id: str):
     :param user_id: Identifier of user to like or dislike post.
     :type user_id: str
     """
+    get_post(post_id) # ensure post exists
     try:
         post_like = PostLike.objects.get(post_id=post_id, user_id=user_id)
     except DoesNotExist:
@@ -176,7 +178,7 @@ def get_user_liked_posts(user_id: str, start: int = None, count: int = None):
     return [Post.objects.get(post_id=pl.post_id) for pl in post_likes]
 
 
-def post_to_dto(post: Post, href: str = None, links: list = None, comments: bool = True) -> PostDto:
+def post_to_dto(post: Post, href: str = None, links: list = None) -> PostDto:
     """
     Converts post resource into data transfer object.
 
@@ -186,8 +188,6 @@ def post_to_dto(post: Post, href: str = None, links: list = None, comments: bool
     :type href: str
     :param links: Post resource links.
     :type links: list
-    :param comments: Include post comments.
-    :type comments: bool
     :return: PostDto
     """
     likes = PostLike.objects(post_id=str(post.id))
@@ -203,6 +203,5 @@ def post_to_dto(post: Post, href: str = None, links: list = None, comments: bool
         private=post.private,
         created=post.created,
         edited=post.edited,
-        comments=get_post_comments(post.id) if comments else [],
         likes=len(likes),
         views=len(views))

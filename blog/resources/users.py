@@ -51,9 +51,10 @@ class UserResource(BaseResource):
     def on_post(self, req, resp):
         """Creates a new user resource and provides a session JWT."""
         resp.status = falcon.HTTP_201
+        host = req.access_route[0]
         payload = req.stream.read()
         user = create_user(from_json(UserFormDtoSerializer, payload))
-        resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user)))
+        resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user, host)))
 
     @falcon.before(require_login)
     def on_get(self, req, resp):

@@ -36,6 +36,23 @@ def edit_comment(comment_id: str, comment_form_dto: CommentFormDto):
     comment.save()
 
 
+def like_comment(comment_id: str, user_id: str):
+    """
+    Like or dislike existing comment resource.
+
+    :param comment_id:  Identifier of comment to like or dislike.
+    :type comment_id: str
+    :param user_id: Identifier of user to like or dislike comment.
+    :type user_id: str
+    """
+    try:
+        comment_like = CommentLike.objects.get(comment_id=comment_id, user_id=user_id)
+    except DoesNotExist:
+        CommentLike(comment_id=comment_id, user_id=user_id).save()
+    else:
+        comment_like.delete()
+
+
 def delete_comment(comment_id: str):
     """
     Delete existing post resource.
@@ -46,7 +63,7 @@ def delete_comment(comment_id: str):
     get_comment(comment_id).delete()
 
 
-def comment_to_dto(comment: Comment, href: str = None) -> CommentDto:
+def comment_to_dto(comment: Comment, href: str = None, links: list = None) -> CommentDto:
     """
     Convert comment resource to data transfer object.
 
@@ -56,7 +73,7 @@ def comment_to_dto(comment: Comment, href: str = None) -> CommentDto:
     :type href: str
     :return: CommentDto
     """
-    likes = CommentLike.objects(comment_id=comment_id)
+    likes = CommentLike.objects(comment_id=comment.id)
     return CommentDto(
         href=href,
         author=get_user(comment.author).username,

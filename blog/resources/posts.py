@@ -1,16 +1,15 @@
 import falcon
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
-    post_to_dto, like_post, view_post
+    post_to_dto, like_post, view_post, get_post_comments
+from blog.core.comments import comment_to_dto
 from blog.db import User
 from blog.errors import UnauthorizedRequest
 from blog.hooks.users import require_login
 from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
     PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto
 from blog.resources.base import BaseResource
+from blog.resources.comments import CommentResource, CommentLikeResource
 from blog.utils.serializers import from_json, to_json
-
-# TODO: include functionality and endpoint for liking post
-# can include like endpoint in post link
 
 
 def user_has_post_access(user: User, post_id: str) -> bool:
@@ -53,6 +52,16 @@ class PostResource(BaseResource):
         post_dto = post_to_dto(post, href=req.uri, links=[
             LinkDto(rel='like-post', href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
             LinkDto(rel='view-post', href=PostViewResource.url_to(req.netloc, post_id=post.id))])
+        comments = get_post_comments(post_id)
+        post.comments = [
+            comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=str(comment.id),
+                links=[
+                    LinkDto(
+                        rel='like-comment',
+                        href=CommentLikeResource.url_to(req.netloc, comment_id=str(comment.id))
+                    )
+                ])) for comment in comments]
+
         resp.body = to_json(PostDtoSerializer, post_dto)
 
     @falcon.before(require_login)
@@ -89,7 +98,7 @@ class PostCollectionResource(BaseResource):
         post_collection_dto = PostCollectionDto(posts=[
             post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=[
                 LinkDto(rel='like-post', href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
-                LinkDto(rel='view-post', href=PostViewResource.url_to(req.netloc, post_id=post.id))], comments=False)
+                LinkDto(rel='view-post', href=PostViewResource.url_to(req.netloc, post_id=post.id))])
             for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 
