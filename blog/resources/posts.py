@@ -1,12 +1,13 @@
 import falcon
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
-    post_to_dto, like_post, view_post, get_post_comments
+    post_to_dto, like_post, view_post, get_post_comments, create_post_comment
 from blog.core.comments import comment_to_dto
 from blog.db import User
 from blog.errors import UnauthorizedRequest
 from blog.hooks.users import require_login
 from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
-    PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto
+    PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto, \
+    CommentFormDtoSerializer
 from blog.resources.base import BaseResource
 from blog.resources.comments import CommentResource, CommentLikeResource
 from blog.utils.serializers import from_json, to_json
@@ -15,6 +16,19 @@ from blog.utils.serializers import from_json, to_json
 def user_has_post_access(user: User, post_id: str) -> bool:
     return get_post(post_id).author != user.id and \
         user.role not in (UserRoles.admin, UserRoles.moderator)
+
+
+class PostCommentResource(BaseResource):
+
+    route = '/v1/post/{post_id}/comment'
+
+    @falcon.before(require_login)
+    def on_post(self, req, resp, post_id):
+        """Create comment for existing post resource"""
+        resp.status = falcon.HTTP_201
+        payload = req.stream.read()
+        user = req.context.get('user')
+        create_post_comment(post_id, str(user.id), from_json(CommentFormDtoSerializer, payload))
 
 
 class PostViewResource(BaseResource):
@@ -50,8 +64,9 @@ class PostResource(BaseResource):
         resp.status = falcon.HTTP_200
         post = get_post(post_id)
         post_dto = post_to_dto(post, href=req.uri, links=[
-            LinkDto(rel='like-post', href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
-            LinkDto(rel='view-post', href=PostViewResource.url_to(req.netloc, post_id=post.id))])
+            LinkDto(rel='comment', href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
+            LinkDto(rel='like', href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
+            LinkDto(rel='view', href=PostViewResource.url_to(req.netloc, post_id=post.id))])
         comments = get_post_comments(post_id)
         post.comments = [
             comment_to_dto(
@@ -99,8 +114,9 @@ class PostCollectionResource(BaseResource):
         resp.status = falcon.HTTP_200
         post_collection_dto = PostCollectionDto(posts=[
             post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=[
-                LinkDto(rel='like-post', href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
-                LinkDto(rel='view-post', href=PostViewResource.url_to(req.netloc, post_id=post.id))])
+                LinkDto(rel='comment', href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
+                LinkDto(rel='like', href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
+                LinkDto(rel='view', href=PostViewResource.url_to(req.netloc, post_id=post.id))])
             for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 

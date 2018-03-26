@@ -4,7 +4,7 @@ from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, 
 from blog.core.users import get_user, get_user_comments
 from blog.db import Post, PostLike, PostView, Comment
 from blog.errors import PostNotFoundError
-from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto
+from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto, CommentFormDto
 from blog.settings import settings
 from blog.utils.crypto import encrypt_content, decrypt_content
 
@@ -81,6 +81,26 @@ def edit_post(post_id: str, post_form_dto: PostFormDto):
     post.private = post_form_dto.private or post.private
     post.edited = datetime.datetime.utcnow()
     post.save()
+
+
+def create_post_comment(post_id: str, user_id: str, comment_form_dto: CommentFormDto):
+    """
+    Create a new commnet resource.
+
+    :param post_id: Identifier of post to create new comment for.
+    :type post_id: str
+    :param user_id: Identifier of user creating comment resource.
+    :type user_id: str
+    :param comment_form_dto: Comment data transfer object.
+    :type comment_form_dto: CommentFormDto
+    """
+    post = get_post(post_id) # ensure post exists
+    comment = Comment()
+    comment.post_id = post_id
+    comment.author = user_id
+    comment.content = encrypt_content(comment_form_dto.content)
+    comment.tags = comment_form_dto.tags
+    comment.save()
 
 
 def view_post(post_id: str, user_id: str, host: str):
