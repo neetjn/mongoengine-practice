@@ -94,12 +94,11 @@ def create_post_comment(post_id: str, user_id: str, comment_form_dto: CommentFor
     :param comment_form_dto: Comment data transfer object.
     :type comment_form_dto: CommentFormDto
     """
-    post = get_post(post_id) # ensure post exists
+    get_post(post_id) # ensure post exists
     comment = Comment()
     comment.post_id = post_id
     comment.author = user_id
     comment.content = encrypt_content(comment_form_dto.content)
-    comment.tags = comment_form_dto.tags
     comment.save()
 
 
@@ -161,6 +160,7 @@ def get_post_comments(post_id: str, start: int = None, count: int = None):
     :type count: int
     :return: [Comment, ...]
     """
+    # TODO: remove queryset for post comments
     comments = Comment.objects(post_id=post_id)[start:count]
     for comment in comments:
         comment.content = decrypt_content(comment.content)

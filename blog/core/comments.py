@@ -78,7 +78,6 @@ def comment_to_dto(comment: Comment, href: str = None, links: list = None) -> Co
         href=href,
         author=get_user(comment.author).username,
         content=comment.content,
-        tags=comment.tags,
         created=comment.created,
         edited=comment.edited,
         likes=len(likes))

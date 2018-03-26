@@ -64,7 +64,6 @@ class CommentDto(object):
         self.href = kwargs.get('href', '')
         self.author = kwargs.get('author', '')
         self.content = kwargs.get('content', '')
-        self.tags = kwargs.get('tags', [])
         self.created = kwargs.get('created', None)
         self.edited = kwargs.get('edited', None)
         self.likes = kwargs.get('likes', 0)
@@ -109,7 +108,6 @@ class CommentFormDto(object):
 
     def __init__(self, **kwargs):
         self.content = kwargs.get('content', '')
-        self.tags = kwargs.get('tags', [])
 
 
 class CommentFormDtoSerializer(Serializer):
@@ -121,7 +119,6 @@ class CommentFormDtoSerializer(Serializer):
             max=settings.rules.post.content_max_char
         )
     ])
-    tags = fields.ListField(fields.ObjectField(fields.StringField))
 
     class Meta(object):
 
