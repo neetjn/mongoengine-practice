@@ -87,7 +87,6 @@ class CommentDtoSerializer(Serializer):
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
     likes = fields.IntegerField()
-    views = fields.IntegerField()
     links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
 
     class Meta(object):

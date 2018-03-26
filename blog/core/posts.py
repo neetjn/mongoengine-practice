@@ -85,7 +85,7 @@ def edit_post(post_id: str, post_form_dto: PostFormDto):
 
 def create_post_comment(post_id: str, user_id: str, comment_form_dto: CommentFormDto):
     """
-    Create a new commnet resource.
+    Create a new comment resource.
 
     :param post_id: Identifier of post to create new comment for.
     :type post_id: str
