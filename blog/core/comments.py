@@ -8,6 +8,9 @@ from blog.mediatypes import CommentDto, CommentFormDto
 from blog.utils.crypto import encrypt_content, decrypt_content
 
 
+# TODO: create utility to create new comment resource
+
+
 def get_comment(comment_id: str) -> Comment:
     """
     Fetch existing comment resource.

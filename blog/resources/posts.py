@@ -54,7 +54,9 @@ class PostResource(BaseResource):
             LinkDto(rel='view-post', href=PostViewResource.url_to(req.netloc, post_id=post.id))])
         comments = get_post_comments(post_id)
         post.comments = [
-            comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=str(comment.id),
+            comment_to_dto(
+                comment,
+                href=CommentResource.url_to(req.netloc, comment_id=str(comment.id),
                 links=[
                     LinkDto(
                         rel='like-comment',
