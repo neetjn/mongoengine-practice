@@ -68,7 +68,7 @@ def create_user(user_form_dto: UserFormDto) -> User:
         user.salt = salt
         user.full_name = user_form_dto.full_name
         user.email = user_form_dto.email
-        user.role = UserRoles.blogger
+        user.role = UserRoles.BLOGGER
         user.save()
         return user
     else:

@@ -17,7 +17,7 @@ class BLOG_COMMENT_RESOURCE_HREF_REL(object):
 
 def user_has_comment_access(user: User, comment_id: str):
     return get_comment(comment_id).author != user.id and \
-        user.role not in (UserRoles.admin, UserRoles.moderator)
+        user.role not in (UserRoles.ADMIN, UserRoles.MODERATOR)
 
 
 class CommentLikeResource(BaseResource):

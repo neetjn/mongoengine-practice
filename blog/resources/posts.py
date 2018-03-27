@@ -23,7 +23,7 @@ class BLOG_POST_RESOURCE_HREF_REL(object):
 
 def user_has_post_access(user: User, post_id: str) -> bool:
     return get_post(post_id).author != user.id and \
-        user.role not in (UserRoles.admin, UserRoles.moderator)
+        user.role not in (UserRoles.ADMIN, UserRoles.MODERATOR)
 
 
 class PostCommentResource(BaseResource):

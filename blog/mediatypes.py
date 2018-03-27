@@ -8,16 +8,16 @@ from blog.utils.serializers import CharLenValidator, EmailValidator, RegexValida
 
 class UserRoles(object):
 
-    admin = 'ADMIN'
-    moderator = 'MODERATOR'
-    blogger = 'BLOGGER'
+    ADMIN = 'ADMIN'
+    MODERATOR = 'MODERATOR'
+    BLOGGER = 'BLOGGER'
 
 
-class SearchOption(object):
+class PostSearchOptions(object):
 
-    title = 'TITLE'
-    content = 'CONTENT'
-    author = 'AUTHOR'
+    TITLE = 'TITLE'
+    CONTENT = 'CONTENT'
+    AUTHOR = 'AUTHOR'
 
 
 class LinkDto(object):
