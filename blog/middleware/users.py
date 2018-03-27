@@ -25,10 +25,11 @@ class UserProcessor(object):
             elif int(payload.get('created')) + (60 * settings.login.max_session_time) <= time.time():
                 warning(req, 'JWT created over {} hours ago.'.format(settings.login.max_session_time_hours))
             else:
+                user_id = payload.get('user')
                 try:
                     # add our user to the request context
-                    user = get_user(payload.get('user'))
+                    user = get_user(user_id)
                     req.context.setdefault('user', user)
                 except UserNotFoundError:
-                    warning(req, 'JWT payload found with invalid username.')
+                    warning(req, f'JWT payload found with invalid user identifier "{user_id}".')
                     raise UnauthorizedRequest()
