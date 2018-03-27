@@ -125,9 +125,12 @@ class PostCollectionResource(BaseResource):
         resp.status = falcon.HTTP_200
         post_collection_dto = PostCollectionDto(posts=[
             post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=[
-                LinkDto(rel='comment', href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
-                LinkDto(rel='like', href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
-                LinkDto(rel='view', href=PostViewResource.url_to(req.netloc, post_id=post.id))])
+                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_COMMENT,
+                        href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
+                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_LIKE,
+                        href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
+                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_VIEW,
+                        href=PostViewResource.url_to(req.netloc, post_id=post.id))])
             for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 
