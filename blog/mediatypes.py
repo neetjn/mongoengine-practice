@@ -13,6 +13,13 @@ class UserRoles(object):
     blogger = 'BLOGGER'
 
 
+class SearchOption(object):
+
+    title = 'TITLE'
+    content = 'CONTENT'
+    author = 'AUTHOR'
+
+
 class LinkDto(object):
 
     def __init__(self, rel=None, href=None):
@@ -139,6 +146,17 @@ class PostViewDtoSerializer(Serializer):
     class Meta(object):
 
         model = PostViewDto
+
+
+class PostSearchSettings(object):
+
+    def __init__(self, **kwargs):
+        self.options = kwargs.get('method', [])
+
+
+class PostSearchSettingsSerializer(Serializer):
+
+    options = fields.ListField(fields.ObjectField(fields.StringField))
 
 
 class PostDto(object):

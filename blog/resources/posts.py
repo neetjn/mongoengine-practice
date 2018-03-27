@@ -129,3 +129,10 @@ class PostCollectionResource(BaseResource):
         create_post(user.id, from_json(PostFormDtoSerializer, payload))
         # link to grid view
         resp.set_header('Location', req.uri)
+
+
+class PostSearchResource(BaseResource):
+
+    route = '/v1/posts/search'
+
+    def on_post(self, req, resp):
