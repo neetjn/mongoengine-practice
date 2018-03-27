@@ -4,9 +4,23 @@ from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, 
 from blog.core.users import get_user, get_user_comments
 from blog.db import Post, PostLike, PostView, Comment
 from blog.errors import PostNotFoundError
-from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto, CommentFormDto
+from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto, CommentFormDto, \
+    PostSearchSettings
 from blog.settings import settings
 from blog.utils.crypto import encrypt_content, decrypt_content
+
+
+def search_post(query: str, post_search_settings: PostSearchSettings, start: int = None, count: int = None):
+    """
+    Search for an existing post resource.
+
+    :param query: Search query.
+    :type query: str
+    :param post_search_settings: Post search settings
+    :type post_search_settings: PostSearchSettings
+    """
+    # TODO: complete post search query / functionality
+    pass
 
 
 def get_posts(start=None, count=None):

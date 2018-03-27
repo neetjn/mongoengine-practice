@@ -136,3 +136,5 @@ class PostSearchResource(BaseResource):
     route = '/v1/posts/search'
 
     def on_post(self, req, resp):
+        resp.status = falcon.HTTP_201
+        # TODO: complete postsearch resource
