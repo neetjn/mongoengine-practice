@@ -4,13 +4,19 @@ from blog.core.comments import get_comment, edit_comment, delete_comment, commen
 from blog.db import User
 from blog.errors import UnauthorizedRequest
 from blog.hooks.users import require_login
-from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSerializer
+from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSerializer, \
+    LinkDto
 from blog.resources.base import BaseResource
 from blog.utils.serializers import from_json, to_json
 
 
+class BLOG_COMMENT_RESOURCE_HREF_REL(object):
+
+    COMMENT_LIKE = 'comment-like'
+
+
 def user_has_comment_access(user: User, comment_id: str):
-    return get_comment(comment_id).author != user_id and \
+    return get_comment(comment_id).author != user.id and \
         user.role not in (UserRoles.admin, UserRoles.moderator)
 
 
@@ -34,6 +40,9 @@ class CommentResource(BaseResource):
         """Fetch single comment resource."""
         resp.status = falcon.HTTP_200
         comment_dto = comment_to_dto(get_comment(comment_id))
+        comment_dto.links = [
+            LinkDto(rel=BLOG_COMMENT_RESOURCE_HREF_REL.COMMENT_LIKE,
+                    href=CommentLikeResource.url_to(req.netloc, comment_id=comment_id))]
         # no need to construct url, pull from request
         comment_dto.href = req.uri
         resp.body = to_json(CommentDtoSerializer, comment_dto)

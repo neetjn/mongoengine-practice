@@ -9,8 +9,16 @@ from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
     PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto, \
     CommentFormDtoSerializer
 from blog.resources.base import BaseResource
-from blog.resources.comments import CommentResource, CommentLikeResource
+from blog.resources.comments import CommentResource, CommentLikeResource, \
+    BLOG_COMMENT_RESOURCE_HREF_REL
 from blog.utils.serializers import from_json, to_json
+
+
+class BLOG_POST_RESOURCE_HREF_REL(object):
+
+    POST_LIKE = 'post-like'
+    POST_VIEW = 'post-view'
+    POST_COMMENT = 'post-comment'
 
 
 def user_has_post_access(user: User, post_id: str) -> bool:
@@ -64,9 +72,12 @@ class PostResource(BaseResource):
         resp.status = falcon.HTTP_200
         post = get_post(post_id)
         post_dto = post_to_dto(post, href=req.uri, links=[
-            LinkDto(rel='comment', href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
-            LinkDto(rel='like', href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
-            LinkDto(rel='view', href=PostViewResource.url_to(req.netloc, post_id=post.id))])
+            LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_COMMENT,
+                    href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
+            LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_LIKE,
+                    href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
+            LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_VIEW,
+                    href=PostViewResource.url_to(req.netloc, post_id=post.id))])
         comments = get_post_comments(post_id)
         post_dto.comments = [
             comment_to_dto(
@@ -74,7 +85,7 @@ class PostResource(BaseResource):
                 href=CommentResource.url_to(req.netloc, comment_id=str(comment.id),
                 links=[
                     LinkDto(
-                        rel='like-comment',
+                        rel=BLOG_COMMENT_RESOURCE_HREF_REL.COMMENT_LIKE,
                         href=CommentLikeResource.url_to(req.netloc, comment_id=str(comment.id))
                     )
                 ])) for comment in comments]
