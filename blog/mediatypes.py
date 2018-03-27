@@ -82,7 +82,6 @@ class CommentDtoSerializer(Serializer):
             max=settings.rules.comment.content_max_char
         )
     ])
-    tags = fields.ListField(fields.ObjectField(fields.StringField))
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
     likes = fields.IntegerField()

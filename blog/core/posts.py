@@ -160,7 +160,6 @@ def get_post_comments(post_id: str, start: int = None, count: int = None):
     :type count: int
     :return: [Comment, ...]
     """
-    # TODO: remove queryset for post comments
     comments = Comment.objects(post_id=post_id)[start:count]
     for comment in comments:
         comment.content = decrypt_content(comment.content)
