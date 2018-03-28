@@ -12,7 +12,7 @@ class BlogSettingsResource(BaseResource):
     @falcon.before(is_admin)
     def on_get(self, req, resp):
         resp.status = falcon.HTTP_200
-        resp.body = to_json(settings, SettingsSerializer)
+        resp.body = to_json(SettingsSerializer, settings)
 
     @falcon.before(is_admin)
     def on_put(self, req, resp):
