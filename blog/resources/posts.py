@@ -9,8 +9,7 @@ from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
     PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto, \
     CommentFormDtoSerializer, PostSearchSettingsDtoSerializer
 from blog.resources.base import BaseResource
-from blog.resources.comments import CommentResource, CommentLikeResource, \
-    BLOG_COMMENT_RESOURCE_HREF_REL
+from blog.resources.comments import get_comment_links
 from blog.utils.serializers import from_json, to_json
 
 
@@ -23,7 +22,7 @@ class BLOG_POST_RESOURCE_HREF_REL(object):
 
 def get_post_links(req: falcon.Request, post: Post) -> list:
     """
-    Construct post links.
+    Construct post resource links.
 
     :param req: Request object to pull host from.
     :type req: falcon.Request
@@ -103,12 +102,7 @@ class PostResource(BaseResource):
             comment_to_dto(
                 comment,
                 href=CommentResource.url_to(req.netloc, comment_id=str(comment.id),
-                links=[
-                    LinkDto(
-                        rel=BLOG_COMMENT_RESOURCE_HREF_REL.COMMENT_LIKE,
-                        href=CommentLikeResource.url_to(req.netloc, comment_id=str(comment.id))
-                    )
-                ])) for comment in comments]
+                links=get_comment_links(req, comment))) for comment in comments]
 
         resp.body = to_json(PostDtoSerializer, post_dto)
 
