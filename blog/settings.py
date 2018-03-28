@@ -20,16 +20,16 @@ class PostSettings(object):
 
 
 class PostSettingsSerializer(Serializer):
-    view_time_delay = fields.IntegerField()
+    view_time_delay = fields.IntegerField(required=True)
 
     class Meta(object):
         model = PostSettings
 
 
 class LoginSettingsSerializer(Serializer):
-    max_failed_login = fields.IntegerField()
-    failed_login_timeout = fields.IntegerField()
-    max_session_time = fields.IntegerField()
+    max_failed_login = fields.IntegerField(required=True)
+    failed_login_timeout = fields.IntegerField(required=True)
+    max_session_time = fields.IntegerField(required=True)
 
     class Meta(object):
         model = LoginSettings
@@ -44,10 +44,10 @@ class UserRules(object):
 
 
 class UserRulesSerializer(Serializer):
-    username_min_char = fields.IntegerField()
-    username_max_char = fields.IntegerField()
-    name_min_char = fields.IntegerField()
-    name_max_char = fields.IntegerField()
+    username_min_char = fields.IntegerField(required=True)
+    username_max_char = fields.IntegerField(required=True)
+    name_min_char = fields.IntegerField(required=True)
+    name_max_char = fields.IntegerField(required=True)
 
     class Meta(object):
         model = UserRules
@@ -62,10 +62,10 @@ class PostRules(object):
 
 
 class PostRulesSerializer(Serializer):
-    title_min_char = fields.IntegerField()
-    title_max_char = fields.IntegerField()
-    content_min_char = fields.IntegerField()
-    content_max_char = fields.IntegerField()
+    title_min_char = fields.IntegerField(required=True)
+    title_max_char = fields.IntegerField(required=True)
+    content_min_char = fields.IntegerField(required=True)
+    content_max_char = fields.IntegerField(required=True)
 
     class Meta(object):
         model = PostRules
@@ -78,8 +78,8 @@ class CommentRules(object):
 
 
 class CommentRulesSerializer(Serializer):
-    content_min_char = fields.IntegerField()
-    content_max_char = fields.IntegerField()
+    content_min_char = fields.IntegerField(required=True)
+    content_max_char = fields.IntegerField(required=True)
 
     class Meta(object):
         model = CommentRules
@@ -93,9 +93,9 @@ class Rules(object):
 
 
 class RulesSerializer(Serializer):
-    user = fields.ObjectField(UserRulesSerializer)
-    post = fields.ObjectField(PostRulesSerializer)
-    comment = fields.ObjectField(CommentRulesSerializer)
+    user = fields.ObjectField(UserRulesSerializer, required=True)
+    post = fields.ObjectField(PostRulesSerializer, required=True)
+    comment = fields.ObjectField(CommentRulesSerializer, required=True)
 
     class Meta(object):
         model = Rules
@@ -109,9 +109,9 @@ class Settings(object):
 
 
 class SettingsSerializer(Serializer):
-    login = fields.ObjectField(LoginSettingsSerializer)
-    post = fields.ObjectField(PostSettingsSerializer)
-    rules = fields.ObjectField(RulesSerializer)
+    login = fields.ObjectField(LoginSettingsSerializer, required=True)
+    post = fields.ObjectField(PostSettingsSerializer, required=True)
+    rules = fields.ObjectField(RulesSerializer, required=True)
 
     class Meta(object):
         model = Settings
