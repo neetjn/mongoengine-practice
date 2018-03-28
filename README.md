@@ -60,7 +60,7 @@ The py-blog project ships with (but is not limited to) the following:
 
 * [x] Service Description (resource expansion)
 * [x] Logging
-* [x] User Registration/Authentication
+* [x] User Registration/Authentication (includes login failure handling)
 * [ ] Email authentication
 * [x] User Roles (blogger, moderator, admin)
 * [ ] User news letters
@@ -68,8 +68,10 @@ The py-blog project ships with (but is not limited to) the following:
 * [ ] AWS S3 support for media management
 * [x] Live blog settings management
 * [x] Creating, deleting, liking, "viewing" posts
-* [x] Post privacy (editting/publishing)
+* [x] Fetching all public posts (with pagination)
+* [x] Post privacy (editing/publishing)
 * [x] Post content encryption (database level)
+* [x] Searching for posts by title, description, content, and author (with cooldown and pagination)
 * [x] Creating, deleting, liking post comments
 * [x] Comment content encryption (database level)
 
