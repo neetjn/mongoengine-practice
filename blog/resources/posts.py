@@ -1,13 +1,13 @@
 import falcon
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
-    post_to_dto, like_post, view_post, get_post_comments, create_post_comment
+    post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts
 from blog.core.comments import comment_to_dto
 from blog.db import User
 from blog.errors import UnauthorizedRequest
 from blog.hooks.users import require_login
 from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
     PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto, \
-    CommentFormDtoSerializer
+    CommentFormDtoSerializer, PostSearchSettingsDtoSerializer
 from blog.resources.base import BaseResource
 from blog.resources.comments import CommentResource, CommentLikeResource, \
     BLOG_COMMENT_RESOURCE_HREF_REL
@@ -149,6 +149,18 @@ class PostSearchResource(BaseResource):
 
     route = '/v1/posts/search'
 
+    @falcon.before(require_login)
     def on_post(self, req, resp):
         resp.status = falcon.HTTP_201
-        # TODO: complete postsearch resource
+        payload = req.stream.read()
+        post_search_settings = from_json(PostSearchSettingsDtoSerializer, payload)
+        post_collection_dto = PostCollectionDto(posts=[
+            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=[
+                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_COMMENT,
+                        href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
+                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_LIKE,
+                        href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
+                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_VIEW,
+                        href=PostViewResource.url_to(req.netloc, post_id=post.id))])
+            for post in search_posts(post_search_settings, req.params.get('start'), req.params.get('count'))])
+        resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)

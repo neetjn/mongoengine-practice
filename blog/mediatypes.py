@@ -15,9 +15,10 @@ class UserRoles(object):
 
 class PostSearchOptions(object):
 
-    TITLE = 'TITLE'
-    CONTENT = 'CONTENT'
-    AUTHOR = 'AUTHOR'
+    TITLE = 'title'
+    CONTENT = 'content'
+    DESCRIPTION = 'description'
+    AUTHOR = 'author'
 
 
 class LinkDto(object):
@@ -148,15 +149,21 @@ class PostViewDtoSerializer(Serializer):
         model = PostViewDto
 
 
-class PostSearchSettings(object):
+class PostSearchSettingsDto(object):
 
     def __init__(self, **kwargs):
+        self.query = kwargs.get('query', '')
         self.options = kwargs.get('method', [])
 
 
-class PostSearchSettingsSerializer(Serializer):
+class PostSearchSettingsDtoSerializer(Serializer):
 
-    options = fields.ListField(fields.ObjectField(fields.StringField))
+    query = fields.StringField()
+    options = fields.ListField(fields.StringField())
+
+    class Meta(object):
+
+        model = PostSearchSettingsDto
 
 
 class PostDto(object):
@@ -196,7 +203,7 @@ class PostDtoSerializer(Serializer):
         )
     ])
     content = fields.StringField(validators=[NotEmptyValidator()])
-    tags = fields.ListField(fields.ObjectField(fields.StringField))
+    tags = fields.ListField(fields.StringField())
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
     comments = fields.ListField(fields.ObjectField(CommentDtoSerializer))
@@ -250,7 +257,7 @@ class PostFormDtoSerializer(Serializer):
         )
     ])
     content = fields.StringField(validators=[NotEmptyValidator()])
-    tags = fields.ListField(fields.ObjectField(fields.StringField))
+    tags = fields.ListField(fields.StringField())
     private = fields.BooleanField()
 
     class Meta(object):

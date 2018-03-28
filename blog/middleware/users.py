@@ -16,6 +16,7 @@ class UserProcessor(object):
         # should be depracated
         # Source: https://tools.ietf.org/html/rfc6648
 
+        # TODO: resolve token creation check
         host = req.access_route[0]
         payload = jwt.decode(req.auth, BLOG_JWT_SECRET_KEY, algorithms=['HS256']) if req.auth else None
         if payload:

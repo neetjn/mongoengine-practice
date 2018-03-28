@@ -1,42 +1,55 @@
 import datetime
 import time
-from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError, Q
+from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError, \
+    InvalidQueryError, Q
 from blog.core.users import get_user, get_user_comments
 from blog.db import Post, PostLike, PostView, Comment, User
 from blog.errors import PostNotFoundError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto, CommentFormDto, \
-    PostSearchSettings, PostSearchOptions
+    PostSearchSettingsDto, PostSearchOptions
 from blog.settings import settings
 from blog.utils.crypto import encrypt_content, decrypt_content
 
 
-def search_post(query: str, post_search_settings: PostSearchSettings, start: int = None, count: int = None):
+def search_posts(post_search_settings: PostSearchSettingsDto, start: int = None, count: int = None):
     """
     Search for an existing post resource.
 
-    :param query: Search query.
-    :type query: str
     :param post_search_settings: Post search settings
-    :type post_search_settings: PostSearchSettings
+    :type post_search_settings: PostSearchSettingsDto
     """
-    query = Q()
+    # TODO: add post search timeout functionality
+    queries = {}
+
     if PostSearchOptions.TITLE in post_search_settings.options:
-        query = query | Q(title__contains=query)
-    if PostSearchOptions.CONTENT in post_search_settings:
-        # figure out how to decrypt content?
-        query = query | Q(content__contains=query)
+        queries['title__contains'] = post_search_settings.query
 
-    posts = Post.objects.get(query)
+    try:
+        posts = Post.objects(Q(**queries))
+    except InvalidQueryError:
+        posts = Post.objects()
 
-    if PostSearchOptions.AUTHOR in post_search_settings:
+    # TODO: research how to optimize search queries for encrypted content
+
+    for post in posts:
+        post.description = decrypt_content(post.description)
+        post.content = decrypt_content(post.content)
+
+    if PostSearchOptions.CONTENT in post_search_settings.options:
+        posts = [post for post in posts if post_search_settings.query in post.content]
+
+    if PostSearchOptions.DESCRIPTION in post_search_settings.options:
+        posts = [post for post in posts if post_search_settings.query in post.description]
+
+    if PostSearchOptions.AUTHOR in post_search_settings.options:
         try:
             author = User.objects.get(username=post_search_settings)
             # filter posts by author username
-            return [p for p in posts if p.author == author.id]
+            posts = [post for post in posts if post.author == author.id]
         except DoesNotExist:
-            return posts
-    else:
-        return posts
+            posts = []
+
+    return posts
 
 
 def get_posts(start=None, count=None):
