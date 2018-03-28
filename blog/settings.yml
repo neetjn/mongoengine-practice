@@ -1,21 +1,20 @@
----
 login:
-  max_failed_login: 5
   failed_login_timeout: 300
+  max_failed_login: 5
   max_session_time: 43200
 post:
   view_time_delay: 3600
 rules:
-  user:
-    username_min_char: 3
-    username_max_char: 20
-    name_min_char: 3
-    name_max_char: 20
-  post:
-    title_min_char: 3
-    title_max_char: 124
-    content_min_char: 124
-    content_max_char: 10000
   comment:
-    content_min_char: 10
     content_max_char: 124
+    content_min_char: 10
+  post:
+    content_max_char: 10000
+    content_min_char: 124
+    title_max_char: 124
+    title_min_char: 3
+  user:
+    name_max_char: 20
+    name_min_char: 3
+    username_max_char: 20
+    username_min_char: 3

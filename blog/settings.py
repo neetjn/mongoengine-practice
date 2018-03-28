@@ -158,4 +158,4 @@ def save_settings(settings_dto: Settings):
     with open('blog/settings.yml', 'w') as data:
         s = SettingsSerializer(object=settings)
         s.validate()
-        data.write(yaml.dump(s.data), default_flow_style=False)
+        data.write(yaml.dump(s.data, default_flow_style=False))
