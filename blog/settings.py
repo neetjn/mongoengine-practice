@@ -126,10 +126,35 @@ with open('blog/settings.yml', 'r') as data:
     settings = s.object
 
 
-# TODO: create admin endpoint to change and save settings on the fly
-def save_settings():
-    """Saves local settings given provided settings object."""
+def save_settings(settings_dto: Settings):
+    """
+    Saves local settings given provided settings object.
+
+    :param settings_dto: Settings data transfer object.
+    :type settings_dto: Settings
+    """
     global settings
+
+    # login settings
+    settings.login.max_failed_login = settings_dto.login.max_failed_login
+    settings.login.failed_login_timeout = settings_dto.login.failed_login_timeout
+    settings.login.max_session_time = settings_dto.login.max_session_time
+    # post settings
+    settings.post.view_time_delay = settings_dto.post.view_time_delay
+    # user rules
+    settings.rules.user.username_min_char = settings_dto.rules.user.username_min_char
+    settings.rules.user.username_max_char = settings_dto.rules.user.username_max_char
+    settings.rules.user.name_min_char = settings_dto.rules.user.name_min_char
+    settings.rules.user.name_max_char = settings_dto.rules.user.name_max_char
+    # post rules
+    settings.rules.post.title_min_char = settings_dto.rules.post.title_min_char
+    settings.rules.post.title_max_char = settings_dto.rules.post.title_max_char
+    settings.rules.post.content_min_char = settings_dto.rules.post.content_min_char
+    settings.rules.post.content_max_char = settings_dto.rules.post.content_max_char
+    # comment rules
+    settings.rules.comment.content_min_char = settings_dto.rules.comment.content_min_char
+    settings.rules.comment.content_max_char = settings_dto.rules.comment.content_max_char
+
     with open('blog/settings.yml', 'w') as data:
         s = SettingsSerializer(object=settings)
         s.validate()

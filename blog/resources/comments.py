@@ -3,7 +3,7 @@ from blog.core.comments import get_comment, edit_comment, delete_comment, commen
     like_comment
 from blog.db import User
 from blog.errors import UnauthorizedRequest
-from blog.hooks.users import require_login
+from blog.hooks.users import is_logged_in
 from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSerializer, \
     LinkDto
 from blog.resources.base import BaseResource
@@ -24,7 +24,7 @@ class CommentLikeResource(BaseResource):
 
     route = '/v1/blog/comment/{comment_id}/like'
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_put(self, req, resp, comment_id):
         """Like an existing comment resource."""
         resp.status = falcon.HTTP_204
@@ -47,7 +47,7 @@ class CommentResource(BaseResource):
         comment_dto.href = req.uri
         resp.body = to_json(CommentDtoSerializer, comment_dto)
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_put(self, req, resp, comment_id):
         """Update single comment resource."""
         resp.status = falcon.HTTP_204
@@ -57,7 +57,7 @@ class CommentResource(BaseResource):
         payload = req.stream.read()
         edit_comment(comment_id, from_json(CommentFormDtoSerializer, payload))
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_delete(self, req, resp, comment_id):
         """Delete single comment resource."""
         resp.status = falcon.HTTP_204

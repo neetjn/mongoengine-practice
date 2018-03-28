@@ -4,7 +4,7 @@ from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_
 from blog.core.comments import comment_to_dto
 from blog.db import User
 from blog.errors import UnauthorizedRequest
-from blog.hooks.users import require_login
+from blog.hooks.users import is_logged_in
 from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
     PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto, \
     CommentFormDtoSerializer, PostSearchSettingsDtoSerializer
@@ -30,7 +30,7 @@ class PostCommentResource(BaseResource):
 
     route = '/v1/post/{post_id}/comment'
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_post(self, req, resp, post_id):
         """Create comment for existing post resource"""
         resp.status = falcon.HTTP_201
@@ -43,7 +43,7 @@ class PostViewResource(BaseResource):
 
     route = '/v1/post/{post_id}/view'
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_put(self, req, resp, post_id):
         """View an existing post resource"""
         resp.status = falcon.HTTP_204
@@ -55,7 +55,7 @@ class PostLikeResource(BaseResource):
 
     route = '/v1/post/{post_id}/like'
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_put(self, req, resp, post_id):
         """Like an existing post resource"""
         resp.status = falcon.HTTP_204
@@ -92,7 +92,7 @@ class PostResource(BaseResource):
 
         resp.body = to_json(PostDtoSerializer, post_dto)
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_put(self, req, resp, post_id):
         """Update single post resource."""
         resp.status = falcon.HTTP_204
@@ -102,7 +102,7 @@ class PostResource(BaseResource):
         payload = req.stream.read()
         edit_post(post_id, from_json(PostFormDtoSerializer, payload))
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_delete(self, req, resp, post_id):
         """Delete single post resource."""
         resp.status = falcon.HTTP_204
@@ -134,7 +134,7 @@ class PostCollectionResource(BaseResource):
             for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_post(self, req, resp):
         """Create a new post resource."""
         resp.status = falcon.HTTP_201
@@ -149,7 +149,7 @@ class PostSearchResource(BaseResource):
 
     route = '/v1/posts/search'
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_post(self, req, resp):
         resp.status = falcon.HTTP_201
         payload = req.stream.read()

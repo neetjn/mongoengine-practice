@@ -7,7 +7,7 @@ from blog.db import User
 from blog.core.posts import get_user_liked_posts, post_to_dto
 from blog.core.users import authenticate, get_user, create_user, edit_user, \
     user_to_dto, get_user_comments, get_user_posts
-from blog.hooks.users import require_login
+from blog.hooks.users import is_logged_in
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
     TokenDtoSerializer, UserProfileDtoSerializer
 from blog.resources.base import BaseResource
@@ -56,7 +56,7 @@ class UserResource(BaseResource):
         user = create_user(from_json(UserFormDtoSerializer, payload))
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user, host)))
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_get(self, req, resp):
         """Fetch user information for current session."""
         resp.status = falcon.HTTP_200
@@ -75,7 +75,7 @@ class UserResource(BaseResource):
         user.href = req.uri
         resp.body = to_json(UserProfileDtoSerializer, user_dto)
 
-    @falcon.before(require_login)
+    @falcon.before(is_logged_in)
     def on_put(self, req, resp):
         """Updates user resource for current session."""
         resp.status = falcon.HTTP_204
