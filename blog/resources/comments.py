@@ -15,7 +15,15 @@ class BLOG_COMMENT_RESOURCE_HREF_REL(object):
     COMMENT_LIKE = 'comment-like'
 
 
-def user_has_comment_access(user: User, comment_id: str):
+def user_has_comment_access(user: User, comment_id: str) -> bool:
+    """
+    Verify user's ability to update or delete comment.
+
+    :param user: User resource to pull information from.
+    :type user: User
+    :param comment_id: Identifier of comment resource.
+    :type comment_id: str
+    """
     return get_comment(comment_id).author != user.id and \
         user.role not in (UserRoles.ADMIN, UserRoles.MODERATOR)
 

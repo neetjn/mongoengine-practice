@@ -2,7 +2,7 @@ import falcon
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
     post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts
 from blog.core.comments import comment_to_dto
-from blog.db import User
+from blog.db import Post, User
 from blog.errors import UnauthorizedRequest
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
@@ -21,7 +21,33 @@ class BLOG_POST_RESOURCE_HREF_REL(object):
     POST_COMMENT = 'post-comment'
 
 
+def get_post_links(req: falcon.Request, post: Post) -> list:
+    """
+    Construct post links.
+
+    :param req: Request object to pull host from.
+    :type req: falcon.Request
+    :param post: Post document to construct links for.
+    :type post: Post
+    """
+    return [
+        LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_COMMENT,
+                href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
+        LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_LIKE,
+                href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
+        LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_VIEW,
+                href=PostViewResource.url_to(req.netloc, post_id=post.id))]
+
+
 def user_has_post_access(user: User, post_id: str) -> bool:
+    """
+    Verify user's ability to update or delete post.
+
+    :param user: User resource to pull information from.
+    :type user: User
+    :param post_id: Identifier of post resource.
+    :type post_id: str
+    """
     return get_post(post_id).author != user.id and \
         user.role not in (UserRoles.ADMIN, UserRoles.MODERATOR)
 
@@ -71,13 +97,7 @@ class PostResource(BaseResource):
         """Fetch single post resource."""
         resp.status = falcon.HTTP_200
         post = get_post(post_id)
-        post_dto = post_to_dto(post, href=req.uri, links=[
-            LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_COMMENT,
-                    href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
-            LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_LIKE,
-                    href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
-            LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_VIEW,
-                    href=PostViewResource.url_to(req.netloc, post_id=post.id))])
+        post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
         comments = get_post_comments(post_id)
         post_dto.comments = [
             comment_to_dto(
@@ -124,13 +144,7 @@ class PostCollectionResource(BaseResource):
         """
         resp.status = falcon.HTTP_200
         post_collection_dto = PostCollectionDto(posts=[
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=[
-                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_COMMENT,
-                        href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
-                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_LIKE,
-                        href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
-                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_VIEW,
-                        href=PostViewResource.url_to(req.netloc, post_id=post.id))])
+            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
             for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
 
@@ -151,16 +165,11 @@ class PostSearchResource(BaseResource):
 
     @falcon.before(is_logged_in)
     def on_post(self, req, resp):
+        """Search for an existing post resource."""
         resp.status = falcon.HTTP_201
         payload = req.stream.read()
         post_search_settings = from_json(PostSearchSettingsDtoSerializer, payload)
         post_collection_dto = PostCollectionDto(posts=[
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=[
-                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_COMMENT,
-                        href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
-                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_LIKE,
-                        href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
-                LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_VIEW,
-                        href=PostViewResource.url_to(req.netloc, post_id=post.id))])
+            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
             for post in search_posts(post_search_settings, req.params.get('start'), req.params.get('count'))])
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
