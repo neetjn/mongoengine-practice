@@ -54,6 +54,25 @@ This project was crafted with consumability in mind. The root endpoint serves a 
 
 By design this blog encrypts any and all post or comment content within the given database. Blog content secret keys can be defined by the administrator, and will be hashed into a 32 bit key for AES encryption/decryption.
 
+**Features**
+
+The py-blog project ships with (but is not limited to) the following:
+
+* [x] Service Description (resource expansion)
+* [x] Logging
+* [x] User Registration/Authentication
+* [ ] Email authentication
+* [x] User Roles (blogger, moderator, admin)
+* [ ] User news letters
+* [ ] User avatars and avatar storage
+* [ ] AWS S3 support for media management
+* [x] Live blog settings management
+* [x] Creating, deleting, liking, "viewing" posts
+* [x] Post privacy (editting/publishing)
+* [x] Post content encryption (database level)
+* [x] Creating, deleting, liking post comments
+* [x] Comment content encryption (database level)
+
 ## Configuration
 
 This project is highly configurable, all blog constants can be found in `blog/constants.py` and all settings can be found in `blog/settings.yml`.
