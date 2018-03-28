@@ -102,8 +102,6 @@ def edit_user(user_id: str, user_form_dto: UserFormDto):
         password, salt = hash_password(user_form_dto.password)
         user.password = password
         user.salt = salt
-    print(user_form_dto.full_name)
-    print(user_form_dto.email)
     user.full_name = user_form_dto.full_name or user.full_name
     user.email = user_form_dto.email or user.email
     user.save()
