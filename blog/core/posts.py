@@ -49,7 +49,7 @@ def search_posts(post_search_settings: PostSearchSettingsDto, start: int = None,
         except DoesNotExist:
             posts = []
 
-    return posts
+    return posts[start:count]
 
 
 def get_posts(start=None, count=None):
