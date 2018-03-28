@@ -1,6 +1,7 @@
 import falcon
 from blog.middleware.users import UserProcessor
 from blog.resources.comments import CommentResource
+from blog.resources.admin import BlogSettingsResource
 from blog.resources.posts import PostCollectionResource, PostResource, PostLikeResource, \
     PostViewResource, PostCommentResource, PostSearchResource
 from blog.resources.users import AuthResource, UserResource
@@ -8,6 +9,8 @@ from blog.resources.service import ServiceDescriptionResource
 
 
 api = falcon.API(middleware=[UserProcessor()])
+
+api.add_route(BlogSettingsResource.route, BlogSettingsResource())
 
 api.add_route(CommentResource.route, CommentResource())
 api.add_route(PostResource.route, PostResource())

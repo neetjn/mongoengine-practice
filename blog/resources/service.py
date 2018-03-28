@@ -30,7 +30,6 @@ class ServiceDescriptionResource(BaseResource):
             LinkDto(rel=BLOG_HREF_REL.USER, href=UserResource.url_to(req.netloc))])
         user = req.context.get('user')
         if user and user.role == UserRoles.ADMIN:
-            service_description.links.append([
-                LinkDto(rel=BLOG_HREF_REL.ADMIN_BLOG_SETTINGS, href=BlogSettingsResource.url_to(req.netloc))
-            ])
+            service_description.links.append(
+                LinkDto(rel=BLOG_HREF_REL.ADMIN_BLOG_SETTINGS, href=BlogSettingsResource.url_to(req.netloc)))
         resp.body = to_json(ServiceDescriptionDtoSerializer, service_description)
