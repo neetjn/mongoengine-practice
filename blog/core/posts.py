@@ -2,7 +2,7 @@ import datetime
 import time
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError, Q
 from blog.core.users import get_user, get_user_comments
-from blog.db import Post, PostLike, PostView, Comment
+from blog.db import Post, PostLike, PostView, Comment, User
 from blog.errors import PostNotFoundError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto, CommentFormDto, \
     PostSearchSettings, PostSearchOptions
@@ -19,16 +19,24 @@ def search_post(query: str, post_search_settings: PostSearchSettings, start: int
     :param post_search_settings: Post search settings
     :type post_search_settings: PostSearchSettings
     """
-    # TODO: complete post search query / functionality
     query = Q()
     if PostSearchOptions.TITLE in post_search_settings.options:
         query = query | Q(title__contains=query)
     if PostSearchOptions.CONTENT in post_search_settings:
         # figure out how to decrypt content?
         query = query | Q(content__contains=query)
+
+    posts = Post.objects.get(query)
+
     if PostSearchOptions.AUTHOR in post_search_settings:
-        # figure out how to get query name in query?
-        query = query | Q()
+        try:
+            author = User.objects.get(username=post_search_settings)
+            # filter posts by author username
+            return [p for p in posts if p.author == author.id]
+        except DoesNotExist:
+            return posts
+    else:
+        return posts
 
 
 def get_posts(start=None, count=None):
