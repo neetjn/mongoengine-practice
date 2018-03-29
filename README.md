@@ -74,7 +74,6 @@ The py-blog project ships with (but is not limited to) the following:
 * [x] Searching for posts by title, description, content, and author (with cooldown and pagination)
 * [x] Creating, deleting, liking post comments
 * [x] Comment content encryption (database level)
-* [ ] Redis caching for speedy data transactions
 
 ## Configuration
 
