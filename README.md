@@ -22,24 +22,24 @@ This project was crafted with consumability in mind. The root endpoint serves a 
 
 ```js
 {
-	"links": [
-		{
-			"rel": "post-collection",
-			"href": "localhost:8000/v1/posts/"
-		},
-		{
-			"rel": "post-search",
-			"href": "localhost:8000/v1/posts/search"
-		},
-		{
-			"rel": "user-auth",
-			"href": "localhost:8000/v1/user/authenticate/"
-		},
-		{
-			"rel": "user",
-			"href": "localhost:8000/v1/user/"
-		}
-	]
+  "links": [
+    {
+      "rel": "post-collection",
+      "href": "localhost:8000/v1/posts/"
+    },
+    {
+      "rel": "post-search",
+      "href": "localhost:8000/v1/posts/search"
+    },
+    {
+      "rel": "user-auth",
+      "href": "localhost:8000/v1/user/authenticate/"
+    },
+    {
+      "rel": "user",
+      "href": "localhost:8000/v1/user/"
+    }
+  ]
 }
 ```
 
