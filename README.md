@@ -103,6 +103,8 @@ This project is highly configurable, all blog constants can be found in `blog/co
 * **post**
   * **view_time_delay**: Time in seconds wait before processing another post view.
   * **search_time_delay**: Time in seconds to wait in between each post search request.
+* **user**
+  * **require_email_verification**: Enforce email verification for new users.
 * **rules**
   * **user**
     * **username_min_char**: Minimum number of characters for user names.
