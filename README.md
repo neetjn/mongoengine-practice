@@ -21,33 +21,62 @@ This project was crafted with consumability in mind. The root endpoint serves a 
 *Service Description Example*
 
 ```js
-[
-    {
-        "rel": "post-collection",
-        "link": ".../posts"
-    },
-    {
-        "rel": "authentication",
-        "link": ".../user/login"
-    },
-    ...
-]
+{
+	"links": [
+		{
+			"rel": "post-collection",
+			"href": "localhost:8000/v1/posts/"
+		},
+		{
+			"rel": "post-search",
+			"href": "localhost:8000/v1/posts/search"
+		},
+		{
+			"rel": "user-auth",
+			"href": "localhost:8000/v1/user/authenticate/"
+		},
+		{
+			"rel": "user",
+			"href": "localhost:8000/v1/user/"
+		}
+	]
+}
 ```
 
 *Post Collection Example*
 
 ```js
-[
+{
+  "posts": [
     {
-        "href": ".../post/000000/",
-        "links": [
-            "rel": "like",
-            "href": ".../post/000000/like"
-        ],
-        "title": "Foobar",
-        ...
+      "href": "http://localhost:8000/v1/post/5ab842dd8743a11a7fbbbcf5",
+      "author": "john",
+      "title": "my post title",
+      "description": "my post description",
+      "content": "this is misc. blog post content for validation",
+      "tags": [],
+      "created": "2018-03-26 00:46:21.805000",
+      "edited": null,
+      "comments": [],
+      "likes": 1,
+      "views": 2,
+      "links": [
+        {
+          "rel": "comment",
+          "href": "localhost:8000/v1/post/5ab842dd8743a11a7fbbbcf5/comment"
+        },
+        {
+          "rel": "like",
+          "href": "localhost:8000/v1/post/5ab842dd8743a11a7fbbbcf5/like"
+        },
+        {
+          "rel": "view",
+          "href": "localhost:8000/v1/post/5ab842dd8743a11a7fbbbcf5/view"
+        }
+      ]
     }
-]
+  ]
+}
 ```
 
 **Security**
