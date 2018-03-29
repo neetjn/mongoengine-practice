@@ -151,7 +151,7 @@ TODO: add docker setup example with sample docker-compose for setting up mongo.
 > Note: Testing will require an instance of mongodb.
 > Note: CI tests s3 functionality using [fakes3](https://github.com/jubos/fake-s3) project.
 
-The test suite is composed of operational tests exercising the blog's core, as well as mocked requests against the provided API.
+The test suite is composed of operational tests exercising the blog's core, as well as mocked requests against the provided API using the [falcon testing tools](http://falcon.readthedocs.io/en/stable/api/testing.html).
 
 To install test dependencies in your local development environment using pipenv:
 

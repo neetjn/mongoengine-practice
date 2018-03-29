@@ -3,7 +3,7 @@ import mongoengine
 from blog.constants import BLOG_DB_HOST
 
 
-mongoengine.connect(host=BLOG_DB_HOST)
+client = mongoengine.connect(host=BLOG_DB_HOST)
 
 
 class FailedLogin(mongoengine.Document):

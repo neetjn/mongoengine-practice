@@ -310,6 +310,7 @@ class UserProfileDtoSerializer(Serializer):
     links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
 
     class Meta(object):
+
         model = UserProfileDto
 
 

@@ -2,7 +2,7 @@ from unittest import TestCase
 from pylint.lint import Run
 
 
-class LintTest(TestCase):
+class LintTests(TestCase):
 
     def test_lint_blog(self):
 
