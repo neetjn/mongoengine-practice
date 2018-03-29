@@ -28,6 +28,18 @@ class PostSettingsSerializer(Serializer):
         model = PostSettings
 
 
+class UserSettings(object):
+    def __init__(self):
+        self.require_email_verification = False
+
+
+class UserSettingsSerializer(Serializer):
+    require_email_verification = fields.BooleanField(required=True)
+
+    class Meta(object):
+        model = UserSettings
+
+
 class LoginSettingsSerializer(Serializer):
     max_failed_login = fields.IntegerField(required=True)
     failed_login_timeout = fields.IntegerField(required=True)
@@ -107,12 +119,14 @@ class Settings(object):
     def __init__(self):
         self.login = LoginSettings()
         self.post = PostSettings()
+        self.user = UserSettings()
         self.rules = Rules()
 
 
 class SettingsSerializer(Serializer):
     login = fields.ObjectField(LoginSettingsSerializer, required=True)
     post = fields.ObjectField(PostSettingsSerializer, required=True)
+    user = fields.ObjectField(UserSettingsSerializer, required=True)
     rules = fields.ObjectField(RulesSerializer, required=True)
 
     class Meta(object):
@@ -141,19 +155,26 @@ def save_settings(settings_dto: Settings):
     settings.login.max_failed_login = settings_dto.login.max_failed_login
     settings.login.failed_login_timeout = settings_dto.login.failed_login_timeout
     settings.login.max_session_time = settings_dto.login.max_session_time
+
     # post settings
     settings.post.view_time_delay = settings_dto.post.view_time_delay
     settings.post.search_time_delay = settings_dto.post.search_time_delay
+
+    # user settings
+    settings.user.require_email_verification = settings_dto.require_email_verification
+
     # user rules
     settings.rules.user.username_min_char = settings_dto.rules.user.username_min_char
     settings.rules.user.username_max_char = settings_dto.rules.user.username_max_char
     settings.rules.user.name_min_char = settings_dto.rules.user.name_min_char
     settings.rules.user.name_max_char = settings_dto.rules.user.name_max_char
+
     # post rules
     settings.rules.post.title_min_char = settings_dto.rules.post.title_min_char
     settings.rules.post.title_max_char = settings_dto.rules.post.title_max_char
     settings.rules.post.content_min_char = settings_dto.rules.post.content_min_char
     settings.rules.post.content_max_char = settings_dto.rules.post.content_max_char
+
     # comment rules
     settings.rules.comment.content_min_char = settings_dto.rules.comment.content_min_char
     settings.rules.comment.content_max_char = settings_dto.rules.comment.content_max_char
