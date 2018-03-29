@@ -1,14 +1,16 @@
 
-# dist: trusty
-# language: python
-# python:
-#   - '3.6'
-# before_install:
-#   - pip install codecov
-#   - pip install pipenv
-# install:
-#   - pipenv install --system
-#   - pipenv install --dev --system
-# script:
-#   - pytest --cov blog.core tests
-#   - if [ "$TRAVIS_BRANCH" == "master" ]; then codecov; fi
+dist: trusty
+language: python
+python:
+  - '3.6'
+services:
+  - mongodb
+before_install:
+  - pip install codecov
+  - pip install pipenv
+install:
+  - pipenv install --system
+  - pipenv install --dev --system
+script:
+  - pytest --cov blog.core tests
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then codecov; fi
