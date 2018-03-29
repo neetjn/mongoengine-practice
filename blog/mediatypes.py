@@ -18,6 +18,7 @@ class PostSearchOptions(object):
     TITLE = 'title'
     CONTENT = 'content'
     DESCRIPTION = 'description'
+    TAGS = 'tags'
     AUTHOR = 'author'
 
 

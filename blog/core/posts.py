@@ -43,6 +43,9 @@ def search_posts(post_search_settings: PostSearchSettingsDto, user_id, start: in
     if PostSearchOptions.TITLE in post_search_settings.options:
         queries['title__contains'] = post_search_settings.query
 
+    if PostSearchOptions.TAGS in post_search_settings.options:
+        queries['tags__contains'] = post_search_settings.query
+
     try:
         posts = Post.objects(Q(**queries))
     except InvalidQueryError:
