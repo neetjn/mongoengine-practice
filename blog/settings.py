@@ -17,10 +17,12 @@ class LoginSettings(object):
 class PostSettings(object):
     def __init__(self):
         self.view_time_delay = 0
+        self.search_time_delay = 0
 
 
 class PostSettingsSerializer(Serializer):
     view_time_delay = fields.IntegerField(required=True)
+    search_time_delay = fields.IntegerField(required=True)
 
     class Meta(object):
         model = PostSettings
@@ -141,6 +143,7 @@ def save_settings(settings_dto: Settings):
     settings.login.max_session_time = settings_dto.login.max_session_time
     # post settings
     settings.post.view_time_delay = settings_dto.post.view_time_delay
+    settings.post.search_time_delay = settings_dto.post.search_time_delay
     # user rules
     settings.rules.user.username_min_char = settings_dto.rules.user.username_min_char
     settings.rules.user.username_max_char = settings_dto.rules.user.username_max_char

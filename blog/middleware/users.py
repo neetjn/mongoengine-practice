@@ -1,7 +1,7 @@
 import time
 import jwt
 from blog.constants import BLOG_JWT_SECRET_KEY
-from blog.errors import UserNotFoundError, UnauthorizedRequest
+from blog.errors import UserNotFoundError, UnauthorizedRequestError
 from blog.core.users import get_user
 from blog.settings import settings
 from blog.utils.logger import debug, warning
@@ -22,7 +22,7 @@ class UserProcessor(object):
         if payload:
             if payload.get('host') != host:
                 warning(req, 'JWT host "{}" does not match the requestee "{}"'.format(payload.get('host'), host))
-                raise UnauthorizedRequest()
+                raise UnauthorizedRequestError()
             elif int(payload.get('created')) + (60 * settings.login.max_session_time) <= time.time():
                 warning(req, 'JWT created over {} hours ago.'.format(settings.login.max_session_time_hours))
             else:
@@ -33,4 +33,4 @@ class UserProcessor(object):
                     req.context.setdefault('user', user)
                 except UserNotFoundError:
                     warning(req, f'JWT payload found with invalid user identifier "{user_id}".')
-                    raise UnauthorizedRequest()
+                    raise UnauthorizedRequestError()

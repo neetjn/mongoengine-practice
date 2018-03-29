@@ -50,6 +50,14 @@ class PostView(mongoengine.Document):
     seen = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
 
 
+class PostSearchRequest(mongoengine.Document):
+
+    user_id = mongoengine.StringField(required=True)
+    query = mongoengine.StringField(required=True)
+    options = mongoengine.ListField(mongoengine.StringField(), required=True)
+    time = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
+
+
 class PostQuerySet(mongoengine.QuerySet):
 
     def get_public(self):

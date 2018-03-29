@@ -2,7 +2,7 @@ import falcon
 from blog.core.comments import get_comment, edit_comment, delete_comment, comment_to_dto, \
     like_comment
 from blog.db import Comment, User
-from blog.errors import UnauthorizedRequest
+from blog.errors import UnauthorizedRequestError
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSerializer, \
     LinkDto
@@ -70,7 +70,7 @@ class CommentResource(BaseResource):
         resp.status = falcon.HTTP_204
         user = req.context.get('user')
         if not user_has_comment_access(user, comment_id):
-            raise UnauthorizedRequest()
+            raise UnauthorizedRequestError()
         payload = req.stream.read()
         edit_comment(comment_id, from_json(CommentFormDtoSerializer, payload))
 
@@ -80,5 +80,5 @@ class CommentResource(BaseResource):
         resp.status = falcon.HTTP_204
         user = req.context.get('user')
         if not user_has_comment_access(user, comment_id):
-            raise UnauthorizedRequest()
+            raise UnauthorizedRequestError()
         delete_comment(comment_id)

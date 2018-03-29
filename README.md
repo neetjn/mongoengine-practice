@@ -102,6 +102,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
   * **max_session_time**: Time in seconds a session is valid after a token is generated.
 * **post**
   * **view_time_delay**: Time in seconds wait before processing another post view.
+  * **search_time_delay**: Time in seconds to wait in between each post search request.
 * **rules**
   * **user**
     * **username_min_char**: Minimum number of characters for user names.

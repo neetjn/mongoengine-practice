@@ -3,22 +3,41 @@ import time
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError, \
     InvalidQueryError, Q
 from blog.core.users import get_user, get_user_comments
-from blog.db import Post, PostLike, PostView, Comment, User
-from blog.errors import PostNotFoundError
+from blog.db import Post, PostLike, PostView, PostSearchRequest, Comment, User
+from blog.errors import PostNotFoundError, ResourceNotAvailableError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto, CommentFormDto, \
     PostSearchSettingsDto, PostSearchOptions
 from blog.settings import settings
 from blog.utils.crypto import encrypt_content, decrypt_content
 
 
-def search_posts(post_search_settings: PostSearchSettingsDto, start: int = None, count: int = None):
+def search_posts(post_search_settings: PostSearchSettingsDto, user_id, start: int = None, count: int = None):
     """
     Search for an existing post resource.
 
     :param post_search_settings: Post search settings
     :type post_search_settings: PostSearchSettingsDto
+    :param user_id: Identifier of user creating search request.
+    :type user_id: str
+    :param start: Used for pagination, specify where to start.
+    :type start: int
+    :param count: Used for pagination, specify number of posts to find.
+    :type count: int
     """
-    # TODO: add post search timeout functionality
+    post_search_requests = PostSearchRequest.objects(user_id=user_id).order_by('-time')
+
+    # verify post request hasn't been made within provided parameters
+    if post_search_requests:
+        now = datetime.datetime.utcnow().timestamp()
+        if now - post_search_requests[0].time.timestamp() <= settings.post.search_time_delay:
+            raise ResourceNotAvailableError()
+
+    # log post search request
+    PostSearchRequest(
+        user_id=user_id,
+        query=post_search_settings.query,
+        options=post_search_settings.options).save()
+
     queries = {}
 
     if PostSearchOptions.TITLE in post_search_settings.options:

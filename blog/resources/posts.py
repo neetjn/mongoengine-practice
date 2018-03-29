@@ -3,7 +3,7 @@ from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_
     post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts
 from blog.core.comments import comment_to_dto
 from blog.db import Post, User
-from blog.errors import UnauthorizedRequest
+from blog.errors import UnauthorizedRequestError
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
     PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto, \
@@ -112,7 +112,7 @@ class PostResource(BaseResource):
         resp.status = falcon.HTTP_204
         user = req.context.get('user')
         if not user_has_post_access(user, post_id):
-            raise UnauthorizedRequest(user)
+            raise UnauthorizedRequestError(user)
         payload = req.stream.read()
         edit_post(post_id, from_json(PostFormDtoSerializer, payload))
 
@@ -122,7 +122,7 @@ class PostResource(BaseResource):
         resp.status = falcon.HTTP_204
         user = req.context.get('user')
         if not user_has_post_access(user, post_id):
-            raise UnauthorizedRequest(user)
+            raise UnauthorizedRequestError(user)
         delete_post(post_id)
 
 
@@ -162,8 +162,9 @@ class PostSearchResource(BaseResource):
         """Search for an existing post resource."""
         resp.status = falcon.HTTP_201
         payload = req.stream.read()
+        user = req.context.get('user')
         post_search_settings = from_json(PostSearchSettingsDtoSerializer, payload)
         post_collection_dto = PostCollectionDto(posts=[
             post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
-            for post in search_posts(post_search_settings, req.params.get('start'), req.params.get('count'))])
+            for post in search_posts(post_search_settings, str(user.id), req.params.get('start'), req.params.get('count'))])
         resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)

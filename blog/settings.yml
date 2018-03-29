@@ -4,6 +4,7 @@ login:
   max_session_time: 43200
 post:
   view_time_delay: 3600
+  search_time_delay: 15
 rules:
   comment:
     content_max_char: 124

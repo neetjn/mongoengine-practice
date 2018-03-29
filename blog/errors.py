@@ -1,20 +1,28 @@
 from falcon import HTTPNotFound, HTTPConflict, HTTPUnauthorized, HTTPForbidden
 
 
-class UserForbiddenRequest(HTTPForbidden):
+class UserForbiddenRequestError(HTTPForbidden):
 
     def __init__(self):
         super().__init__(
-            description='User has been temporarily disabled due to failed logins.'
+            description='User has been temporarily disabled due to failed logins. '
                         'Try again at a later time.')
 
 
-class UnauthorizedRequest(HTTPUnauthorized):
+class UnauthorizedRequestError(HTTPUnauthorized):
 
     def __init__(self, user=None):
         super().__init__(
             description=f'User "{user.username}" is not authorized for this resource.' if user else
                          'Requested resource requires user authentication.')
+
+
+class ResourceNotAvailableError(HTTPForbidden):
+
+    def __init__(self):
+        super().__init__(
+            description='Resource is not available. '
+                        'Try again at a later time.')
 
 
 class ResourceNotFoundError(HTTPNotFound):
