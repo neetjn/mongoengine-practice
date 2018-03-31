@@ -33,12 +33,12 @@ def get_auth_jwt(user: User, host: str) -> str:
         algorithm='HS256').decode('utf-8')
 
 
-class AuthResource(BaseResource):
+class UserAuthenticationResource(BaseResource):
 
     route = '/v1/user/authenticate/'
 
     def on_post(self, req, resp):
-        """Fetch serialized session JWT."""
+        """Fetch serialized session token."""
         resp.status = falcon.HTTP_200
         payload = req.stream.read()
         host = req.access_route[0]
@@ -46,9 +46,9 @@ class AuthResource(BaseResource):
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user, host))) if user else 'false'
 
 
-class UserResource(BaseResource):
+class UserRegistrationResource(BaseResource):
 
-    route = '/v1/user/'
+    route = '/v1/user/register/'
 
     def on_post(self, req, resp):
         """Creates a new user resource and provides a session token."""
@@ -60,6 +60,11 @@ class UserResource(BaseResource):
         user = create_user(from_json(UserFormDtoSerializer, payload))
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user, host)))
 
+
+class UserResource(BaseResource):
+
+    route = '/v1/user/'
+
     @falcon.before(is_logged_in)
     def on_get(self, req, resp):
         """Fetch user information for current session."""
@@ -67,13 +72,13 @@ class UserResource(BaseResource):
         user = req.context.get('user')
         user_dto = user_to_dto(user)
         user_dto.posts = [
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), comments=False)
+            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
             for post in get_user_posts(user.id)]
         user_dto.comments = [
             comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=comment.id))
             for comment in get_user_comments(user.id)]
         user_dto.liked_posts = [
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), comments=False)
+            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
             for post in get_user_liked_posts(user.id)]
         # no need to construct url, pull from request
         user.href = req.uri

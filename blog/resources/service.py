@@ -3,7 +3,8 @@ from blog.mediatypes import LinkDto, ServiceDescriptionDto, ServiceDescriptionDt
 from blog.resources.admin import BlogSettingsResource
 from blog.resources.base import BaseResource
 from blog.resources.posts import PostCollectionResource, PostSearchResource
-from blog.resources.users import AuthResource, UserResource
+from blog.resources.users import UserAuthenticationResource, UserRegistrationResource, UserResource
+from blog.settings import settings
 from blog.utils.serializers import from_json, to_json
 
 
@@ -12,7 +13,8 @@ class BLOG_HREF_REL(object):
     ADMIN_BLOG_SETTINGS = 'admin-blog-settings'
     POST_COLLECTION = 'post-collection'
     POST_SEARCH = 'post-search'
-    USER_AUTHENTICATION = 'user-auth'
+    USER_AUTHENTICATION = 'user-authentication'
+    USER_REGISTRATION = 'user-registration'
     USER = 'user'
 
 
@@ -26,8 +28,11 @@ class ServiceDescriptionResource(BaseResource):
         service_description = ServiceDescriptionDto(links=[
             LinkDto(rel=BLOG_HREF_REL.POST_COLLECTION, href=PostCollectionResource.url_to(req.netloc)),
             LinkDto(rel=BLOG_HREF_REL.POST_SEARCH, href=PostSearchResource.url_to(req.netloc)),
-            LinkDto(rel=BLOG_HREF_REL.USER_AUTHENTICATION, href=AuthResource.url_to(req.netloc)),
+            LinkDto(rel=BLOG_HREF_REL.USER_AUTHENTICATION, href=UserAuthenticationResource.url_to(req.netloc)),
             LinkDto(rel=BLOG_HREF_REL.USER, href=UserResource.url_to(req.netloc))])
+        if settings.user.allow_manual_registration:
+            service_description.links.append(
+                LinkDto(rel=BLOG_HREF_REL.USER_REGISTRATION, href=UserRegistrationResource.url_to(req.netloc)))
         user = req.context.get('user')
         if user and user.role == UserRoles.ADMIN:
             service_description.links.append(
