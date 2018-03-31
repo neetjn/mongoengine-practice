@@ -9,7 +9,7 @@ from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
     PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto, \
     CommentFormDtoSerializer, PostSearchSettingsDtoSerializer
 from blog.resources.base import BaseResource
-from blog.resources.comments import get_comment_links
+from blog.resources.comments import get_comment_links, CommentResource
 from blog.utils.serializers import from_json, to_json
 
 
