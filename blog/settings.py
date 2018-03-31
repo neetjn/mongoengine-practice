@@ -163,8 +163,8 @@ def save_settings(settings_dto: Settings):
     settings.post.search_time_delay = settings_dto.post.search_time_delay
 
     # user settings
-    settings.user.allow_manual_registration = settings_dto.allow_manual_registration
-    settings.user.require_email_verification = settings_dto.require_email_verification
+    settings.user.allow_manual_registration = settings_dto.user.allow_manual_registration
+    settings.user.require_email_verification = settings_dto.user.require_email_verification
 
     # user rules
     settings.rules.user.username_min_char = settings_dto.rules.user.username_min_char
