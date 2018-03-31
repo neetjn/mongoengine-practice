@@ -70,16 +70,17 @@ class UserResource(BaseResource):
         """Fetch user information for current session."""
         resp.status = falcon.HTTP_200
         user = req.context.get('user')
+        user_id = str(user.id)
         user_dto = user_to_dto(user)
         user_dto.posts = [
             post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
-            for post in get_user_posts(user.id)]
+            for post in get_user_posts(user_id)]
         user_dto.comments = [
             comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=comment.id))
-            for comment in get_user_comments(user.id)]
+            for comment in get_user_comments(user_id)]
         user_dto.liked_posts = [
             post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
-            for post in get_user_liked_posts(user.id)]
+            for post in get_user_liked_posts(user_id)]
         # no need to construct url, pull from request
         user.href = req.uri
         resp.body = to_json(UserProfileDtoSerializer, user_dto)

@@ -6,7 +6,7 @@ from blog.db import User, FailedLogin, Comment, Post
 from blog.errors import UserNotFoundError, UserExistsError, UserForbiddenRequestError
 from blog.mediatypes import UserProfileDto, UserAuthDto, UserFormDto, UserRoles
 from blog.settings import settings
-from blog.utils.crypto import hash_password, compare_passwords
+from blog.utils.crypto import hash_password, compare_passwords, encrypt_content, decrypt_content
 
 
 def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
