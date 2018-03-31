@@ -1,4 +1,4 @@
-import time
+import datetime
 import jwt
 import falcon
 from blog.constants import BLOG_JWT_SECRET_KEY
@@ -26,7 +26,7 @@ def get_auth_jwt(user: User, host: str) -> str:
     :type host: str
     """
     return jwt.encode(
-        {'user': str(user.id), 'created': time.time(), 'host': host},
+        {'user': str(user.id), 'created': datetime.datetime.utcnow().timestamp(), 'host': host},
         BLOG_JWT_SECRET_KEY,
         algorithm='HS256').decode('utf-8')
 

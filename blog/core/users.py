@@ -24,7 +24,7 @@ def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
         rfl = FailedLogin.objects(username=user_auth_dto.username, ip_address=client).order_by('-time')[5:]
         now = datetime.datetime.utcnow().timestamp()
         failed_logins = [
-            fl for fl in rfl if now - fl.time.timestamp() <= settings.login.failed_login_timeout ]
+            fl for fl in rfl if now - fl.time.timestamp() <= settings.login.failed_login_timeout]
         if len(failed_logins) >= 5:
             raise UserForbiddenRequestError()
         if compare_passwords(user.password, user_auth_dto.password, user.salt):

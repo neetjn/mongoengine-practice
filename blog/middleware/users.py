@@ -1,4 +1,4 @@
-import time
+import datetime
 import jwt
 from blog.constants import BLOG_JWT_SECRET_KEY
 from blog.errors import UserNotFoundError, UnauthorizedRequestError
@@ -16,15 +16,14 @@ class UserProcessor(object):
         # should be depracated
         # Source: https://tools.ietf.org/html/rfc6648
 
-        # TODO: resolve token creation check
         host = req.access_route[0]
         payload = jwt.decode(req.auth, BLOG_JWT_SECRET_KEY, algorithms=['HS256']) if req.auth else None
         if payload:
             if payload.get('host') != host:
-                warning(req, 'JWT host "{}" does not match the requestee "{}"'.format(payload.get('host'), host))
+                warning(req, 'Token host "{}" does not match the requestee "{}"'.format(payload.get('host'), host))
                 raise UnauthorizedRequestError()
-            elif int(payload.get('created')) + (60 * settings.login.max_session_time) <= time.time():
-                warning(req, 'JWT created over {} hours ago.'.format(settings.login.max_session_time_hours))
+            elif int(payload.get('created')) + (60 * settings.login.max_session_time) <= datetime.datetime.utcnow().timestamp():
+                warning(req, 'Token created over "{}" hour(s) ago.'.format(settings.login.max_session_time_hours))
             else:
                 user_id = payload.get('user')
                 try:
@@ -32,5 +31,5 @@ class UserProcessor(object):
                     user = get_user(user_id)
                     req.context.setdefault('user', user)
                 except UserNotFoundError:
-                    warning(req, f'JWT payload found with invalid user identifier "{user_id}".')
+                    warning(req, f'Token payload found with invalid user identifier "{user_id}".')
                     raise UnauthorizedRequestError()
