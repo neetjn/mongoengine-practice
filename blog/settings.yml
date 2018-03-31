@@ -6,7 +6,8 @@ post:
   view_time_delay: 3600
   search_time_delay: 15
 user:
-  require_email_verification: true
+  manual_registration: false
+  require_email_verification: false
 rules:
   comment:
     content_max_char: 124

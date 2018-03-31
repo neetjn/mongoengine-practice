@@ -30,10 +30,12 @@ class PostSettingsSerializer(Serializer):
 
 class UserSettings(object):
     def __init__(self):
+        self.allow_manual_registration = False
         self.require_email_verification = False
 
 
 class UserSettingsSerializer(Serializer):
+    allow_manual_registration = fields.BooleanField(required=True)
     require_email_verification = fields.BooleanField(required=True)
 
     class Meta(object):
@@ -161,6 +163,7 @@ def save_settings(settings_dto: Settings):
     settings.post.search_time_delay = settings_dto.post.search_time_delay
 
     # user settings
+    settings.user.allow_manual_registration = settings_dto.allow_manual_registration
     settings.user.require_email_verification = settings_dto.require_email_verification
 
     # user rules

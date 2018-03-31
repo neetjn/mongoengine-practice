@@ -90,7 +90,7 @@ The py-blog project ships with (but is not limited to) the following:
 * [x] Service Description (resource expansion)
 * [x] Logging
 * [x] User Registration/Authentication (includes login failure handling)
-* [ ] Email authentication
+* [ ] Email verification
 * [x] User Roles (blogger, moderator, admin)
 * [ ] User news letters
 * [ ] User avatars and avatar storage
@@ -132,6 +132,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
   * **view_time_delay**: Time in seconds wait before processing another post view.
   * **search_time_delay**: Time in seconds to wait in between each post search request.
 * **user**
+  * **allow_manual_registration**: Allow manual registration for new users, enabled registration endpoint.
   * **require_email_verification**: Enforce email verification for new users.
 * **rules**
   * **user**

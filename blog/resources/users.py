@@ -3,16 +3,18 @@ import jwt
 import falcon
 from blog.constants import BLOG_JWT_SECRET_KEY
 from blog.core.comments import comment_to_dto
-from blog.db import User
 from blog.core.posts import get_user_liked_posts, post_to_dto
 from blog.core.users import authenticate, get_user, create_user, edit_user, \
     user_to_dto, get_user_comments, get_user_posts
+from blog.db import User
+from blog.errors import ResourceNotAvailableError
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
     TokenDtoSerializer, UserProfileDtoSerializer
 from blog.resources.base import BaseResource
 from blog.resources.comments import CommentResource
 from blog.resources.posts import PostResource
+from blog.settings import settings
 from blog.utils.serializers import from_json, to_json
 
 
@@ -49,8 +51,10 @@ class UserResource(BaseResource):
     route = '/v1/user/'
 
     def on_post(self, req, resp):
-        """Creates a new user resource and provides a session JWT."""
+        """Creates a new user resource and provides a session token."""
         resp.status = falcon.HTTP_201
+        if not settings.user.allow_manual_registration:
+            raise ResourceNotAvailableError()
         host = req.access_route[0]
         payload = req.stream.read()
         user = create_user(from_json(UserFormDtoSerializer, payload))
