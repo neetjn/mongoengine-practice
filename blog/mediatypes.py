@@ -31,8 +31,8 @@ class LinkDto(object):
 
 class LinkDtoSerializer(Serializer):
 
-    rel = fields.StringField()
-    href = fields.StringField()
+    rel = fields.StringField(required=True)
+    href = fields.StringField(required=True)
 
     class Meta(object):
         model = LinkDto
@@ -61,7 +61,7 @@ class TokenDto(object):
 
 class TokenDtoSerializer(Serializer):
 
-    token = fields.StringField()
+    token = fields.StringField(required=True)
 
     class Meta(object):
         model = TokenDto
@@ -120,7 +120,7 @@ class CommentFormDto(object):
 
 class CommentFormDtoSerializer(Serializer):
 
-    content = fields.StringField(validators=[
+    content = fields.StringField(required=True, validators=[
         NotEmptyValidator(),
         CharLenValidator(
             min=settings.rules.post.content_min_char,
@@ -159,7 +159,9 @@ class PostSearchSettingsDto(object):
 
 class PostSearchSettingsDtoSerializer(Serializer):
 
-    query = fields.StringField()
+    query = fields.StringField(required=True, validators=[
+        NotEmptyValidator()
+    ])
     options = fields.ListField(fields.StringField())
 
     class Meta(object):
@@ -243,23 +245,23 @@ class PostFormDto(object):
 
 class PostFormDtoSerializer(Serializer):
 
-    title = fields.StringField(validators=[
+    title = fields.StringField(required=True, validators=[
         NotEmptyValidator(),
         CharLenValidator(
             min=settings.rules.post.title_min_char,
             max=settings.rules.post.title_max_char
         )
     ])
-    description = fields.StringField(validators=[
+    description = fields.StringField(required=True, validators=[
         NotEmptyValidator(),
         CharLenValidator(
             min=settings.rules.post.title_min_char,
             max=settings.rules.post.title_max_char
         )
     ])
-    content = fields.StringField(validators=[NotEmptyValidator()])
+    content = fields.StringField(required=True, validators=[NotEmptyValidator()])
     tags = fields.ListField(fields.StringField())
-    private = fields.BooleanField()
+    private = fields.BooleanField(required=True)
 
     class Meta(object):
 
@@ -284,8 +286,8 @@ class UserProfileDto(object):
 
 class UserProfileDtoSerializer(Serializer):
 
-    href = fields.StringField()
-    username = fields.StringField(validators=[
+    href = fields.StringField(required=True)
+    username = fields.StringField(required=True, validators=[
         NotEmptyValidator(),
         CharLenValidator(
             min=settings.rules.user.username_min_char,
@@ -293,20 +295,20 @@ class UserProfileDtoSerializer(Serializer):
         ),
         RegexValidator(pattern=USERNAME_PATTERN)
     ])
-    full_name = fields.StringField(name='fullName', validators=[
+    full_name = fields.StringField(required=True, name='fullName', validators=[
         NotEmptyValidator(),
         CharLenValidator(
             min=settings.rules.user.name_min_char,
             max=settings.rules.user.name_max_char
         )
     ])
-    email = fields.StringField(validators=[NotEmptyValidator(), EmailValidator()])
+    email = fields.StringField(required=True, validators=[NotEmptyValidator(), EmailValidator()])
     posts = fields.ListField(fields.ObjectField(PostDtoSerializer))
     comments = fields.ListField(fields.ObjectField(CommentDtoSerializer))
     liked_posts = fields.ListField(fields.ObjectField(PostDtoSerializer), name='likedPosts')
     last_posted = fields.DateTimeField(name='lastPosted')
     last_activity = fields.DateTimeField(name='lastActivity')
-    register_date = fields.DateTimeField(name='registerDate')
+    register_date = fields.DateTimeField(required=True, name='registerDate')
     links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
 
     class Meta(object):
@@ -326,7 +328,7 @@ class UserFormDto(object):
 
 class UserFormDtoSerializer(Serializer):
 
-    username = fields.StringField(validators=[
+    username = fields.StringField(required=True, validators=[
         NotEmptyValidator(),
         CharLenValidator(
             min=settings.rules.user.username_min_char,
@@ -334,16 +336,22 @@ class UserFormDtoSerializer(Serializer):
         ),
         RegexValidator(pattern=USERNAME_PATTERN)
     ])
-    full_name = fields.StringField(name='fullName', validators=[
+    full_name = fields.StringField(required=True, name='fullName', validators=[
         NotEmptyValidator(),
         CharLenValidator(
             min=settings.rules.user.name_min_char,
             max=settings.rules.user.name_max_char
         )
     ])
-    email = fields.StringField(validators=[EmailValidator()])
-    password = fields.StringField()
-    avatar_href = fields.StringField(name='avatarHref')
+    email = fields.StringField(required=True, validators=[EmailValidator()])
+    password = fields.StringField(required=True, validators=[
+        NotEmptyValidator(),
+        CharLenValidator(
+            min=settings.rules.user.password_min_field,
+            max=settings.rules.user.password_max_field
+        )
+    ])
+    avatar_href = fields.StringField(required=True, name='avatarHref')
 
     class Meta(object):
 
@@ -359,7 +367,7 @@ class UserAuthDto(object):
 
 class UserAuthDtoSerializer(Serializer):
 
-    username = fields.StringField(validators=[
+    username = fields.StringField(required=True, validators=[
         NotEmptyValidator(),
         CharLenValidator(
             min=settings.rules.user.username_min_char,
@@ -367,7 +375,7 @@ class UserAuthDtoSerializer(Serializer):
         ),
         RegexValidator(pattern=USERNAME_PATTERN)
     ])
-    password = fields.StringField()
+    password = fields.StringField(required=True)
 
     class Meta(object):
 

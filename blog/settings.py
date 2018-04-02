@@ -55,6 +55,8 @@ class UserRules(object):
     def __init__(self):
         self.username_min_char = 0
         self.username_max_char = 0
+        self.password_min_char = 0
+        self.password_max_char = 0
         self.name_min_char = 0
         self.name_max_char = 0
 
@@ -62,6 +64,8 @@ class UserRules(object):
 class UserRulesSerializer(Serializer):
     username_min_char = fields.IntegerField(required=True)
     username_max_char = fields.IntegerField(required=True)
+    password_min_char = fields.IntegerField(required=True)
+    password_max_char = fields.IntegerField(required=True)
     name_min_char = fields.IntegerField(required=True)
     name_max_char = fields.IntegerField(required=True)
 

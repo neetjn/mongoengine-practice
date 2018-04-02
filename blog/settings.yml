@@ -22,3 +22,5 @@ rules:
     name_min_char: 3
     username_max_char: 20
     username_min_char: 3
+    password_min_char: 6
+    password_max_char: 25
