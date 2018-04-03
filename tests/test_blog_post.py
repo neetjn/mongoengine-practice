@@ -25,6 +25,7 @@ class BlogPostTests(TestCase):
         }
 
     def test_core_post_resource(self):
+        """Ensure a post resource can be created, fetched, updated, and deleted."""
         res = self.simulate_get(PostCollectionResource.route)
         self.assertEqual(res.status_code, 200)
         # verify no post resources returned in post collection
@@ -35,11 +36,11 @@ class BlogPostTests(TestCase):
             body=to_json(PostFormDtoSerializer, generate_post_form_dto()),
             headers=self.headers)
         self.assertEqual(post_create_res.status_code, 201)
-        res = self.simulate_get(PostCollectionResource.route)
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(len(res.json.get('posts')), 1)
+        post_collection_res = self.simulate_get(PostCollectionResource.route)
+        self.assertEqual(post_collection_res.status_code, 200)
+        self.assertEqual(len(post_collection_res.json.get('posts')), 1)
         # get resource href for created post
-        created_post = res.json.get('posts')[0]
+        created_post = post_collection_res.json.get('posts')[0]
         post_href = normalize_href(created_post.get('href'))
         # fetch post using extracted href
         post_res = self.simulate_get(post_href)
@@ -65,3 +66,26 @@ class BlogPostTests(TestCase):
         self.assertEqual(updated_post_res.json.get('title'), post_details.title)
         self.assertEqual(updated_post_res.json.get('description'), post_details.description)
         self.assertEqual(updated_post_res.json.get('content'), post_details.content)
+        # delete post resource and validate expected behavior
+        delete_post_res = self.simulate_delete(post_href, headers=self.headers)
+        self.assertEqual(delete_post_res.status_code, 204)
+        post_res = self.simulate_get(post_href)
+        self.assertEqual(post_res.status_code, 404)
+        post_collection_res = self.simulate_get(PostCollectionResource.route)
+        self.assertEqual(len(post_collection_res.json.get('posts')), 0)
+
+    def test_like_post(self):
+        """Verify post resources can be liked."""
+        self.simulate_post(
+            PostCollectionResource.route,
+            body=to_json(PostFormDtoSerializer, generate_post_form_dto()),
+            headers=self.headers)
+        post_collection_res = self.simulate_get(PostCollectionResource.route)
+        created_post = post_collection_res.json.get('posts')[0]
+        self.assertEqual(created_post.get('likes'), 0)
+        post_like_href = normalize_href(
+            next(ln for ln in created_post.get('links') if ln.get('rel') == 'post-like'))
+        self.simulate_put(post_like_href)
+        post_res = self.simulate_get(created_post)
+        self.assertEqual(pos_res.json.get('likes'), 1)
+
