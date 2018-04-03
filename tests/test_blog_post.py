@@ -1,11 +1,11 @@
-from falcon import testing
+from falcon.testing import TestCase
 from blog.blog import api
 from blog.resources.posts import PostResource, PostCollectionResource
 from blog.settings import settings
-from tests.utils import drop_database, generate_post_form, random_string
+from tests.utils import create_user, drop_database, generate_post_form, random_string
 
 
-class BlogPostTests(testing.TestCase):
+class BlogPostTests(TestCase):
 
     def setUp(self):
         super(BlogPostTests, self).setUp()
@@ -19,12 +19,14 @@ class BlogPostTests(testing.TestCase):
         self.assertEqual(res.status_code, 200)
         # verify no post resources returned in post collection
         self.assertEqual(len(res.json.get('posts')), 0)
+        # get user credentials
+        token = create_user(self)
         # verify posts are created as intended
         post_form = generate_post_form(
             title=random_string(settings.rules.post.title_min_char),
             description=random_string(settings.rules.post.title_min_char),
             content=random_string(settings.rules.post.content_min_char))
-        post_res = self.simulate_post(PostCollectionResource.route, body=post_form)
-        # left here, need to provide auth token...
+        post_res = self.simulate_post(PostCollectionResource.route, body=post_form, headers={
+            'Authorization': token})
         self.assertEqual(post_res.status_code, 201)
         self.assertEqual(len(res.json.get('posts')), 1)

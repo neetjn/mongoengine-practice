@@ -347,8 +347,8 @@ class UserFormDtoSerializer(Serializer):
     password = fields.StringField(required=True, validators=[
         NotEmptyValidator(),
         CharLenValidator(
-            min=settings.rules.user.password_min_field,
-            max=settings.rules.user.password_max_field
+            min=settings.rules.user.password_min_char,
+            max=settings.rules.user.password_max_char
         )
     ])
     avatar_href = fields.StringField(required=True, name='avatarHref')
