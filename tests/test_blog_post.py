@@ -24,7 +24,7 @@ class BlogPostTests(TestCase):
             'Authorization': token
         }
 
-    def test_create_get_post(self):
+    def test_core_post_resource(self):
         res = self.simulate_get(PostCollectionResource.route)
         self.assertEqual(res.status_code, 200)
         # verify no post resources returned in post collection
@@ -36,6 +36,7 @@ class BlogPostTests(TestCase):
             headers=self.headers)
         self.assertEqual(post_create_res.status_code, 201)
         res = self.simulate_get(PostCollectionResource.route)
+        self.assertEqual(res.status_code, 200)
         self.assertEqual(len(res.json.get('posts')), 1)
         # get resource href for created post
         created_post = res.json.get('posts')[0]
@@ -53,3 +54,14 @@ class BlogPostTests(TestCase):
                 next((ln for ln in created_post.get('links') if ln.get('rel') == rel), None))
             self.assertIsNotNone(
                 next((ln for ln in post_res.json.get('links') if ln.get('rel') == rel), None))
+        # update post resource and verify changes
+        post_details = generate_post_form_dto()
+        post_update_res = self.simulate_put(
+            post_href,
+            body=to_json(PostFormDtoSerializer, post_details),
+            headers=self.headers)
+        self.assertEqual(post_update_res.status_code, 204)
+        updated_post_res = self.simulate_get(post_href)
+        self.assertEqual(updated_post_res.json.get('title'), post_details.title)
+        self.assertEqual(updated_post_res.json.get('description'), post_details.description)
+        self.assertEqual(updated_post_res.json.get('content'), post_details.content)
