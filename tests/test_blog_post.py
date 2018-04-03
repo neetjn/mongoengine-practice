@@ -1,8 +1,12 @@
 from falcon.testing import TestCase
 from blog.blog import api
+from blog.mediatypes import PostFormDtoSerializer
 from blog.resources.posts import PostResource, PostCollectionResource
 from blog.settings import settings
-from tests.utils import create_user, drop_database, generate_post_form, random_string
+from blog.utils.serializers import to_json
+from tests.generators.posts import generate_post_form_dto
+from tests.mocks.users import create_user
+from tests.utils import drop_database, normalize_href, random_string
 
 
 class BlogPostTests(TestCase):
@@ -13,20 +17,39 @@ class BlogPostTests(TestCase):
         self.app = api
         # scrub database before each test
         drop_database()
+        # get user credentials
+        token = create_user(self)
+        # construct request headers
+        self.headers = {
+            'Authorization': token
+        }
 
     def test_create_get_post(self):
         res = self.simulate_get(PostCollectionResource.route)
         self.assertEqual(res.status_code, 200)
         # verify no post resources returned in post collection
         self.assertEqual(len(res.json.get('posts')), 0)
-        # get user credentials
-        token = create_user(self)
         # verify posts are created as intended
-        post_form = generate_post_form(
-            title=random_string(settings.rules.post.title_min_char),
-            description=random_string(settings.rules.post.title_min_char),
-            content=random_string(settings.rules.post.content_min_char))
-        post_res = self.simulate_post(PostCollectionResource.route, body=post_form, headers={
-            'Authorization': token})
-        self.assertEqual(post_res.status_code, 201)
+        post_create_res = self.simulate_post(
+            PostCollectionResource.route,
+            body=to_json(PostFormDtoSerializer, generate_post_form_dto()),
+            headers=self.headers)
+        self.assertEqual(post_create_res.status_code, 201)
+        res = self.simulate_get(PostCollectionResource.route)
         self.assertEqual(len(res.json.get('posts')), 1)
+        # get resource href for created post
+        created_post = res.json.get('posts')[0]
+        post_href = normalize_href(created_post.get('href'))
+        # fetch post using extracted href
+        post_res = self.simulate_get(post_href)
+        self.assertEqual(created_post.get('title'), post_res.json.get('title'))
+        self.assertEqual(created_post.get('description'), post_res.json.get('description'))
+        self.assertEqual(created_post.get('content'), post_res.json.get('content'))
+        self.assertEqual(created_post.get('author'), post_res.json.get('author'))
+        # validate links for post in collection and payload from post resource
+        expected_links = ('post-comment', 'post-like', 'post-view')
+        for rel in expected_links:
+            self.assertIsNotNone(
+                next((ln for ln in created_post.get('links') if ln.get('rel') == rel), None))
+            self.assertIsNotNone(
+                next((ln for ln in post_res.json.get('links') if ln.get('rel') == rel), None))

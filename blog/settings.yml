@@ -3,11 +3,8 @@ login:
   max_failed_login: 5
   max_session_time: 43200
 post:
-  view_time_delay: 3600
   search_time_delay: 15
-user:
-  allow_manual_registration: true
-  require_email_verification: false
+  view_time_delay: 3600
 rules:
   comment:
     content_max_char: 124
@@ -20,7 +17,10 @@ rules:
   user:
     name_max_char: 20
     name_min_char: 3
+    password_max_char: 25
+    password_min_char: 6
     username_max_char: 20
     username_min_char: 3
-    password_min_char: 6
-    password_max_char: 25
+user:
+  allow_manual_registration: true
+  require_email_verification: false
