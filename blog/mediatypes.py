@@ -261,7 +261,7 @@ class PostFormDtoSerializer(Serializer):
     ])
     content = fields.StringField(required=True, validators=[NotEmptyValidator()])
     tags = fields.ListField(fields.StringField())
-    private = fields.BooleanField(required=True)
+    private = fields.BooleanField()
 
     class Meta(object):
 
@@ -351,7 +351,7 @@ class UserFormDtoSerializer(Serializer):
             max=settings.rules.user.password_max_char
         )
     ])
-    avatar_href = fields.StringField(required=True, name='avatarHref')
+    avatar_href = fields.StringField(name='avatarHref')
 
     class Meta(object):
 

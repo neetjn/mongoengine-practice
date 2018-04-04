@@ -36,12 +36,16 @@ This project was crafted with consumability in mind. The root endpoint serves a 
       "href": "localhost:8000/v1/posts/search"
     },
     {
-      "rel": "user-auth",
+      "rel": "user-authentication",
       "href": "localhost:8000/v1/user/authenticate/"
     },
     {
       "rel": "user",
       "href": "localhost:8000/v1/user/"
+    },
+    {
+      "rel": "user-registration",
+      "href": "localhost:8000/v1/user/register/"
     }
   ]
 }
@@ -53,29 +57,56 @@ This project was crafted with consumability in mind. The root endpoint serves a 
 {
   "posts": [
     {
-      "href": "http://localhost:8000/v1/post/5ab842dd8743a11a7fbbbcf5",
-      "author": "john",
-      "title": "my post title",
-      "description": "my post description",
-      "content": "this is misc. blog post content for validation",
+      "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/",
+      "author": "Tpd",
+      "title": "zBd",
+      "description": "rfQ",
+      "content": "cPWYBvqSzeInApeTnGXGrTxIMVWvQmrAeiyPKvwsvaujmmsOoUoMQqLCEPReHiuBmRuwGgWottlgTDgheaUsrwyNZGeGHkOscSrJxNdVhOAtpfeRTGVAWleKPzGC",
       "tags": [],
-      "created": "2018-03-26 00:46:21.805000",
+      "created": "2018-04-04 03:19:59.714000",
       "edited": null,
       "comments": [],
-      "likes": 1,
-      "views": 2,
+      "likes": 0,
+      "views": 1,
       "links": [
         {
-          "rel": "comment",
-          "href": "localhost:8000/v1/post/5ab842dd8743a11a7fbbbcf5/comment"
+          "rel": "post-comment",
+          "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/comment"
         },
         {
-          "rel": "like",
-          "href": "localhost:8000/v1/post/5ab842dd8743a11a7fbbbcf5/like"
+          "rel": "post-like",
+          "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/like"
         },
         {
-          "rel": "view",
-          "href": "localhost:8000/v1/post/5ab842dd8743a11a7fbbbcf5/view"
+          "rel": "post-view",
+          "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/view"
+        }
+      ]
+    },
+    {
+      "href": "localhost:8000/v1/post/5ac4496c8743a17eb6a0c08f/",
+      "author": "john",
+      "title": "1st post",
+      "description": "tht post",
+      "content": "fgdfgdfgdf dfgdfg ertfefv the onme who said",
+      "tags": [],
+      "created": "2018-04-04 03:41:32.619000",
+      "edited": null,
+      "comments": [],
+      "likes": 0,
+      "views": 0,
+      "links": [
+        {
+          "rel": "post-comment",
+          "href": "localhost:8000/v1/post/5ac4496c8743a17eb6a0c08f/comment"
+        },
+        {
+          "rel": "post-like",
+          "href": "localhost:8000/v1/post/5ac4496c8743a17eb6a0c08f/like"
+        },
+        {
+          "rel": "post-view",
+          "href": "localhost:8000/v1/post/5ac4496c8743a17eb6a0c08f/view"
         }
       ]
     }
