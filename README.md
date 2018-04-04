@@ -178,11 +178,27 @@ Once the necessary configurations have been made to `blog/constants.py`, the blo
 pipenv run python -m blog
 ```
 
-TODO: complete setup details
+For provisioning refer to the [**Configuration**](https://github.com/neetjn/py-blog#configuration) section.
 
 **Docker**
 
-TODO: add docker setup example with sample docker-compose for setting up mongo.
+Build your docker image:
+
+```bash
+docker build . -t py-blog
+```
+
+Run your container:
+
+```bash
+docker run --name blog -p 8000:8000 py-blog
+```
+
+Alternatively use `docker-compose` for a quick start, will provide a mongodb container:
+
+```bash
+docker-compose up
+```
 
 ## Testing
 

@@ -10,7 +10,7 @@ BLOG_CONTENT_KEY = os.environ.get('BLOG_CONTENT_KEY', 'mWmYSBcSzfhGuLCRvqc3A9xK'
 
 # blog api specifications
 BLOG_HOST = os.environ.get('BLOG_HOST', '0.0.0.0')
-BLOG_PORT = os.environ.get('BLOG_PORT', 8080)
+BLOG_PORT = os.environ.get('BLOG_PORT', 8000)
 
 # blog mongodb specifications
 BLOG_DB_HOST = os.environ.get('BLOG_DB_HOST', 'mongodb://127.0.0.1:27017/py-blog')
