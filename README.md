@@ -58,10 +58,10 @@ This project was crafted with consumability in mind. The root endpoint serves a 
   "posts": [
     {
       "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/",
-      "author": "Tpd",
-      "title": "zBd",
-      "description": "rfQ",
-      "content": "cPWYBvqSzeInApeTnGXGrTxIMVWvQmrAeiyPKvwsvaujmmsOoUoMQqLCEPReHiuBmRuwGgWottlgTDgheaUsrwyNZGeGHkOscSrJxNdVhOAtpfeRTGVAWleKPzGC",
+      "author": "John Nolette",
+      "title": "My First Post",
+      "description": "Hello world!",
+      "content": "Hello world, this is my first post!",
       "tags": [],
       "created": "2018-04-04 03:19:59.714000",
       "edited": null,
@@ -80,33 +80,6 @@ This project was crafted with consumability in mind. The root endpoint serves a 
         {
           "rel": "post-view",
           "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/view"
-        }
-      ]
-    },
-    {
-      "href": "localhost:8000/v1/post/5ac4496c8743a17eb6a0c08f/",
-      "author": "john",
-      "title": "1st post",
-      "description": "tht post",
-      "content": "fgdfgdfgdf dfgdfg ertfefv the onme who said",
-      "tags": [],
-      "created": "2018-04-04 03:41:32.619000",
-      "edited": null,
-      "comments": [],
-      "likes": 0,
-      "views": 0,
-      "links": [
-        {
-          "rel": "post-comment",
-          "href": "localhost:8000/v1/post/5ac4496c8743a17eb6a0c08f/comment"
-        },
-        {
-          "rel": "post-like",
-          "href": "localhost:8000/v1/post/5ac4496c8743a17eb6a0c08f/like"
-        },
-        {
-          "rel": "post-view",
-          "href": "localhost:8000/v1/post/5ac4496c8743a17eb6a0c08f/view"
         }
       ]
     }
