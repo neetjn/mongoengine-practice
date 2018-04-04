@@ -92,3 +92,19 @@ class BlogPostTests(TestCase):
         self.simulate_put(post_like_href, headers=self.headers)
         post_res = self.simulate_get(post_href)
         self.assertEqual(post_res.json.get('likes'), 0)
+
+    def test_view_post(self):
+        """Verify post resources can be viewed."""
+        self.simulate_post(
+            PostCollectionResource.route,
+            body=to_json(PostFormDtoSerializer, generate_post_form_dto()),
+            headers=self.headers)
+        post_collection_res = self.simulate_get(PostCollectionResource.route)
+        created_post = post_collection_res.json.get('posts')[0]
+        post_href = normalize_href(created_post.get('href'))
+        self.assertEqual(created_post.get('views'), 0)
+        post_view_href = normalize_href(
+            next(ln.get('href') for ln in created_post.get('links') if ln.get('rel') == 'post-view'))
+        self.simulate_put(post_view_href, headers=self.headers)
+        post_res = self.simulate_get(post_href)
+        self.assertEqual(post_res.json.get('views'), 1)
