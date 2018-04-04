@@ -17,24 +17,26 @@ class AESCipher(object):
         self.bs = 32
         self.key = hashlib.sha256(key.encode()).digest()
 
-    def encrypt(self, raw: str):
+    def encrypt(self, raw: str) -> str:
         """
         Encrypt raw content with AES cipher using provided key.
 
         :param raw: Content to encrypt.
         :type raw: str
+        :return: str
         """
         raw = self._pad(raw)
         iv = Random.new().read(AES.block_size)
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return base64.b64encode(iv + cipher.encrypt(raw)).decode('utf-8')
 
-    def decrypt(self, enc: str):
+    def decrypt(self, enc: str) -> str:
         """
         Decrypt encrypted content with AES cipher using provided key.
 
         :param raw: Encrypted content to decrypt.
         :type raw: str
+        :return: str
         """
         enc = base64.b64decode(enc)
         iv = enc[:AES.block_size]
@@ -49,7 +51,7 @@ class AESCipher(object):
         return s[:-ord(s[len(s)-1:])]
 
 
-def hash_password(password: str):
+def hash_password(password: str) -> tuple:
     """
     Hashes password with a randomly generated salt value.
 
@@ -76,21 +78,23 @@ def compare_passwords(hashed: str, password: str, salt: str) -> bool:
     return hashed == hashlib.sha256(password.encode('utf-8') + salt.encode('utf-8')).hexdigest()
 
 
-def encrypt_content(content: str):
+def encrypt_content(content: str) -> str:
     """
     Encrypt blog post and comment content.
 
     :param content: Blog content to encrypt.
     :type content: str
+    :return: str
     """
     return AESCipher(BLOG_CONTENT_KEY).encrypt(content)
 
 
-def decrypt_content(content: str):
+def decrypt_content(content: str) -> str:
     """
     Decrypt blog post and comment content.
 
     :param content: Blog content to decrypt.
     :type content: str
+    :return: str
     """
     return AESCipher(BLOG_CONTENT_KEY).decrypt(content)
