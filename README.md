@@ -1,5 +1,9 @@
 # py-blog
 
+[![build](https://travis-ci.org/neetjn/py-blog.svg?branch=master)](https://travis-ci.org/neetjn/py-blog)
+[![Code Health](https://landscape.io/github/neetjn/py-blog/master/landscape.svg?style=flat)](https://landscape.io/github/neetjn/py-blog/master)
+[![codecov](https://codecov.io/gh/neetjn/py-blog/branch/master/graph/badge.svg)](https://codecov.io/gh/neetjn/py-blog)
+
 **py-blog** is a backend blog service that can easily and comfortably sit behind any frontend.
 
 ## Why
