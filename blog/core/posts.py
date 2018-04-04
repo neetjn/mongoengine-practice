@@ -279,7 +279,7 @@ def post_to_dto(post: Post, href: str = None, links: list = None) -> PostDto:
     return PostDto(
         href=href,
         links=links or [],
-        author=get_user(post.author).username,
+        author=get_user(post.author).full_name,
         title=post.title,
         description=post.description,
         content=post.content,
