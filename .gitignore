@@ -105,3 +105,6 @@ v/
 
 # editor config
 .vscode/
+
+# mongo docker compose volume
+data/
