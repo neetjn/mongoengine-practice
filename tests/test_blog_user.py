@@ -28,8 +28,10 @@ class BlogPostTests(TestCase):
         """Ensure a user resource can be fetched, updated."""
         user_res = self.simulate_get(UserResource.route)
         self.assertEqual(user_res.status_code, 401)
+        # verify user profile resurce can be retrieved as expected
         user_res = self.simulate_get(UserResource.route, headers=self.headers)
         self.assertEqual(user_res.status_code, 200)
+        # verify user resource can be updated
         user_profile = generate_user_form_dto()
         put_user_res = self.simulate_put(
             UserResource.route,
