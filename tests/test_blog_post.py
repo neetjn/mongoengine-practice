@@ -82,10 +82,13 @@ class BlogPostTests(TestCase):
             headers=self.headers)
         post_collection_res = self.simulate_get(PostCollectionResource.route)
         created_post = post_collection_res.json.get('posts')[0]
+        post_href = normalize_href(created_post.get('href'))
         self.assertEqual(created_post.get('likes'), 0)
         post_like_href = normalize_href(
-            next(ln for ln in created_post.get('links') if ln.get('rel') == 'post-like'))
-        self.simulate_put(post_like_href)
-        post_res = self.simulate_get(created_post)
-        self.assertEqual(pos_res.json.get('likes'), 1)
-
+            next(ln.get('href') for ln in created_post.get('links') if ln.get('rel') == 'post-like'))
+        self.simulate_put(post_like_href, headers=self.headers)
+        post_res = self.simulate_get(post_href)
+        self.assertEqual(post_res.json.get('likes'), 1)
+        self.simulate_put(post_like_href, headers=self.headers)
+        post_res = self.simulate_get(post_href)
+        self.assertEqual(post_res.json.get('likes'), 0)
