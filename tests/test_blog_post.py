@@ -1,9 +1,10 @@
 from falcon.testing import TestCase
 from blog.blog import api
-from blog.mediatypes import PostFormDtoSerializer
+from blog.mediatypes import PostFormDtoSerializer, CommentFormDtoSerializer
 from blog.resources.posts import PostResource, PostCollectionResource
 from blog.settings import settings
 from blog.utils.serializers import to_json
+from tests.generators.comments import generate_comment_form_dto
 from tests.generators.posts import generate_post_form_dto
 from tests.mocks.users import create_user
 from tests.utils import drop_database, normalize_href, random_string
@@ -25,7 +26,7 @@ class BlogPostTests(TestCase):
         }
 
     def test_core_post_resource(self):
-        """Ensure a post resource can be created, fetched, updated, and deleted."""
+        """Ensure a post resource can be created, fetched, updated, and deleted"""
         res = self.simulate_get(PostCollectionResource.route)
         self.assertEqual(res.status_code, 200)
         # verify no post resources returned in post collection
@@ -75,7 +76,7 @@ class BlogPostTests(TestCase):
         self.assertEqual(len(post_collection_res.json.get('posts')), 0)
 
     def test_like_post(self):
-        """Verify post resources can be liked."""
+        """Verify post resources can be liked"""
         self.simulate_post(
             PostCollectionResource.route,
             body=to_json(PostFormDtoSerializer, generate_post_form_dto()),
@@ -94,7 +95,7 @@ class BlogPostTests(TestCase):
         self.assertEqual(post_res.json.get('likes'), 0)
 
     def test_view_post(self):
-        """Verify post resources can be viewed."""
+        """Verify post resources can be viewed"""
         self.simulate_post(
             PostCollectionResource.route,
             body=to_json(PostFormDtoSerializer, generate_post_form_dto()),
@@ -108,3 +109,46 @@ class BlogPostTests(TestCase):
         self.simulate_put(post_view_href, headers=self.headers)
         post_res = self.simulate_get(post_href)
         self.assertEqual(post_res.json.get('views'), 1)
+
+    def test_comment_post(self):
+        """Verify comment resources can be created, updated, and deleted"""
+        self.simulate_post(
+            PostCollectionResource.route,
+            body=to_json(PostFormDtoSerializer, generate_post_form_dto()),
+            headers=self.headers)
+        post_collection_res = self.simulate_get(PostCollectionResource.route)
+        created_post = post_collection_res.json.get('posts')[0]
+        self.assertEqual(len(created_post.get('comments')), 0)
+        post_href = normalize_href(created_post.get('href'))
+        post_res = self.simulate_get(post_href)
+        self.assertEqual(len(post_res.json.get('comments')), 0)
+        post_comment_href = normalize_href(
+            next(ln.get('href') for ln in created_post.get('links') if ln.get('rel') == 'post-comment'))
+        comment_form = generate_comment_form_dto()
+        # verify comments are created as intended
+        create_comment_res = self.simulate_post(
+            post_comment_href,
+            body=to_json(CommentFormDtoSerializer, comment_form),
+            headers=self.headers)
+        self.assertEqual(create_comment_res.status_code, 201)
+        post_res = self.simulate_get(post_href)
+        self.assertEqual(len(post_res.json.get('comments')), 1)
+        created_comment = post_res.json.get('comments')[0]
+        self.assertEqual(created_comment.get('content'), comment_form.content)
+        # verify coment content can be updated
+        comment_href = normalize_href(created_comment.get('href'))
+        new_comment_form = generate_comment_form_dto()
+        update_comment_res = self.simulate_put(
+            comment_href,
+            body=to_json(CommentFormDtoSerializer, new_comment_form),
+            headers=self.headers)
+        self.assertEqual(update_comment_res.status_code, 204)
+        comment_res = self.simulate_get(comment_href)
+        self.assertEqual(comment_res.json.get('content'), new_comment_form.content)
+        # verify comment resources can be deleted
+        delete_comment_res = self.simulate_delete(comment_href, headers=self.headers)
+        self.assertEqual(delete_comment_res.status_code, 204)
+        comment_res = self.simulate_get(comment_href)
+        self.assertEqual(comment_res.status_code, 404)
+        post_res = self.simulate_get(post_href)
+        self.assertEqual(len(post_res.json.get('comments')), 0)

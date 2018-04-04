@@ -123,8 +123,8 @@ class CommentFormDtoSerializer(Serializer):
     content = fields.StringField(required=True, validators=[
         NotEmptyValidator(),
         CharLenValidator(
-            min=settings.rules.post.content_min_char,
-            max=settings.rules.post.content_max_char
+            min=settings.rules.comment.content_min_char,
+            max=settings.rules.comment.content_max_char
         )
     ])
 

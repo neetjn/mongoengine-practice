@@ -61,7 +61,7 @@ class CommentResource(BaseResource):
         """Fetch single comment resource."""
         resp.status = falcon.HTTP_200
         comment = get_comment(comment_id)
-        comment_dto = comment_to_dto(comment, href=req.uri, links=get_comment_links(req, comment.id))
+        comment_dto = comment_to_dto(comment, href=req.uri, links=get_comment_links(req, comment))
         resp.body = to_json(CommentDtoSerializer, comment_dto)
 
     @falcon.before(is_logged_in)
