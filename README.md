@@ -107,6 +107,7 @@ The py-blog project ships with (but is not limited to) the following:
 * [x] Creating, deleting, liking, "viewing" posts
 * [x] Fetching all public posts (with pagination)
 * [x] Post privacy (editing/publishing)
+* [x] Featured posts
 * [x] Post content encryption (database level)
 * [x] Searching for posts by title, description, content, and author (with cooldown and pagination)
 * [x] Creating, deleting, liking post comments
