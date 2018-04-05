@@ -72,6 +72,7 @@ class Post(mongoengine.Document):
     content = mongoengine.StringField(required=True)
     tags = mongoengine.ListField(mongoengine.StringField())
     private = mongoengine.BooleanField(default=False)
+    featured = mongoengine.BooleanField(default=False)
     created = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
     edited = mongoengine.DateTimeField()
 

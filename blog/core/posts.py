@@ -144,6 +144,7 @@ def edit_post(post_id: str, post_form_dto: PostFormDto):
     post.content = encrypt_content(post_form_dto.content) or post.content
     post.tags = list(set(post.tags + post_form_dto.tags))
     post.private = post_form_dto.private or post.private
+    post.featured = post_form_dto.featured or post.featured
     post.edited = datetime.datetime.utcnow()
     post.save()
 
@@ -285,6 +286,7 @@ def post_to_dto(post: Post, href: str = None, links: list = None) -> PostDto:
         content=post.content,
         tags=post.tags,
         private=post.private,
+        featured=post.featured,
         created=post.created,
         edited=post.edited,
         likes=len(likes),

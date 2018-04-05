@@ -114,7 +114,14 @@ class PostResource(BaseResource):
         if not user_has_post_access(user, post_id):
             raise UnauthorizedRequestError(user)
         payload = req.stream.read()
-        edit_post(post_id, from_json(PostFormDtoSerializer, payload))
+        post_form_dto = from_json(PostFormDtoSerializer, payload)
+        # ensure non authorized users cannot set post featured status
+        # TODO: create tests for featured post
+        if user.role not in (UserRoles.ADMIN, UserRoles.MODERATOR) and post_form_dto.featured:
+            post = get_post(post_id)
+            if not post.featured:
+                raise UnauthorizedRequestError()
+        edit_post(post_id, post_form_dto)
 
     @falcon.before(is_logged_in)
     def on_delete(self, req, resp, post_id):

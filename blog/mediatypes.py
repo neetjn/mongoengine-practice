@@ -179,6 +179,7 @@ class PostDto(object):
         self.content = kwargs.get('content', '')
         self.tags = kwargs.get('tags', [])
         self.private = kwargs.get('private', False)
+        self.featured = kwargs.get('featured', False)
         self.created = kwargs.get('created', None)
         self.edited = kwargs.get('edited', None)
         self.comments = kwargs.get('comments', [])
@@ -207,6 +208,8 @@ class PostDtoSerializer(Serializer):
     ])
     content = fields.StringField(validators=[NotEmptyValidator()])
     tags = fields.ListField(fields.StringField())
+    private = fields.BooleanField()
+    featured = fields.BooleanField()
     created = fields.DateTimeField()
     edited = fields.DateTimeField()
     comments = fields.ListField(fields.ObjectField(CommentDtoSerializer))
@@ -241,6 +244,7 @@ class PostFormDto(object):
         self.content = kwargs.get('content', '')
         self.tags = kwargs.get('tags', [])
         self.private = kwargs.get('private', False)
+        self.featured = kwargs.get('featured', False)
 
 
 class PostFormDtoSerializer(Serializer):
@@ -262,6 +266,7 @@ class PostFormDtoSerializer(Serializer):
     content = fields.StringField(required=True, validators=[NotEmptyValidator()])
     tags = fields.ListField(fields.StringField())
     private = fields.BooleanField()
+    featured = fields.BooleanField()
 
     class Meta(object):
 
