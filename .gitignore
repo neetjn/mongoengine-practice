@@ -105,6 +105,10 @@ v/
 
 # editor config
 .vscode/
+*.swp
 
 # mongo docker compose volume
 data/
+
+# miscallaneous
+Makefile
