@@ -20,7 +20,7 @@ from blog.utils.serializers import from_json, to_json
 
 class BLOG_USER_RESOURCE_HREF_REL(object):
 
-    USER_AVATAR = 'user-avatar'
+    USER_AVATAR_UPLOAD = 'user-avatar-upload'
 
 
 def get_auth_jwt(user: User, host: str) -> str:
@@ -69,9 +69,29 @@ class UserRegistrationResource(BaseResource):
 
 class UserAvatarResource(BaseResource):
 
+    route = '/v1/user/{user_id}/avatar/'
+
+    def on_get(self, req, resp):
+        """Fetch and serve avatar for requested user."""
+        resp.status = falcon.HTTP_200
+        if not settings.user.allow_avatar_capability:
+            raise ResourceNotAvailableError()
+        user = req.context.get('user')
+        if user.avatar_href:
+            # add redirect here
+            pass
+        elif user.avatar_binary:
+            # serve binary
+            pass
+        else:
+            # provide a default avatar image
+
+
+class UserAvatarMediaResource(BaseResource):
+
     # TODO: create unit test for user avatar upload
 
-    route = '/v1/user/avatar/'
+    route = '/v1/user/avatar/upload/'
 
     @falcon.before(is_logged_in)
     def on_post(self, req, resp):
@@ -105,7 +125,8 @@ class UserResource(BaseResource):
             for post in get_user_liked_posts(user_id)]
         # no need to construct url, pull from request
         user.href = req.uri
-        user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR, href=UserAvatarResource.url_to(req.netloc))]
+        user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
+                                  href=UserAvatarMediaResource.url_to(req.netloc))]
         resp.body = to_json(UserProfileDtoSerializer, user_dto)
 
     @falcon.before(is_logged_in)
