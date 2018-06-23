@@ -69,6 +69,8 @@ class UserRegistrationResource(BaseResource):
 
 class UserAvatarResource(BaseResource):
 
+    # TODO: create unit test for user avatar upload
+
     route = '/v1/user/avatar/'
 
     @falcon.before(is_logged_in)
