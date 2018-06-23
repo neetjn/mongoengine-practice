@@ -12,12 +12,13 @@ build:
 
 test:
 	@echo "Spinning up mongodb instance"
-	docker run --name test-${PRODUCT_NAME}-mongodb \
+	docker run --name test-${PRODUCT_NAME}-mongodb -d \
                ${MONGODB_IMAGE}
 	sleep 5
+	@echo "Spinning up test container"
 	docker run --name test-${PRODUCT_NAME}-instance \
-               --link test-${PRODUCT_NAME}-mongodb:mongodb \
-               -e BLOG_DB_HOST=mongodb://mongo:27017/py-blog
+               --link test-${PRODUCT_NAME}-mongodb:mongo \
+               -e BLOG_DB_HOST=mongodb://mongo:27017/py-blog \
                ${PRODUCT_TEST_IMAGE}
 
 test-clean:
