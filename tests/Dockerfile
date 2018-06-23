@@ -10,10 +10,9 @@ RUN set -ex && pip install pipenv --upgrade
 # create working directory
 RUN set -ex && mkdir /opt/app
 WORKDIR /opt/app
-ADD blog /opt/app
-ADD Pipfile /opt/app
-ADD Pipfile.lock /opt/app
+ADD . /opt/app
 # install pipenv deps on system
 RUN set -ex && pipenv install --system
+RUN set -ex && pipenv install --dev --system
 # move app to working directory and start
-CMD python -m blog
+CMD pytest --cov blog.core tests
