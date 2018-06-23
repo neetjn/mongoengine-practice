@@ -42,3 +42,4 @@ class BlogPostTests(TestCase):
         self.assertEqual(user_profile_res.json.get('username'), user_res.json.get('username'))
         self.assertEqual(user_profile_res.json.get('email'), user_profile.email)
         self.assertEqual(user_profile_res.json.get('fullName'), user_profile.full_name)
+        self.assertEqual(user_profile_res.json.get('avatarHref'), user_profile.avatar_href)

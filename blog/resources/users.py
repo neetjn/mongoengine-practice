@@ -106,8 +106,8 @@ class UserAvatarMediaResource(BaseResource):
         resp.status = falcon.HTTP_201
         if not settings.user.allow_avatar_capability:
             raise ResourceNotAvailableError()
-        host = req.access_route[0]
-        payload = req.stream.read()
+        # left here, need to parse file and store in db
+        pass
 
 
 class UserResource(BaseResource):
@@ -135,7 +135,7 @@ class UserResource(BaseResource):
         user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
                                   href=UserAvatarMediaResource.url_to(req.netloc))]
         # if user avatar capabilities present, provide avatar image
-        if settings.user.user_avatar_capability:
+        if settings.user.allow_avatar_capability:
             user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
         resp.body = to_json(UserProfileDtoSerializer, user_dto)
 
