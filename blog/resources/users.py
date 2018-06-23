@@ -20,7 +20,7 @@ from blog.utils.serializers import from_json, to_json
 
 class BLOG_USER_RESOURCE_HREF_REL(object):
 
-    AVATAR = 'avatar'
+    USER_AVATAR = 'user-avatar'
 
 
 def get_auth_jwt(user: User, host: str) -> str:
@@ -103,7 +103,7 @@ class UserResource(BaseResource):
             for post in get_user_liked_posts(user_id)]
         # no need to construct url, pull from request
         user.href = req.uri
-        user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.AVATAR, href=UserAvatarResource.url_to(req.netloc))]
+        user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR, href=UserAvatarResource.url_to(req.netloc))]
         resp.body = to_json(UserProfileDtoSerializer, user_dto)
 
     @falcon.before(is_logged_in)
