@@ -62,7 +62,6 @@ def create_user(user_form_dto: UserFormDto) -> User:
     except DoesNotExist:
         user = User()
         user.username = user_form_dto.username
-        user.avatar_href = user_form_dto.avatar_href
         password, salt = hash_password(user_form_dto.password)
         user.password = password
         user.salt = salt
