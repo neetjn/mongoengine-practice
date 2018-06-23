@@ -325,6 +325,7 @@ class UserFormDto(object):
 
     def __init__(self, **kwargs):
         self.username = kwargs.get('username', '')
+        self.avatar_href = kwargs.get('avatar_href', '')
         self.password = kwargs.get('password', '')
         self.email = kwargs.get('email', '')
         self.full_name = kwargs.get('full_name', '')
@@ -355,6 +356,7 @@ class UserFormDtoSerializer(Serializer):
             max=settings.rules.user.password_max_char
         )
     ])
+    avatar_href = fields.StringField(name='avatarHref')
 
     class Meta(object):
 
