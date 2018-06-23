@@ -1,5 +1,6 @@
 import datetime
 import jwt
+import os
 import falcon
 from blog.constants import BLOG_JWT_SECRET_KEY
 from blog.core.comments import comment_to_dto
@@ -78,13 +79,19 @@ class UserAvatarResource(BaseResource):
             raise ResourceNotAvailableError()
         user = req.context.get('user')
         if user.avatar_href:
-            # add redirect here
-            pass
+            # redirect to source
+            raise falcon.HTTPMovedPermanently(user.avatar_href)
         elif user.avatar_binary:
             # serve binary
-            pass
+            resp.content_type = user.avatar_binary.content_type
+            resp.stream = user.avatar_binary.read()
         else:
-            # provide a default avatar image
+            # serve default avatar image
+            resp.content_type = 'image/png'
+            avatar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../static/default-avatar.png')
+            with open(avatar_path, "rb") as f:
+                avatar = f.read()
+            resp.stream = avatar
 
 
 class UserAvatarMediaResource(BaseResource):
