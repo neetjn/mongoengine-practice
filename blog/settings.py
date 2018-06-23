@@ -30,11 +30,13 @@ class PostSettingsSerializer(Serializer):
 
 class UserSettings(object):
     def __init__(self):
+        self.allow_avatar_upload = False
         self.allow_manual_registration = False
         self.require_email_verification = False
 
 
 class UserSettingsSerializer(Serializer):
+    allow_avatar_upload = fields.BooleanField(required=True)
     allow_manual_registration = fields.BooleanField(required=True)
     require_email_verification = fields.BooleanField(required=True)
 
@@ -167,6 +169,7 @@ def save_settings(settings_dto: Settings):
     settings.post.search_time_delay = settings_dto.post.search_time_delay
 
     # user settings
+    settings.user.allow_avatar_upload = settings_dto.user.allow_avatar_upload
     settings.user.allow_manual_registration = settings_dto.user.allow_manual_registration
     settings.user.require_email_verification = settings_dto.user.require_email_verification
 
