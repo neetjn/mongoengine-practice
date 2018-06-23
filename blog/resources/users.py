@@ -107,7 +107,7 @@ class UserAvatarMediaResource(BaseResource):
         if not settings.user.allow_avatar_capability:
             raise ResourceNotAvailableError()
         # left here, need to parse file and store in db
-        pass
+        avatar_img = req.get_param('file').file.read()
 
 
 class UserResource(BaseResource):
