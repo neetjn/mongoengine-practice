@@ -134,6 +134,9 @@ class UserResource(BaseResource):
         user.href = req.uri
         user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
                                   href=UserAvatarMediaResource.url_to(req.netloc))]
+        # if user avatar capabilities present, provide avatar image
+        if settings.user.user_avatar_capability:
+            user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
         resp.body = to_json(UserProfileDtoSerializer, user_dto)
 
     @falcon.before(is_logged_in)

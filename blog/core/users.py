@@ -104,6 +104,9 @@ def edit_user(user_id: str, user_form_dto: UserFormDto):
         user.salt = salt
     user.full_name = user_form_dto.full_name or user.full_name
     user.email = user_form_dto.email or user.email
+    if user_form_dto.avatar_href and user_form_dto.avatar_href != user.avatar_href:
+        user.avatar_href = user_form_dto.avatar_href
+        user.avatar_binary = None
     user.save()
 
 
