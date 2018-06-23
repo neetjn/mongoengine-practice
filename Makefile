@@ -12,10 +12,16 @@ build:
 
 test:
   @echo Spinning up mongodb instance
-
+  docker run --name test-${PRODUCT_NAME}-mongodb \
+             ${MONGODB_IMAGE}
+  sleep 5
+  docker run --name test-${PRODUCT_NAME}-instance \
+             --link test-${PRODUCT_NAME}-mongodb:mongodb \
+             -e BLOG_DB_HOST=mongodb://mongo:27017/py-blog
+             ${PRODUCT_TEST_IMAGE}
 
 test-clean:
-  docker rm -f test-${}
+  docker rm -f test-${PRODUCT_NAME}-mongodb test-${PRODUCT_NAME}-instance
 
-publish:
-
+publish: build
+  docker push ${PRODUCT_IMAGE}
