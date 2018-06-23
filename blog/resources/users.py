@@ -8,14 +8,19 @@ from blog.core.users import authenticate, get_user, create_user, edit_user, \
     user_to_dto, get_user_comments, get_user_posts
 from blog.db import User
 from blog.errors import ResourceNotAvailableError
-from blog.hooks.users import is_logged_in
+from blog.hooks.users import is_logged_in, is_logged_out
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
-    TokenDtoSerializer, UserProfileDtoSerializer
+    TokenDtoSerializer, UserProfileDtoSerializer, LinkDto
 from blog.resources.base import BaseResource
 from blog.resources.comments import CommentResource
 from blog.resources.posts import PostResource
 from blog.settings import settings
 from blog.utils.serializers import from_json, to_json
+
+
+class BLOG_USER_RESOURCE_HREF_REL(object):
+
+    AVATAR = 'avatar'
 
 
 def get_auth_jwt(user: User, host: str) -> str:
@@ -50,6 +55,7 @@ class UserRegistrationResource(BaseResource):
 
     route = '/v1/user/register/'
 
+    @falcon.before(is_logged_out)
     def on_post(self, req, resp):
         """Creates a new user resource and provides a session token."""
         resp.status = falcon.HTTP_201
@@ -59,6 +65,20 @@ class UserRegistrationResource(BaseResource):
         payload = req.stream.read()
         user = create_user(from_json(UserFormDtoSerializer, payload))
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user, host)))
+
+
+class UserAvatarResource(BaseResource):
+
+    route = '/v1/user/avatar/'
+
+    @falcon.before(is_logged_in)
+    def on_post(self, req, resp):
+        """Consumes and stores avatar for user in current session."""
+        resp.status = falcon.HTTP_201
+        if not settings.user.allow_avatar_capability:
+            raise ResourceNotAvailableError()
+        host = req.access_route[0]
+        payload = req.stream.read()
 
 
 class UserResource(BaseResource):
@@ -83,6 +103,7 @@ class UserResource(BaseResource):
             for post in get_user_liked_posts(user_id)]
         # no need to construct url, pull from request
         user.href = req.uri
+        user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.AVATAR, href=UserAvatarResource.url_to(req.netloc))]
         resp.body = to_json(UserProfileDtoSerializer, user_dto)
 
     @falcon.before(is_logged_in)
