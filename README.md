@@ -146,6 +146,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
   * **require_email_verification**: Enforce email verification for new users.
 * **rules**
   * **user**
+    * **avatar_size**: Maximum size in kb for uploaded user avatars.
     * **username_min_char**: Minimum number of characters for user names.
     * **username_max_char**: Maximum number of characters for user names.
     * **name_min_char**: Minimum number of characters for post titles.
