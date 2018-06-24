@@ -225,6 +225,12 @@ pipenv run pytest tests
 pipenv run pytest --cov blog.core tests
 ```
 
+Alternatively, you may run your tests within a docker container using:
+
+```bash
+make build test test-clean
+```
+
 ## Deployment
 
 TODO: cover different deployment strategies and how to use with heroku or aws ec2.
