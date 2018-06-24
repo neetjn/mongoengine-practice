@@ -15,6 +15,7 @@ rules:
     title_max_char: 124
     title_min_char: 3
   user:
+    avatar_size: 2240
     name_max_char: 20
     name_min_char: 3
     password_max_char: 25

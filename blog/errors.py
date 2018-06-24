@@ -1,4 +1,5 @@
-from falcon import HTTPNotFound, HTTPConflict, HTTPUnauthorized, HTTPForbidden
+from falcon import HTTPNotFound, HTTPConflict, HTTPUnauthorized, HTTPForbidden, \
+    HTTPBadRequest
 
 
 class UserForbiddenRequestError(HTTPForbidden):
@@ -39,7 +40,13 @@ class UserNotFoundError(HTTPNotFound):
 class UserExistsError(HTTPConflict):
 
     def __init__(self):
-        super().__init__(description='User resource by username or email already exists')
+        super().__init__(description='User resource by username or email already exists.')
+
+
+class UserAvatarUploadError(HTTPBadRequest):
+
+    def __init__(self):
+        super().__init__(description='Provided avatar image does not follow expected contraints.')
 
 
 class PostNotFoundError(HTTPNotFound):
