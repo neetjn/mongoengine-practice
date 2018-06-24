@@ -10,7 +10,7 @@ RUN set -ex && pip install pipenv --upgrade
 # create working directory
 RUN set -ex && mkdir /opt/app
 WORKDIR /opt/app
-ADD blog /opt/app
+ADD blog /opt/app/blog
 ADD Pipfile /opt/app
 ADD Pipfile.lock /opt/app
 # install pipenv deps on system
