@@ -55,6 +55,7 @@ class LoginSettingsSerializer(Serializer):
 
 class UserRules(object):
     def __init__(self):
+        self.avatar_size = 0
         self.username_min_char = 0
         self.username_max_char = 0
         self.password_min_char = 0
@@ -64,6 +65,7 @@ class UserRules(object):
 
 
 class UserRulesSerializer(Serializer):
+    avatar_size = fields.IntegerField(required=True)
     username_min_char = fields.IntegerField(required=True)
     username_max_char = fields.IntegerField(required=True)
     password_min_char = fields.IntegerField(required=True)
@@ -174,6 +176,7 @@ def save_settings(settings_dto: Settings):
     settings.user.require_email_verification = settings_dto.user.require_email_verification
 
     # user rules
+    settings.rules.user.avatar_size = settings_dto.rules.user.avatar_size
     settings.rules.user.username_min_char = settings_dto.rules.user.username_min_char
     settings.rules.user.username_max_char = settings_dto.rules.user.username_max_char
     settings.rules.user.name_min_char = settings_dto.rules.user.name_min_char
