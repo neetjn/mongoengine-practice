@@ -72,7 +72,7 @@ class UserAvatarResource(BaseResource):
 
     route = '/v1/user/{user_id}/avatar/'
 
-    def on_get(self, req, resp):
+    def on_get(self, req, resp, user_id):
         """Fetch and serve avatar for requested user."""
         resp.status = falcon.HTTP_200
         if not settings.user.allow_avatar_capability:
