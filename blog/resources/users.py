@@ -77,21 +77,22 @@ class UserAvatarResource(BaseResource):
         resp.status = falcon.HTTP_200
         if not settings.user.allow_avatar_capability:
             raise ResourceNotAvailableError()
-        user = req.context.get('user')
+        user = get_user(user_id)
         if user.avatar_href:
             # redirect to source
             raise falcon.HTTPMovedPermanently(user.avatar_href)
         elif user.avatar_binary:
             # serve binary
             resp.content_type = user.avatar_binary.content_type
-            resp.stream = user.avatar_binary.read()
+            avatar = user.avatar_binary.read()
+            resp.stream = avatar
+            resp.stream_len = len(avatar)
         else:
             # serve default avatar image
             resp.content_type = 'image/png'
-            avatar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../static/default-avatar.png')
-            with open(avatar_path, "rb") as f:
-                avatar = f.read()
-            resp.stream = avatar
+            avatar_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static/default-avatar.png'))
+            resp.stream = open(avatar_path, 'rb')
+            resp.stream_len = os.path.getsize(avatar_path)
 
 
 class UserAvatarMediaResource(BaseResource):
