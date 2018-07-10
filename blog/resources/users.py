@@ -85,7 +85,6 @@ class UserAvatarResource(BaseResource):
         elif user.avatar_binary:
             # serve binary
             resp.content_type = user.avatar_binary.content_type
-            print(user.avatar_binary.content_type)
             resp.stream = user.avatar_binary
             resp.stream_len = len(user.avatar_binary.gridout.read())
         else:
