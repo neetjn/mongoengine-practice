@@ -111,7 +111,7 @@ def edit_user(user_id: str, user_form_dto: UserFormDto):
     user.save()
 
 
-def store_user_avatar(user_id: str, file: io.BufferedReader):
+def store_user_avatar(user_id: str, file: io.BufferedReader, content_type: str):
     """
     Store user avatar image.
 
@@ -119,11 +119,14 @@ def store_user_avatar(user_id: str, file: io.BufferedReader):
     :type user_id: str
     :param file: Avatar to store.
     :type file: BufferReader
+    :param content_type: Avatar filetype.
+    :type content_type: str
     """
     user = get_user(user_id)
     if user.avatar_href:
         user.avatar_href = None
-    user.avatar_binary = file
+    user.avatar_binary.delete()
+    user.avatar_binary.put(file, content_type=file_type)
     user.save()
 
 

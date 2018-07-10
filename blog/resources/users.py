@@ -1,5 +1,6 @@
 import datetime
 import jwt
+import magic
 import os
 import falcon
 from blog.constants import BLOG_JWT_SECRET_KEY
@@ -84,9 +85,9 @@ class UserAvatarResource(BaseResource):
         elif user.avatar_binary:
             # serve binary
             resp.content_type = user.avatar_binary.content_type
-            avatar = user.avatar_binary.read()
-            resp.stream = avatar
-            resp.stream_len = len(avatar)
+            print(user.avatar_binary.content_type)
+            resp.stream = user.avatar_binary
+            resp.stream_len = len(user.avatar_binary.gridout.read())
         else:
             # serve default avatar image
             resp.content_type = 'image/png'
@@ -109,10 +110,15 @@ class UserAvatarMediaResource(BaseResource):
             raise ResourceNotAvailableError()
         user = req.context.get('user')
         user_id = str(user.id)
-        avatar_img = req.get_param('file').file.read()
-        if len(avatar_img) > settings.rules.user.avatar_size:
+        if 'image' not in req.params:
             raise UserAvatarUploadError()
-        store_user_avatar(user_id, avatar_img)
+        avatar = req.params.get('image').file
+        avatar_stream = avatar.read()
+        # checking avatar stream kb against max size
+        if len(avatar_stream) / 1024 > settings.rules.user.avatar_size:
+            raise UserAvatarUploadError()
+        mime = magic.Magic(mime=True)
+        store_user_avatar(user_id, avatar, mime.from_buffer(avatar_stream))
 
 
 class UserResource(BaseResource):

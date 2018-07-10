@@ -9,8 +9,10 @@ from blog.resources.users import UserAuthenticationResource, UserRegistrationRes
 from blog.resources.service import ServiceDescriptionResource
 from blog.settings import settings
 
+from falcon_multipart.middleware import MultipartMiddleware
 
-api = falcon.API(middleware=[UserProcessor()])
+
+api = falcon.API(middleware=[UserProcessor(), MultipartMiddleware()])
 
 api.add_route(BlogSettingsResource.route, BlogSettingsResource())
 
