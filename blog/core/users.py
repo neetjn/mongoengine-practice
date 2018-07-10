@@ -126,7 +126,7 @@ def store_user_avatar(user_id: str, file: io.BufferedReader, content_type: str):
     if user.avatar_href:
         user.avatar_href = None
     user.avatar_binary.delete()
-    user.avatar_binary.put(file, content_type=file_type)
+    user.avatar_binary.put(file, content_type=content_type)
     user.save()
 
 
