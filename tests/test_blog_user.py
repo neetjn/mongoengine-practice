@@ -9,6 +9,10 @@ from tests.mocks.users import create_user
 from tests.utils import drop_database, normalize_href, random_string
 
 
+# TODO: create tests for s3 avatar upload using fakes3
+# TODO: create test for admin users and settings
+
+
 class BlogPostTests(TestCase):
 
     def setUp(self):
