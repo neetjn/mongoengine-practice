@@ -130,6 +130,21 @@ def store_user_avatar(user_id: str, file: io.BufferedReader, content_type: str):
     user.save()
 
 
+def delete_user_avatar(user_id: str):
+    """
+    Delete user avatar.
+
+    :param user_id: Identifier of target user.
+    :type user_id: str
+    """
+    user = get_user(user_id)
+    if user.avatar_href:
+        user.avatar_href = None
+    if user.avatar_binary:
+        user.avatar_binary.delete()
+    user.save()
+
+
 def get_user_posts(user_id: str, start: int = None, count: int = None):
     """
     Find all posts belonging to given user.

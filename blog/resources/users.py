@@ -1,4 +1,5 @@
 import datetime
+import io
 import jwt
 import magic
 import os
@@ -7,7 +8,7 @@ from blog.constants import BLOG_JWT_SECRET_KEY
 from blog.core.comments import comment_to_dto
 from blog.core.posts import get_user_liked_posts, post_to_dto
 from blog.core.users import authenticate, get_user, create_user, edit_user, \
-    user_to_dto, get_user_comments, get_user_posts, store_user_avatar
+    user_to_dto, get_user_comments, get_user_posts, store_user_avatar, delete_user_avatar
 from blog.db import User
 from blog.errors import ResourceNotAvailableError, UserAvatarUploadError
 from blog.hooks.users import is_logged_in, is_logged_out
@@ -23,6 +24,7 @@ from blog.utils.serializers import from_json, to_json
 class BLOG_USER_RESOURCE_HREF_REL(object):
 
     USER_AVATAR_UPLOAD = 'user-avatar-upload'
+    USER_AVATAR_DELETE = 'user-avatar-delete'
 
 
 def get_auth_jwt(user: User, host: str) -> str:
@@ -85,8 +87,9 @@ class UserAvatarResource(BaseResource):
         elif user.avatar_binary:
             # serve binary
             resp.content_type = user.avatar_binary.content_type
-            resp.stream = user.avatar_binary
-            resp.stream_len = len(user.avatar_binary.gridout.read())
+            avatar_stream = user.avatar_binary.gridout.read()
+            resp.stream = io.BytesIO(avatar_stream)
+            resp.stream_len = len(avatar_stream)
         else:
             # serve default avatar image
             resp.content_type = 'image/png'
@@ -99,7 +102,7 @@ class UserAvatarMediaResource(BaseResource):
 
     # TODO: create unit test for user avatar upload
 
-    route = '/v1/user/avatar/upload/'
+    route = '/v1/user/avatar/'
 
     @falcon.before(is_logged_in)
     def on_post(self, req, resp):
@@ -117,7 +120,17 @@ class UserAvatarMediaResource(BaseResource):
         if len(avatar_stream) / 1024 > settings.rules.user.avatar_size:
             raise UserAvatarUploadError()
         mime = magic.Magic(mime=True)
-        store_user_avatar(user_id, avatar, mime.from_buffer(avatar_stream))
+        store_user_avatar(user_id, avatar_stream, mime.from_buffer(avatar_stream))
+
+    @falcon.before(is_logged_in)
+    def on_delete(self, req, resp):
+        """Delete existing user avatar, will reference default."""
+        resp.status = falcon.HTTP_204
+        if not settings.user.allow_avatar_capability:
+            raise ResourceNotAvailableError()
+        user = req.context.get('user')
+        user_id = str(user.id)
+        delete_user_avatar(user_id)
 
 
 class UserResource(BaseResource):
@@ -143,6 +156,8 @@ class UserResource(BaseResource):
         # no need to construct url, pull from request
         user.href = req.uri
         user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
+                                  href=UserAvatarMediaResource.url_to(req.netloc)),
+                          LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
                                   href=UserAvatarMediaResource.url_to(req.netloc))]
         # if user avatar capabilities present, provide avatar image
         if settings.user.allow_avatar_capability:
