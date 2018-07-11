@@ -43,3 +43,12 @@ class BlogPostTests(TestCase):
         self.assertEqual(user_profile_res.json.get('email'), user_profile.email)
         self.assertEqual(user_profile_res.json.get('fullName'), user_profile.full_name)
         self.assertEqual(user_profile_res.json.get('avatarHref'), user_profile.avatar_href)
+
+    def test_user_avatar_disabled(self):
+        """Verify user avatar functionality disabled with setting."""
+        user_res = self.simulate_get(UserResource.route, headers=self.headers)
+
+
+    def test_user_avatar_resource(self):
+        """Ensure a user can upload and delete an avatar."""
+        pass
