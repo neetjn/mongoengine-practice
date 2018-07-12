@@ -152,12 +152,14 @@ with open('blog/settings.yml', 'r') as data:
     settings = s.object
 
 
-def save_settings(settings_dto: Settings):
+def save_settings(settings_dto: Settings, write_to_config=True: bool):
     """
     Saves local settings given provided settings object.
 
     :param settings_dto: Settings data transfer object.
     :type settings_dto: Settings
+    :param write_to_config: Write settings to config on disk.
+    :type write_to_config: bool
     """
     global settings
 
@@ -192,7 +194,8 @@ def save_settings(settings_dto: Settings):
     settings.rules.comment.content_min_char = settings_dto.rules.comment.content_min_char
     settings.rules.comment.content_max_char = settings_dto.rules.comment.content_max_char
 
-    with open('blog/settings.yml', 'w') as data:
-        s = SettingsSerializer(object=settings)
-        s.validate()
-        data.write(yaml.dump(s.data, default_flow_style=False))
+    if write_to_config:
+        with open('blog/settings.yml', 'w') as data:
+            s = SettingsSerializer(object=settings)
+            s.validate()
+            data.write(yaml.dump(s.data, default_flow_style=False))

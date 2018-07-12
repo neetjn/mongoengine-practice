@@ -1,10 +1,11 @@
+import copy
 import io
 import os
 from falcon.testing import TestCase
 from blog.blog import api
 from blog.mediatypes import UserFormDtoSerializer
 from blog.resources.users import UserResource, BLOG_USER_RESOURCE_HREF_REL
-from blog.settings import settings, SettingsSerializer
+from blog.settings import settings, save_settings, SettingsSerializer
 from blog.utils.serializers import to_json
 from tests.generators.users import generate_user_form_dto
 from tests.mocks.users import create_user
@@ -71,6 +72,31 @@ class BlogPostTests(TestCase):
         self.assertEqual(user_profile_res.json.get('username'), user_res.json.get('username'))
         self.assertEqual(user_profile_res.json.get('email'), user_profile.email)
         self.assertEqual(user_profile_res.json.get('fullName'), user_profile.full_name)
+
+    def test_user_avatar_disabled(self):
+        """Ensure user avatar resources are not accessible when the feature is disabled."""
+        global settings
+        settings.user.allow_avatar_capability = False
+        save_settings(settings, False)
+        user_res = self.simulate_get(UserResource.route, headers=self.headers)
+        avatar_href = user_res.json.get('avatarHref')
+        # verify avatar cannot be fetched
+        self.assertEqual(avatar_href, '')
+        user_links = user_res.json.get('links')
+        # can currently double as both upload and delete, may be subject to change
+        user_avatar_resource_href = normalize_href(
+            find_link_href_json(user_links, BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD))
+        avatar_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'blog/static/default-avatar.png'))
+        avatar_binary = open(avatar_path, 'rb').read()
+        body, headers = create_multipart_form(avatar_binary, 'image', avatar_path, 'image/png')
+        upload_headers = self.headers.copy()
+        upload_headers.update(headers)
+        # verify avatar can be uploaded
+        avatar_res = self.simulate_post(
+            user_avatar_resource_href,
+            headers=upload_headers,
+            body=body)
+        self.assertEqual(avatar_res.status_code, 403)
 
     def test_user_avatar_resource(self):
         """Ensure a user can upload and delete an avatar."""
