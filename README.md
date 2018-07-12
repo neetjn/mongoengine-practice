@@ -101,8 +101,8 @@ The py-blog project ships with (but is not limited to) the following:
 * [ ] Email verification
 * [x] User Roles (blogger, moderator, admin)
 * [ ] User news letters
-* [ ] User avatars and avatar storage
-* [ ] AWS S3 support for media management
+* [X] User avatars and avatar storage
+* [X] AWS S3 support for media management
 * [x] Live blog settings management
 * [x] Creating, deleting, liking, "viewing" posts
 * [x] Fetching all public posts (with pagination)
