@@ -91,11 +91,14 @@ class BlogPostTests(TestCase):
         body, headers = create_multipart_form(avatar_binary, 'image', avatar_path, 'image/png')
         upload_headers = self.headers.copy()
         upload_headers.update(headers)
-        # verify avatar can be uploaded
+        # verify avatar cannot be uploaded
         avatar_res = self.simulate_post(
             user_avatar_resource_href,
             headers=upload_headers,
             body=body)
+        self.assertEqual(avatar_res.status_code, 403)
+        # verify avatar cannot be deleted
+        avatar_res = self.simulate_delete(user_avatar_resource_href, headers=self.headers)
         self.assertEqual(avatar_res.status_code, 403)
 
     def test_user_avatar_resource(self):

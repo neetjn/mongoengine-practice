@@ -152,7 +152,7 @@ with open('blog/settings.yml', 'r') as data:
     settings = s.object
 
 
-def save_settings(settings_dto: Settings, write_to_config=True: bool):
+def save_settings(settings_dto: Settings, write_to_config: bool = True):
     """
     Saves local settings given provided settings object.
 
