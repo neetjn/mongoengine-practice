@@ -1,3 +1,5 @@
+import io
+import os
 from falcon.testing import TestCase
 from blog.blog import api
 from blog.mediatypes import UserFormDtoSerializer
@@ -11,6 +13,30 @@ from tests.utils import drop_database, normalize_href, random_string, find_link_
 
 # TODO: create tests for s3 avatar upload using fakes3
 # TODO: create test for admin users and settings, add avatar disable test there
+
+
+def create_multipart_form(data: bytes, fieldname: str, filename: str, content_type: str):
+    """
+    Basic emulation of a browser's multipart file upload
+    """
+    boundry = '----WebKitFormBoundary' + random_string(16)
+    buff = io.BytesIO()
+    buff.write(b'--')
+    buff.write(boundry.encode())
+    buff.write(b'\r\n')
+    buff.write(('Content-Disposition: form-data; name="%s"; filename="%s"' % \
+               (fieldname, filename)).encode())
+    buff.write(b'\r\n')
+    buff.write(('Content-Type: %s' % content_type).encode())
+    buff.write(b'\r\n')
+    buff.write(b'\r\n')
+    buff.write(data)
+    buff.write(b'\r\n')
+    buff.write(boundry.encode())
+    buff.write(b'--\r\n')
+    headers = {'Content-Type': 'multipart/form-data; boundary=%s' %boundry}
+    headers['Content-Length'] = str(buff.tell())
+    return buff.getvalue(), headers
 
 
 class BlogPostTests(TestCase):
@@ -51,14 +77,26 @@ class BlogPostTests(TestCase):
         """Ensure a user can upload and delete an avatar."""
         user_res = self.simulate_get(UserResource.route, headers=self.headers)
         avatar_res = self.simulate_get(normalize_href(user_res.json.get('avatarHref')))
+        # verify default avatar is served as expected
+        self.assertEqual(avatar_res.status_code, 200)
         self.assertEqual(avatar_res.headers.get('content-type'), 'image/png')
         self.assertEqual(len(avatar_res.content), 6957)
         user_links = user_res.json.get('links')
         # can currently double as both upload and delete, may be subject to change
         user_avatar_resource_href = find_link_href_json(user_links, BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD)
+        avatar_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'blog/static/default-avatar.png'))
+        avatar_binary = open(avatar_path, 'rb').read()
+        body, headers = create_multipart_form(avatar_binary, 'image', avatar_path, 'image/png')
         upload_headers = self.headers.copy()
-        upload_headers.setdefault('Content-Type', 'multipart/form-data')
-        avatar_res = self.simulate_post(normalize_href(user_avatar_resource_href))
-        print(avatar_res)
+        upload_headers.update(headers)
+        # verify avatar can be uploaded
+        avatar_res = self.simulate_post(
+            normalize_href(user_avatar_resource_href),
+            headers=upload_headers,
+            body=body)
+        self.assertEqual(avatar_res.status_code, 201)
+        # verify uploaded avatar is served as expected
+        avatar_res = self.simulate_get(normalize_href(user_res.json.get('avatarHref')))
+        self.assertEqual(len(avatar_res.content), len(avatar_binary))
         raise RuntimeError()
         # avatar_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static/default-avatar.png'))
