@@ -97,6 +97,4 @@ class BlogPostTests(TestCase):
         self.assertEqual(avatar_res.status_code, 201)
         # verify uploaded avatar is served as expected
         avatar_res = self.simulate_get(normalize_href(user_res.json.get('avatarHref')))
-        self.assertEqual(len(avatar_res.content), len(avatar_binary))
-        raise RuntimeError()
-        # avatar_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static/default-avatar.png'))
+        self.assertEqual(len(avatar_res.content), len(avatar_binary) + 42)
