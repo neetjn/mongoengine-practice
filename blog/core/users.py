@@ -19,7 +19,7 @@ aws_session = Session(
 s3_resource = aws_session.resource('s3', endpoint_url='http://localhost:4569' if BLOG_TEST else None)
 s3_bucket = s3_resource.Bucket(BLOG_AWS_S3_BUCKET)
 
-s3_client = session.client('s3', endpoint_url='http://localhost:4569' if BLOG_TEST else None)
+s3_client = aws_session.client('s3', endpoint_url='http://localhost:4569' if BLOG_TEST else None)
 
 
 def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
@@ -135,6 +135,7 @@ def store_user_avatar(user_id: str, file: io.BufferedReader, content_type: str):
     :type content_type: str
     """
     user = get_user(user_id)
+    user.avatar_binary.delete()
     if settings.user.upload_avatar_s3:
         object_key = hashlib.md5(file).hexdigest()
         s3_bucket.put_object(
@@ -151,7 +152,6 @@ def store_user_avatar(user_id: str, file: io.BufferedReader, content_type: str):
     else:
         if user.avatar_href:
             user.avatar_href = None
-        user.avatar_binary.delete()
         user.avatar_binary.put(file, content_type=content_type)
     user.save()
 

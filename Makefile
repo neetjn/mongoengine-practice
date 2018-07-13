@@ -27,7 +27,7 @@ test:
                ${PRODUCT_TEST_IMAGE}
 
 test-clean:
-	docker rm -f test-${PRODUCT_NAME}-mongodb test-${PRODUCT_NAME}-instance
+	docker rm -f test-${PRODUCT_NAME}-mongodb test-${PRODUCT_NAME}-fakes3 test-${PRODUCT_NAME}-instance
 
 publish: build
 	docker push ${PRODUCT_IMAGE}
