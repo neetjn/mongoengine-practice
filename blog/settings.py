@@ -40,7 +40,7 @@ class UserSettingsSerializer(Serializer):
     allow_avatar_capability = fields.BooleanField(required=True)
     allow_manual_registration = fields.BooleanField(required=True)
     require_email_verification = fields.BooleanField(required=True)
-    upload_avatar_s3 = fields.BooleanField(required-True)
+    upload_avatar_s3 = fields.BooleanField(required=True)
 
     class Meta(object):
         model = UserSettings

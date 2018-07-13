@@ -1,15 +1,25 @@
-import boto3
 import datetime
+import hashlib
 import io
 import time
+from boto3 import Session
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from mongoengine.queryset.visitor import Q
-from blog.constants BLOG_AWS_ACCESS_KEY_ID, BLOG_AWS_SECRET_ACCESS_KEY, BLOG_AWS_S3_BUCKET
+from blog.constants import BLOG_TEST, BLOG_AWS_ACCESS_KEY_ID, BLOG_AWS_SECRET_ACCESS_KEY, BLOG_AWS_S3_BUCKET
 from blog.db import User, FailedLogin, Comment, Post
 from blog.errors import UserNotFoundError, UserExistsError, UserForbiddenRequestError
 from blog.mediatypes import UserProfileDto, UserAuthDto, UserFormDto, UserRoles
 from blog.settings import settings
 from blog.utils.crypto import hash_password, compare_passwords, encrypt_content, decrypt_content
+
+
+aws_session = Session(
+    aws_access_key_id=BLOG_AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=BLOG_AWS_SECRET_ACCESS_KEY)
+s3_resource = aws_session.resource('s3', endpoint_url='http://localhost:4569' if BLOG_TEST else None)
+s3_bucket = s3_resource.Bucket(BLOG_AWS_S3_BUCKET)
+
+s3_client = session.client('s3', endpoint_url='http://localhost:4569' if BLOG_TEST else None)
 
 
 def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
@@ -125,10 +135,24 @@ def store_user_avatar(user_id: str, file: io.BufferedReader, content_type: str):
     :type content_type: str
     """
     user = get_user(user_id)
-    if user.avatar_href:
-        user.avatar_href = None
-    user.avatar_binary.delete()
-    user.avatar_binary.put(file, content_type=content_type)
+    if settings.user.upload_avatar_s3:
+        object_key = hashlib.md5(file).hexdigest()
+        s3_bucket.put_object(
+            ACL='public-read',
+            Body=file,
+            ContentType=content_type,
+            Key=object_key)
+        user.avatar_href = s3_client.generate_presigned_url(
+            ClientMethod='get_object',
+            Params={
+                'Key': object_key,
+                'Bucket': BLOG_AWS_S3_BUCKET
+            })
+    else:
+        if user.avatar_href:
+            user.avatar_href = None
+        user.avatar_binary.delete()
+        user.avatar_binary.put(file, content_type=content_type)
     user.save()
 
 
