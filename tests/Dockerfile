@@ -15,4 +15,4 @@ ADD . /opt/app
 RUN set -ex && pipenv install --system
 RUN set -ex && pipenv install --dev --system
 # move app to working directory and start
-CMD pytest --cov blog.core tests
+CMD BLOG_TEST=true pytest --cov blog.core tests

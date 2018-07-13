@@ -12,9 +12,6 @@ from tests.mocks.users import create_user
 from tests.utils import drop_database, normalize_href, random_string, find_link_href_json
 
 
-# TODO: create tests for s3 avatar upload using fakes3
-
-
 def create_multipart_form(data: bytes, fieldname: str, filename: str, content_type: str):
     """
     Basic emulation of a browser's multipart file upload
@@ -114,9 +111,9 @@ class BlogPostTests(TestCase):
         # can currently double as both upload and delete, may be subject to change
         user_avatar_resource_href = normalize_href(
             find_link_href_json(user_links, BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD))
-        avatar_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'blog/static/default-avatar.png'))
+        avatar_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/resources/afro.jpg'))
         avatar_binary = open(avatar_path, 'rb').read()
-        body, headers = create_multipart_form(avatar_binary, 'image', avatar_path, 'image/png')
+        body, headers = create_multipart_form(avatar_binary, 'image', avatar_path, 'image/jpeg')
         upload_headers = self.headers.copy()
         upload_headers.update(headers)
         # verify avatar can be uploaded
@@ -128,7 +125,7 @@ class BlogPostTests(TestCase):
         # verify uploaded avatar is served as expected
         avatar_res = self.simulate_get(avatar_href)
         self.assertEqual(avatar_res.status_code, 200)
-        self.assertEqual(avatar_res.headers.get('content-type'), 'image/png')
+        self.assertEqual(avatar_res.headers.get('content-type'), 'image/jpeg')
         self.assertEqual(len(avatar_res.content), len(avatar_binary) + 42)
         # verify avatar is deleted as expected
         avatar_res = self.simulate_delete(user_avatar_resource_href, headers=self.headers)
@@ -140,4 +137,26 @@ class BlogPostTests(TestCase):
 
     def test_user_avatar_resource_s3(self):
         """Ensure a user can upload an avatar via s3 (this test was designed for fakes3)"""
-        pass
+        global settings
+        settings.user.upload_avatar_s3 = True
+        save_settings(settings, False)
+        user_res = self.simulate_get(UserResource.route, headers=self.headers)
+        user_links = user_res.json.get('links')
+        # can currently double as both upload and delete, may be subject to change
+        user_avatar_resource_href = normalize_href(
+            find_link_href_json(user_links, BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD))
+        avatar_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/resources/afro.jpg'))
+        avatar_binary = open(avatar_path, 'rb').read()
+        body, headers = create_multipart_form(avatar_binary, 'image', avatar_path, 'image/jpf')
+        upload_headers = self.headers.copy()
+        upload_headers.update(headers)
+        # verify avatar can be uploaded
+        avatar_res = self.simulate_post(
+            user_avatar_resource_href,
+            headers=upload_headers,
+            body=body)
+        self.assertEqual(avatar_res.status_code, 201)
+        # verify avatar was stored in s3
+        user_res = self.simulate_get(UserResource.route, headers=self.headers)
+        avatar_href = user_res.json.get('avatarHref')
+        self.assertIn('http://localhost:4569/pyblog/', avatar_href)
