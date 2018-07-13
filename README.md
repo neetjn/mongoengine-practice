@@ -144,6 +144,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
   * **allow_avatar_capability**: Allow avatars to be uploaded and served.
   * **allow_manual_registration**: Allow manual registration for new users, enabled registration endpoint.
   * **require_email_verification**: Enforce email verification for new users.
+  * **upload_avatar_s3**: Upload avatar to s3 instead of mongodb gridfs storage.
 * **rules**
   * **user**
     * **avatar_size**: Maximum size in kb for uploaded user avatars.

@@ -33,12 +33,14 @@ class UserSettings(object):
         self.allow_avatar_capability = False
         self.allow_manual_registration = False
         self.require_email_verification = False
+        self.upload_avatar_s3 = False
 
 
 class UserSettingsSerializer(Serializer):
     allow_avatar_capability = fields.BooleanField(required=True)
     allow_manual_registration = fields.BooleanField(required=True)
     require_email_verification = fields.BooleanField(required=True)
+    upload_avatar_s3 = fields.BooleanField(required-True)
 
     class Meta(object):
         model = UserSettings
@@ -176,6 +178,7 @@ def save_settings(settings_dto: Settings, write_to_config: bool = True):
     settings.user.allow_avatar_capability = settings_dto.user.allow_avatar_capability
     settings.user.allow_manual_registration = settings_dto.user.allow_manual_registration
     settings.user.require_email_verification = settings_dto.user.require_email_verification
+    settings.user.upload_avatar_s3 = settings_dto.user.upload_avatar_s3
 
     # user rules
     settings.rules.user.avatar_size = settings_dto.rules.user.avatar_size

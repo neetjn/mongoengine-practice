@@ -26,3 +26,4 @@ user:
   allow_avatar_capability: true
   allow_manual_registration: true
   require_email_verification: false
+  upload_avatar_s3: false

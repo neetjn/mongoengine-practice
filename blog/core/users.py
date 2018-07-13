@@ -1,8 +1,10 @@
+import boto3
 import datetime
 import io
 import time
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from mongoengine.queryset.visitor import Q
+from blog.constants BLOG_AWS_ACCESS_KEY_ID, BLOG_AWS_SECRET_ACCESS_KEY, BLOG_AWS_S3_BUCKET
 from blog.db import User, FailedLogin, Comment, Post
 from blog.errors import UserNotFoundError, UserExistsError, UserForbiddenRequestError
 from blog.mediatypes import UserProfileDto, UserAuthDto, UserFormDto, UserRoles
