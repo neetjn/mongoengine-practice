@@ -119,6 +119,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
 
 **Constants** (Environmental)
 
+* **BLOG_TEST**: Provision platform for test environments.
 * **BLOG_HOST**: Host blog will be served on for Gunicorn.
 * **BLOG_PORT**: Port blog will be served on for Gunicorn.
 * **BLOG_DB_HOST**: Blog mongodb database host.
@@ -127,6 +128,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
 
 > Note: If AWS credentials are not provided, api will alternatively store avatars and other media as base64 encoded binaries in mongodb.
 
+* **BLOG_FAKE_S3_HOST**: fakes3 host for blog to use in test mode.
 * **BLOG_AWS_ACCESS_KEY_ID**: AWS access key id for s3.
 * **BLOG_AWS_SECRET_ACCESS_KEY**: AWS secret access key for s3.
 * **BLOG_AWS_S3_BUCKET**: AWS s3 bucket for storing avatars.

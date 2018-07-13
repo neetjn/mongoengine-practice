@@ -3,6 +3,7 @@ import io
 import os
 from falcon.testing import TestCase
 from blog.blog import api
+from blog.constants import BLOG_FAKE_S3_HOST, BLOG_AWS_S3_BUCKET
 from blog.mediatypes import UserFormDtoSerializer
 from blog.resources.users import UserResource, BLOG_USER_RESOURCE_HREF_REL
 from blog.settings import settings, save_settings, SettingsSerializer
@@ -147,7 +148,7 @@ class BlogPostTests(TestCase):
             find_link_href_json(user_links, BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD))
         avatar_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/resources/afro.jpg'))
         avatar_binary = open(avatar_path, 'rb').read()
-        body, headers = create_multipart_form(avatar_binary, 'image', avatar_path, 'image/jpf')
+        body, headers = create_multipart_form(avatar_binary, 'image', avatar_path, 'image/jpg')
         upload_headers = self.headers.copy()
         upload_headers.update(headers)
         # verify avatar can be uploaded
@@ -159,4 +160,4 @@ class BlogPostTests(TestCase):
         # verify avatar was stored in s3
         user_res = self.simulate_get(UserResource.route, headers=self.headers)
         avatar_href = user_res.json.get('avatarHref')
-        self.assertIn('http://localhost:4569/pyblog/', avatar_href)
+        self.assertIn(f'http://{BLOG_FAKE_S3_HOST}:4569/{BLOG_AWS_S3_BUCKET}/', avatar_href)
