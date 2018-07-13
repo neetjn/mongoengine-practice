@@ -18,7 +18,7 @@ BLOG_PORT = os.environ.get('BLOG_PORT', 8000)
 BLOG_DB_HOST = os.environ.get('BLOG_DB_HOST', 'mongodb://127.0.0.1:27017/py-blog')
 
 # aws credentials for s3 bucket storage
-BLOG_FAKE_S3_HOST = os.environ.get('BLOG_FAKE_S3_HOST', 'http://localhost:4569')
+BLOG_FAKE_S3_HOST = os.environ.get('BLOG_FAKE_S3_HOST', 'localhost:4569')
 BLOG_AWS_ACCESS_KEY_ID = os.environ.get('', '')
 BLOG_AWS_SECRET_ACCESS_KEY = os.environ.get('', '')
 BLOG_AWS_S3_BUCKET = os.environ.get('', 'pyblog')
