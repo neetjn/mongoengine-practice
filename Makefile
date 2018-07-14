@@ -24,6 +24,7 @@ test:
                --link test-${PRODUCT_NAME}-mongodb:mongo \
 							 --link test-${PRODUCT_NAME}-fakes3:fakes3.local \
                -e BLOG_DB_HOST=mongodb://mongo:27017/py-blog \
+							 -e BLOG_FAKE_S3_HOST=fakes3.local:4569 \
                ${PRODUCT_TEST_IMAGE}
 
 test-clean:
