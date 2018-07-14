@@ -101,8 +101,8 @@ The py-blog project ships with (but is not limited to) the following:
 * [ ] Email verification
 * [x] User Roles (blogger, moderator, admin)
 * [ ] User news letters
-* [ ] User avatars and avatar storage
-* [ ] AWS S3 support for media management
+* [X] User avatars and avatar storage
+* [X] AWS S3 support for media management
 * [x] Live blog settings management
 * [x] Creating, deleting, liking, "viewing" posts
 * [x] Fetching all public posts (with pagination)
@@ -119,6 +119,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
 
 **Constants** (Environmental)
 
+* **BLOG_TEST**: Provision platform for test environments.
 * **BLOG_HOST**: Host blog will be served on for Gunicorn.
 * **BLOG_PORT**: Port blog will be served on for Gunicorn.
 * **BLOG_DB_HOST**: Blog mongodb database host.
@@ -127,6 +128,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
 
 > Note: If AWS credentials are not provided, api will alternatively store avatars and other media as base64 encoded binaries in mongodb.
 
+* **BLOG_FAKE_S3_HOST**: fakes3 host for blog to use in test mode.
 * **BLOG_AWS_ACCESS_KEY_ID**: AWS access key id for s3.
 * **BLOG_AWS_SECRET_ACCESS_KEY**: AWS secret access key for s3.
 * **BLOG_AWS_S3_BUCKET**: AWS s3 bucket for storing avatars.
@@ -141,10 +143,13 @@ This project is highly configurable, all blog constants can be found in `blog/co
   * **view_time_delay**: Time in seconds wait before processing another post view.
   * **search_time_delay**: Time in seconds to wait in between each post search request.
 * **user**
+  * **allow_avatar_capability**: Allow avatars to be uploaded and served.
   * **allow_manual_registration**: Allow manual registration for new users, enabled registration endpoint.
   * **require_email_verification**: Enforce email verification for new users.
+  * **upload_avatar_s3**: Upload avatar to s3 instead of mongodb gridfs storage.
 * **rules**
   * **user**
+    * **avatar_size**: Maximum size in kb for uploaded user avatars.
     * **username_min_char**: Minimum number of characters for user names.
     * **username_max_char**: Maximum number of characters for user names.
     * **name_min_char**: Minimum number of characters for post titles.
@@ -218,14 +223,16 @@ For running the test suite with pytest:
 
 ```bash
 # without coverage
-pipenv run pytest tests
+BLOG_TEST=TRUE pipenv run pytest tests
 # with coverage
-pipenv run pytest --cov blog.core tests
+BLOG_TEST=TRUE pipenv run pytest --cov blog.core tests
 ```
 
-## Deployment
+Alternatively, you may run your tests within a docker container using:
 
-TODO: cover different deployment strategies and how to use with heroku or aws ec2.
+```bash
+make build test test-clean
+```
 
 ## Contributors
 

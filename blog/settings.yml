@@ -15,6 +15,7 @@ rules:
     title_max_char: 124
     title_min_char: 3
   user:
+    avatar_size: 2240
     name_max_char: 20
     name_min_char: 3
     password_max_char: 25
@@ -22,5 +23,7 @@ rules:
     username_max_char: 20
     username_min_char: 3
 user:
+  allow_avatar_capability: true
   allow_manual_registration: true
   require_email_verification: false
+  upload_avatar_s3: false

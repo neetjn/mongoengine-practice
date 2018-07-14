@@ -280,6 +280,7 @@ class UserProfileDto(object):
         self.username = kwargs.get('username', '')
         self.email = kwargs.get('email', '')
         self.full_name = kwargs.get('full_name', '')
+        self.avatar_href = kwargs.get('avatar_href', '')
         self.posts = kwargs.get('posts', [])
         self.comments = kwargs.get('comments', [])
         self.liked_posts = kwargs.get('liked_posts', [])
@@ -307,6 +308,7 @@ class UserProfileDtoSerializer(Serializer):
             max=settings.rules.user.name_max_char
         )
     ])
+    avatar_href = fields.StringField(name='avatarHref')
     email = fields.StringField(required=True, validators=[NotEmptyValidator(), EmailValidator()])
     posts = fields.ListField(fields.ObjectField(PostDtoSerializer))
     comments = fields.ListField(fields.ObjectField(CommentDtoSerializer))

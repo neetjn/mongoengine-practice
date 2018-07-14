@@ -1,23 +1,16 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [dev-packages]
-
 pytest-cov = "*"
 pylint = "*"
 
-
 [requires]
-
 python_version = "3.6"
 
-
 [packages]
-
 mongoengine = "*"
 "r2dto" = "*"
 "jinja2" = "*"
@@ -27,3 +20,5 @@ falcon = "*"
 gunicorn = "*"
 pycrypto = "*"
 pyyaml = "*"
+python-magic = "*"
+falcon-multipart = "*"

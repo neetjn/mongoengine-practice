@@ -17,8 +17,8 @@ def create_user(instance, **kwargs) -> str:
     global settings
     original_settings = copy.deepcopy(settings)
     settings.user.allow_manual_registration = True
-    save_settings(settings)
-    user_form_dto = generate_user_form_dto()
+    save_settings(settings, False)
+    user_form_dto = generate_user_form_dto(**kwargs)
     res = instance.simulate_post(
         UserRegistrationResource.route,
         body=to_json(UserFormDtoSerializer, user_form_dto))
