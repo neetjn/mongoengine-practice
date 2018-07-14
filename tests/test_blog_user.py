@@ -160,4 +160,4 @@ class BlogPostTests(TestCase):
         # verify avatar was stored in s3
         user_res = self.simulate_get(UserResource.route, headers=self.headers)
         avatar_href = user_res.json.get('avatarHref')
-        self.assertIn(f'http://{BLOG_FAKE_S3_HOST}:4569/{BLOG_AWS_S3_BUCKET}/', avatar_href)
+        self.assertIn(f'http://{BLOG_FAKE_S3_HOST}/{BLOG_AWS_S3_BUCKET}/', avatar_href)
