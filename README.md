@@ -223,9 +223,9 @@ For running the test suite with pytest:
 
 ```bash
 # without coverage
-pipenv run pytest tests
+BLOG_TEST=TRUE pipenv run pytest tests
 # with coverage
-pipenv run pytest --cov blog.core tests
+BLOG_TEST=TRUE pipenv run pytest --cov blog.core tests
 ```
 
 Alternatively, you may run your tests within a docker container using:
@@ -233,10 +233,6 @@ Alternatively, you may run your tests within a docker container using:
 ```bash
 make build test test-clean
 ```
-
-## Deployment
-
-TODO: cover different deployment strategies and how to use with heroku or aws ec2.
 
 ## Contributors
 
