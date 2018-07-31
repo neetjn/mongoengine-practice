@@ -1,4 +1,5 @@
 import falcon
+from blog.errors import ErrorHandler
 from blog.middleware.users import UserProcessor
 from blog.resources.comments import CommentResource
 from blog.resources.admin import BlogSettingsResource
@@ -9,13 +10,17 @@ from blog.resources.users import UserAuthenticationResource, UserRegistrationRes
 from blog.resources.service import ServiceDescriptionResource
 from blog.settings import settings
 
+from r2dto import ValidationError
 from falcon_multipart.middleware import MultipartMiddleware
 
 
 api = falcon.API(middleware=[UserProcessor(), MultipartMiddleware()])
 
-api.add_route(BlogSettingsResource.route, BlogSettingsResource())
+api.add_error_handler(Exception, ErrorHandler.unexpected)
+api.add_error_handler(falcon.HTTPError, ErrorHandler.http)
+api.add_error_handler(falcon.HTTPStatus, ErrorHandler.http)
 
+api.add_route(BlogSettingsResource.route, BlogSettingsResource())
 api.add_route(CommentResource.route, CommentResource())
 api.add_route(PostResource.route, PostResource())
 api.add_route(PostCollectionResource.route, PostCollectionResource())
