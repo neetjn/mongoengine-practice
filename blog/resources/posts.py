@@ -141,7 +141,7 @@ class PostCollectionResource(BaseResource):
         """
         Fetch grid view for all post resources.
 
-        Note: This endpoint support pagination, pagination arguments must be provided via query args.
+        Note: This endpoint supports pagination, pagination arguments must be provided via query args.
         """
         resp.status = falcon.HTTP_200
         post_collection_dto = PostCollectionDto(posts=[
