@@ -60,25 +60,37 @@ class CommentResource(BaseResource):
     def on_get(self, req, resp, comment_id):
         """Fetch single comment resource."""
         resp.status = falcon.HTTP_200
-        comment = get_comment(comment_id)
-        comment_dto = comment_to_dto(comment, href=req.uri, links=get_comment_links(req, comment))
-        resp.body = to_json(CommentDtoSerializer, comment_dto)
+        cache = req.context.get('cache')
+        if cache.get(f'comment-{comment_id}'):
+            resp.body = cache.get(f'comment-{comment_id}')
+        else:
+            comment = get_comment(comment_id)
+            comment_dto = comment_to_dto(comment, href=req.uri, links=get_comment_links(req, comment))
+            resp.body = to_json(CommentDtoSerializer, comment_dto)
+            # store requested comment in redis
+            cache.set(f'comment-{comment_id}', resp.body)
 
     @falcon.before(is_logged_in)
     def on_put(self, req, resp, comment_id):
         """Update single comment resource."""
         resp.status = falcon.HTTP_204
+        cache = req.context.get('cache')
         user = req.context.get('user')
         if not user_has_comment_access(user, comment_id):
             raise UnauthorizedRequestError()
         payload = req.stream.read()
         edit_comment(comment_id, from_json(CommentFormDtoSerializer, payload))
+        # delete cached comment
+        cache.delete(f'comment-{comment_id}')
 
     @falcon.before(is_logged_in)
     def on_delete(self, req, resp, comment_id):
         """Delete single comment resource."""
         resp.status = falcon.HTTP_204
+        cache = req.context.get('cache')
         user = req.context.get('user')
         if not user_has_comment_access(user, comment_id):
             raise UnauthorizedRequestError()
         delete_comment(comment_id)
+        # delete cached comment
+        cache.delete(f'comment-{comment_id}')
