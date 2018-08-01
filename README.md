@@ -112,6 +112,7 @@ The py-blog project ships with (but is not limited to) the following:
 * [x] Searching for posts by title, description, content, and author (with cooldown and pagination)
 * [x] Creating, deleting, liking post comments
 * [x] Comment content encryption (database level)
+* [x] Resource caching.
 
 ## Configuration
 
@@ -122,6 +123,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
 * **BLOG_TEST**: Provision platform for test environments.
 * **BLOG_HOST**: Host blog will be served on for Gunicorn.
 * **BLOG_PORT**: Port blog will be served on for Gunicorn.
+* **BLOG_REDIS_HOST**: Blog redis host for caching.
 * **BLOG_DB_HOST**: Blog mongodb database host.
 * **BLOG_CONTENT_KEY**: Key used to encrypt/decrypt blog content.
 * **BLOG_JWT_SECRET_KEY**: Key used to encrypt/decrypt session JWT.
