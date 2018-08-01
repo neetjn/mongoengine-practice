@@ -155,14 +155,16 @@ class PostCollectionResource(BaseResource):
         Note: This endpoint supports pagination, pagination arguments must be provided via query args.
         """
         resp.status = falcon.HTTP_200
+        page_start = req.params.get('start')
+        page_count = req.params.get('count')
         cache = req.context.get('cache')
-        cache_key = f'post-collection;{req.params.get('start')};{req.params.get('count')}'
+        cache_key = f'post-collection;{page_start};{page_count}'
         if cache.get(cache_key):
             resp.body = cache.get(cache_key)
         else:
             post_collection_dto = PostCollectionDto(posts=[
                 post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
-                for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
+                for post in get_posts(start=page_start, count=page_count)])
             resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
             # cache post collection in redis
             cache.set(cache_key, resp.body)
@@ -172,6 +174,7 @@ class PostCollectionResource(BaseResource):
         """Create a new post resource."""
         resp.status = falcon.HTTP_201
         payload = req.stream.read()
+        cache = req.context.get('cache')
         user = req.context.get('user')
         create_post(user.id, from_json(PostFormDtoSerializer, payload))
         # link to grid view
