@@ -141,12 +141,12 @@ class UserResource(BaseResource):
     def on_get(self, req, resp):
         """Fetch user information for current session."""
         resp.status = falcon.HTTP_200
+        user = req.context.get('user')
+        user_id = str(user.id)
         cache = req.context.get('cache')
-        if cache.get('user'):
-            resp.body = cache.get('user')
+        if cache.get(f'user-{user_id}'):
+            resp.body = cache.get(f'user-{user_id}')
         else:
-            user = req.context.get('user')
-            user_id = str(user.id)
             user_dto = user_to_dto(user)
             user_dto.posts = [
                 post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
@@ -167,14 +167,17 @@ class UserResource(BaseResource):
             if settings.user.allow_avatar_capability:
                 user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
             resp.body = to_json(UserProfileDtoSerializer, user_dto)
-            cache.set('user', resp.body)
+            # cache user payload in redis
+            cache.set(f'user-{user_id}', resp.body)
 
     @falcon.before(is_logged_in)
     def on_put(self, req, resp):
         """Updates user resource for current session."""
         resp.status = falcon.HTTP_204
         payload = req.stream.read()
-        cache = req.context.get('cache')
-        cache.delete('user')
         user = req.context.get('user')
+        user_id = str(user.id)
+        cache = req.context.get('cache')
         edit_user(user.id, from_json(UserFormDtoSerializer, payload))
+        # delete cached payload on change
+        cache.delete(f'user-{user_id}')

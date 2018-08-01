@@ -95,21 +95,28 @@ class PostResource(BaseResource):
     def on_get(self, req, resp, post_id):
         """Fetch single post resource."""
         resp.status = falcon.HTTP_200
-        post = get_post(post_id)
-        post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
-        comments = get_post_comments(post_id)
-        post_dto.comments = [
-            comment_to_dto(
-                comment,
-                href=CommentResource.url_to(req.netloc, comment_id=str(comment.id),
-                links=get_comment_links(req, comment))) for comment in comments]
+        cache = req.context.get('cache')
+        if cache.get(f'post-{post_id}'):
+            resp.body = cache.get(f'post-{post_id}')
+        else:
+            post = get_post(post_id)
+            post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
+            comments = get_post_comments(post_id)
+            post_dto.comments = [
+                comment_to_dto(
+                    comment,
+                    href=CommentResource.url_to(req.netloc, comment_id=str(comment.id),
+                    links=get_comment_links(req, comment))) for comment in comments]
 
-        resp.body = to_json(PostDtoSerializer, post_dto)
+            resp.body = to_json(PostDtoSerializer, post_dto)
+            # cache post payload in redis
+            cache.set(f'post-{post_id}', resp.body)
 
     @falcon.before(is_logged_in)
     def on_put(self, req, resp, post_id):
         """Update single post resource."""
         resp.status = falcon.HTTP_204
+        cache = req.context.get('cache')
         user = req.context.get('user')
         if not user_has_post_access(user, post_id):
             raise UnauthorizedRequestError(user)
@@ -122,6 +129,8 @@ class PostResource(BaseResource):
             if not post.featured:
                 raise UnauthorizedRequestError()
         edit_post(post_id, post_form_dto)
+        # delete cached payload on change
+        cache.delete(f'post-{post_id}')
 
     @falcon.before(is_logged_in)
     def on_delete(self, req, resp, post_id):
@@ -131,6 +140,8 @@ class PostResource(BaseResource):
         if not user_has_post_access(user, post_id):
             raise UnauthorizedRequestError(user)
         delete_post(post_id)
+        # delete cached payload
+        cache.delete(f'post-{post_id}')
 
 
 class PostCollectionResource(BaseResource):
@@ -144,10 +155,17 @@ class PostCollectionResource(BaseResource):
         Note: This endpoint supports pagination, pagination arguments must be provided via query args.
         """
         resp.status = falcon.HTTP_200
-        post_collection_dto = PostCollectionDto(posts=[
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
-            for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
-        resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
+        cache = req.context.get('cache')
+        cache_key = f'post-collection;{req.params.get('start')};{req.params.get('count')}'
+        if cache.get(cache_key):
+            resp.body = cache.get(cache_key)
+        else:
+            post_collection_dto = PostCollectionDto(posts=[
+                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
+                for post in get_posts(start=req.params.get('start'), count=req.params.get('count'))])
+            resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
+            # cache post collection in redis
+            cache.set(cache_key, resp.body)
 
     @falcon.before(is_logged_in)
     def on_post(self, req, resp):
@@ -158,6 +176,9 @@ class PostCollectionResource(BaseResource):
         create_post(user.id, from_json(PostFormDtoSerializer, payload))
         # link to grid view
         resp.set_header('Location', req.uri)
+        # delete cached collections
+        for key in cache.scan_iter('post-collection*'):
+            cache.delete('post-collection')
 
 
 class PostSearchResource(BaseResource):
