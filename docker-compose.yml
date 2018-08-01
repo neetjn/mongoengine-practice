@@ -8,6 +8,8 @@ services:
     volumes:
       - ./data/db:/data/db
     command: mongod --smallfiles --logpath=/dev/null # --quiet
+  redis:
+    image: redis
   blog:
     build: .
     links:
@@ -18,3 +20,4 @@ services:
       - "BLOG_DB_HOST=mongodb://mongo:27017/py-blog"
     depends_on:
       - mongo
+      - redis

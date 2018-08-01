@@ -141,33 +141,40 @@ class UserResource(BaseResource):
     def on_get(self, req, resp):
         """Fetch user information for current session."""
         resp.status = falcon.HTTP_200
-        user = req.context.get('user')
-        user_id = str(user.id)
-        user_dto = user_to_dto(user)
-        user_dto.posts = [
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
-            for post in get_user_posts(user_id)]
-        user_dto.comments = [
-            comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=comment.id))
-            for comment in get_user_comments(user_id)]
-        user_dto.liked_posts = [
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
-            for post in get_user_liked_posts(user_id)]
-        # no need to construct url, pull from request
-        user.href = req.uri
-        user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
-                                  href=UserAvatarMediaResource.url_to(req.netloc)),
-                          LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
-                                  href=UserAvatarMediaResource.url_to(req.netloc))]
-        # if user avatar capabilities present, provide avatar image
-        if settings.user.allow_avatar_capability:
-            user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
-        resp.body = to_json(UserProfileDtoSerializer, user_dto)
+        cache = req.context.get('cache')
+        if cache.get('user'):
+            resp.body = cache.get('user')
+        else:
+            user = req.context.get('user')
+            user_id = str(user.id)
+            user_dto = user_to_dto(user)
+            user_dto.posts = [
+                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
+                for post in get_user_posts(user_id)]
+            user_dto.comments = [
+                comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=comment.id))
+                for comment in get_user_comments(user_id)]
+            user_dto.liked_posts = [
+                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
+                for post in get_user_liked_posts(user_id)]
+            # no need to construct url, pull from request
+            user.href = req.uri
+            user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
+                                    href=UserAvatarMediaResource.url_to(req.netloc)),
+                            LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
+                                    href=UserAvatarMediaResource.url_to(req.netloc))]
+            # if user avatar capabilities present, provide avatar image
+            if settings.user.allow_avatar_capability:
+                user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
+            resp.body = to_json(UserProfileDtoSerializer, user_dto)
+            cache.set('user', resp.body)
 
     @falcon.before(is_logged_in)
     def on_put(self, req, resp):
         """Updates user resource for current session."""
         resp.status = falcon.HTTP_204
         payload = req.stream.read()
+        cache = req.context.get('cache')
+        cache.delete('user')
         user = req.context.get('user')
         edit_user(user.id, from_json(UserFormDtoSerializer, payload))
