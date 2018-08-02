@@ -25,11 +25,8 @@ def clear_post_comment_cache(client: redis.Redis, comment_id: str=None):
     :param comment_id: Identifier of individual comment of cache to clear.
     :type comment_id: str
     """
-    # delete cached collections
-    for key in client.scan_iter('post-collection*'):
-        client.delete(key)
-    # delete cached searches
-    for key in client.scan_iter('post-search*'):
+    # delete cached posts
+    for key in client.scan_iter('post-*'):
         client.delete(key)
     # delete cached comment by id
     if comment_id:

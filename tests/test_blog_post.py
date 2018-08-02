@@ -1,3 +1,4 @@
+import time
 from falcon.testing import TestCase
 from blog.blog import api
 from blog.mediatypes import PostFormDtoSerializer, CommentFormDtoSerializer
@@ -37,9 +38,16 @@ class BlogPostTests(TestCase):
             body=to_json(PostFormDtoSerializer, generate_post_form_dto()),
             headers=self.headers)
         self.assertEqual(post_create_res.status_code, 201)
+        elapsed_start = time.clock() * 1000
         post_collection_res = self.simulate_get(PostCollectionResource.route)
+        elapsed_delta = (time.clock() * 1000) - elapsed_start
         self.assertEqual(post_collection_res.status_code, 200)
         self.assertEqual(len(post_collection_res.json.get('posts')), 1)
+        # verify caching works as intended
+        elapsed_start = time.clock() * 1000
+        self.simulate_get(PostCollectionResource.route)
+        cached_delta = (time.clock() * 1000) - elapsed_start
+        self.assertGreater(elapsed_delta / 2, cached_delta)
         # get resource href for created post
         created_post = post_collection_res.json.get('posts')[0]
         post_href = normalize_href(created_post.get('href'))
