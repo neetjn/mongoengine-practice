@@ -48,6 +48,8 @@ class BlogPostTests(TestCase):
         self.simulate_get(PostCollectionResource.route)
         cached_delta = (time.clock() * 1000) - elapsed_start
         self.assertGreater(elapsed_delta / 2, cached_delta)
+        # measurement subject to change, cached response should take no longer than 3 ms
+        self.assertLess(cached_delta, 3)
         # get resource href for created post
         created_post = post_collection_res.json.get('posts')[0]
         post_href = normalize_href(created_post.get('href'))
