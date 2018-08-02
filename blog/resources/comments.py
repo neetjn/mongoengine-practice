@@ -1,4 +1,5 @@
 import falcon
+import redis
 from blog.core.comments import get_comment, edit_comment, delete_comment, comment_to_dto, \
     like_comment
 from blog.db import Comment, User
@@ -16,6 +17,14 @@ class BLOG_COMMENT_RESOURCE_HREF_REL(object):
 
 
 def clear_post_comment_cache(client: redis.Redis, comment_id: str=None):
+    """
+    Emptys post collection and search cache effectively.
+
+    :param client: Redis client to reference.
+    :type client: redis.Redis
+    :param comment_id: Identifier of individual comment of cache to clear.
+    :type comment_id: str
+    """
     # delete cached collections
     for key in cache.scan_iter('post-collection*'):
         cache.delete(key)

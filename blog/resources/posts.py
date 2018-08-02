@@ -54,6 +54,14 @@ def user_has_post_access(user: User, post_id: str) -> bool:
 
 
 def clear_post_cache(client: redis.Redis, post_id: str=None):
+    """
+    Emptys post collection and search cache effectively.
+
+    :param client: Redis client to reference.
+    :type client: redis.Redis
+    :param post_id: Identifier of individual post of cache to clear.
+    :type post_id: str
+    """
     # delete cached collections
     for key in cache.scan_iter('post-collection*'):
         cache.delete(key)
