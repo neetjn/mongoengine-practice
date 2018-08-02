@@ -11,7 +11,6 @@ from blog.resources.users import UserAuthenticationResource, UserRegistrationRes
 from blog.resources.service import ServiceDescriptionResource
 from blog.settings import settings
 
-from r2dto import ValidationError
 from falcon_multipart.middleware import MultipartMiddleware
 
 
