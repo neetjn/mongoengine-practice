@@ -1,4 +1,6 @@
+import base64
 import falcon
+import redis
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
     post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts
 from blog.core.comments import comment_to_dto
@@ -49,6 +51,18 @@ def user_has_post_access(user: User, post_id: str) -> bool:
     """
     return get_post(post_id).author != user.id and \
         user.role not in (UserRoles.ADMIN, UserRoles.MODERATOR)
+
+
+def clear_post_cache(client: redis.Redis, post_id: str=None):
+    # delete cached collections
+    for key in cache.scan_iter('post-collection*'):
+        cache.delete(key)
+    # delete cached searches
+    for key in cache.scan_iter('post-search*'):
+        cache.delete(key)
+    # delete cached post by id
+    if post_id:
+        cache.delete(f'post-{post_id}')
 
 
 class PostCommentResource(BaseResource):
@@ -130,18 +144,19 @@ class PostResource(BaseResource):
                 raise UnauthorizedRequestError()
         edit_post(post_id, post_form_dto)
         # delete cached payload on change
-        cache.delete(f'post-{post_id}')
+        clear_post_cache(cache, post_id)
 
     @falcon.before(is_logged_in)
     def on_delete(self, req, resp, post_id):
         """Delete single post resource."""
         resp.status = falcon.HTTP_204
+        cache = req.context.get('cache')
         user = req.context.get('user')
         if not user_has_post_access(user, post_id):
             raise UnauthorizedRequestError(user)
         delete_post(post_id)
-        # delete cached payload
-        cache.delete(f'post-{post_id}')
+        # delete cached payload on delete
+        clear_post_cache(cache, post_id)
 
 
 class PostCollectionResource(BaseResource):
@@ -179,9 +194,8 @@ class PostCollectionResource(BaseResource):
         create_post(user.id, from_json(PostFormDtoSerializer, payload))
         # link to grid view
         resp.set_header('Location', req.uri)
-        # delete cached collections
-        for key in cache.scan_iter('post-collection*'):
-            cache.delete('post-collection')
+        # delete cached grid on create
+        clear_post_cache(cache)
 
 
 class PostSearchResource(BaseResource):
@@ -193,9 +207,19 @@ class PostSearchResource(BaseResource):
         """Search for an existing post resource."""
         resp.status = falcon.HTTP_201
         payload = req.stream.read()
-        user = req.context.get('user')
-        post_search_settings = from_json(PostSearchSettingsDtoSerializer, payload)
-        post_collection_dto = PostCollectionDto(posts=[
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
-            for post in search_posts(post_search_settings, str(user.id), req.params.get('start'), req.params.get('count'))])
-        resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
+        cache = req.context.get('cache')
+        page_start = req.params.get('start')
+        page_count = req.params.get('count')
+        post_search_key = str(base64.encodestring(payload))
+        cache_key = f'post-search;{page_start};{page_count};{post_search_key}'
+        if cache.get(cache_key):
+            resp.body = cache.get(cache_key)
+        else:
+            user = req.context.get('user')
+            post_search_settings = from_json(PostSearchSettingsDtoSerializer, payload)
+            post_collection_dto = PostCollectionDto(posts=[
+                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
+                for post in search_posts(post_search_settings, str(user.id), req.params.get('start'), req.params.get('count'))])
+            resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
+            # cache post search in redis
+            cache.set(cache_key, resp.body)
