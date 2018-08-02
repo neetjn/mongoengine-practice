@@ -63,14 +63,14 @@ def clear_post_cache(client: redis.Redis, post_id: str=None):
     :type post_id: str
     """
     # delete cached collections
-    for key in cache.scan_iter('post-collection*'):
-        cache.delete(key)
+    for key in client.scan_iter('post-collection*'):
+        client.delete(key)
     # delete cached searches
-    for key in cache.scan_iter('post-search*'):
-        cache.delete(key)
+    for key in client.scan_iter('post-search*'):
+        client.delete(key)
     # delete cached post by id
     if post_id:
-        cache.delete(f'post-{post_id}')
+        client.delete(f'post-{post_id}')
 
 
 class PostCommentResource(BaseResource):

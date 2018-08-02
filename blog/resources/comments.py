@@ -26,14 +26,14 @@ def clear_post_comment_cache(client: redis.Redis, comment_id: str=None):
     :type comment_id: str
     """
     # delete cached collections
-    for key in cache.scan_iter('post-collection*'):
-        cache.delete(key)
+    for key in client.scan_iter('post-collection*'):
+        client.delete(key)
     # delete cached searches
-    for key in cache.scan_iter('post-search*'):
-        cache.delete(key)
+    for key in client.scan_iter('post-search*'):
+        client.delete(key)
     # delete cached comment by id
     if comment_id:
-        cache.delete(f'comment-{comment_id}')
+        client.delete(f'comment-{comment_id}')
 
 
 def get_comment_links(req: falcon.Request, comment: Comment) -> list:
