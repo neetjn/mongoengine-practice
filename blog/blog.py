@@ -1,6 +1,7 @@
 import falcon
 from blog.errors import ErrorHandler
 from blog.middleware.users import UserProcessor
+from blog.middleware.redis import CacheProvider
 from blog.resources.comments import CommentResource
 from blog.resources.admin import BlogSettingsResource
 from blog.resources.posts import PostCollectionResource, PostResource, PostLikeResource, \
@@ -10,11 +11,10 @@ from blog.resources.users import UserAuthenticationResource, UserRegistrationRes
 from blog.resources.service import ServiceDescriptionResource
 from blog.settings import settings
 
-from r2dto import ValidationError
 from falcon_multipart.middleware import MultipartMiddleware
 
 
-api = falcon.API(middleware=[UserProcessor(), MultipartMiddleware()])
+api = falcon.API(middleware=[UserProcessor(), CacheProvider(), MultipartMiddleware()])
 
 api.add_error_handler(Exception, ErrorHandler.unexpected)
 api.add_error_handler(falcon.HTTPError, ErrorHandler.http)

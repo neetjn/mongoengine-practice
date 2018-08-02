@@ -1,6 +1,7 @@
 import copy
 import io
 import os
+import time
 from falcon.testing import TestCase
 from blog.blog import api
 from blog.constants import BLOG_FAKE_S3_HOST, BLOG_AWS_S3_BUCKET
@@ -57,8 +58,17 @@ class BlogPostTests(TestCase):
         user_res = self.simulate_get(UserResource.route)
         self.assertEqual(user_res.status_code, 401)
         # verify user profile resurce can be retrieved as expectedUserFormDtoSerializer
+        elapsed_start = time.clock() * 1000
         user_res = self.simulate_get(UserResource.route, headers=self.headers)
+        elapsed_delta = (time.clock() * 1000) - elapsed_start
         self.assertEqual(user_res.status_code, 200)
+        # verify caching works as intended
+        elapsed_start = time.clock() * 1000
+        self.simulate_get(UserResource.route, headers=self.headers)
+        cached_delta = (time.clock() * 1000) - elapsed_start
+        self.assertGreater(elapsed_delta / 2, cached_delta)
+        # measurement subject to change, cached response should take no longer than 3 ms
+        self.assertLessEqual(cached_delta, 3)
         # verify user resource can be updated
         user_profile = generate_user_form_dto()
         put_user_res = self.simulate_put(
