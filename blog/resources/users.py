@@ -110,6 +110,7 @@ class UserAvatarMediaResource(BaseResource):
         resp.status = falcon.HTTP_201
         if not settings.user.allow_avatar_capability:
             raise ResourceNotAvailableError()
+        cache = req.context.get('cache')
         user = req.context.get('user')
         user_id = str(user.id)
         if 'image' not in req.params:
@@ -121,6 +122,8 @@ class UserAvatarMediaResource(BaseResource):
             raise UserAvatarUploadError()
         mime = magic.Magic(mime=True)
         store_user_avatar(user_id, avatar_stream, mime.from_buffer(avatar_stream))
+        # delete cached payload on change
+        cache.delete(f'user-{user_id}')
 
     @falcon.before(is_logged_in)
     def on_delete(self, req, resp):
@@ -128,9 +131,12 @@ class UserAvatarMediaResource(BaseResource):
         resp.status = falcon.HTTP_204
         if not settings.user.allow_avatar_capability:
             raise ResourceNotAvailableError()
+        cache = req.context.get('cache')
         user = req.context.get('user')
         user_id = str(user.id)
         delete_user_avatar(user_id)
+        # delete cached payload on change
+        cache.delete(f'user-{user_id}')
 
 
 class UserResource(BaseResource):
