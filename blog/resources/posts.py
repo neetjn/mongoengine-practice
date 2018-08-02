@@ -74,8 +74,11 @@ class PostCommentResource(BaseResource):
         """Create comment for existing post resource"""
         resp.status = falcon.HTTP_201
         payload = req.stream.read()
+        cache = req.context.get('cache')
         user = req.context.get('user')
         create_post_comment(post_id, str(user.id), from_json(CommentFormDtoSerializer, payload))
+        # delete cached payload on change
+        clear_post_cache(cache, post_id)
 
 
 class PostViewResource(BaseResource):
@@ -86,8 +89,11 @@ class PostViewResource(BaseResource):
     def on_put(self, req, resp, post_id):
         """View an existing post resource"""
         resp.status = falcon.HTTP_204
+        cache = req.context.get('cache')
         user = req.context.get('user')
         view_post(post_id, str(user.id), req.access_route[0])
+        # delete cached payload on change
+        clear_post_cache(cache, post_id)
 
 
 class PostLikeResource(BaseResource):
@@ -98,8 +104,11 @@ class PostLikeResource(BaseResource):
     def on_put(self, req, resp, post_id):
         """Like an existing post resource"""
         resp.status = falcon.HTTP_204
+        cache = req.context.get('cache')
         user = req.context.get('user')
         like_post(post_id, str(user.id))
+        # delete cached payload on change
+        clear_post_cache(cache, post_id)
 
 
 class PostResource(BaseResource):
