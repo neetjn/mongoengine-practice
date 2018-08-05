@@ -53,6 +53,10 @@ class BlogPostTests(TestCase):
             'Authorization': self.token
         }
 
+    def test_user_token_invalidation(self):
+        """gfgdfg"""
+        pass
+
     def test_core_user_resource(self):
         """Ensure a user resource can be fetched, updated."""
         user_res = self.simulate_get(UserResource.route)
