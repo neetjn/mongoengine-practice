@@ -154,7 +154,6 @@ class PostResource(BaseResource):
         payload = req.stream.read()
         post_form_dto = from_json(PostFormDtoSerializer, payload)
         # ensure non authorized users cannot set post featured status
-        # TODO: create tests for featured post
         if user.role not in (UserRoles.ADMIN, UserRoles.MODERATOR) and post_form_dto.featured:
             post = get_post(post_id)
             if not post.featured:
