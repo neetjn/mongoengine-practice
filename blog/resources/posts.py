@@ -154,7 +154,6 @@ class PostResource(BaseResource):
         payload = req.stream.read()
         post_form_dto = from_json(PostFormDtoSerializer, payload)
         # ensure non authorized users cannot set post featured status
-        # TODO: create tests for featured post
         if user.role not in (UserRoles.ADMIN, UserRoles.MODERATOR) and post_form_dto.featured:
             post = get_post(post_id)
             if not post.featured:
@@ -236,7 +235,7 @@ class PostSearchResource(BaseResource):
             post_search_settings = from_json(PostSearchSettingsDtoSerializer, payload)
             post_collection_dto = PostCollectionDto(posts=[
                 post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
-                for post in search_posts(post_search_settings, str(user.id), req.params.get('start'), req.params.get('count'))])
+                for post in search_posts(post_search_settings, str(user.id), page_start, page_count)])
             resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
             # cache post search in redis
             cache.set(cache_key, resp.body)

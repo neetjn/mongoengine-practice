@@ -12,7 +12,7 @@ def create_user(instance, **kwargs) -> str:
 
     :param instance: Falcon test case instance.
     :type instanace: TestCase
-    :return: str
+    :return: (str, str)
     """
     global settings
     original_settings = copy.deepcopy(settings)
@@ -25,4 +25,4 @@ def create_user(instance, **kwargs) -> str:
     token = res.json.get('token')
     settings = original_settings
     save_settings(settings)
-    return token
+    return user_form_dto, token

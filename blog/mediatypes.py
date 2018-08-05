@@ -154,7 +154,7 @@ class PostSearchSettingsDto(object):
 
     def __init__(self, **kwargs):
         self.query = kwargs.get('query', '')
-        self.options = kwargs.get('method', [])
+        self.options = kwargs.get('options', [])
 
 
 class PostSearchSettingsDtoSerializer(Serializer):

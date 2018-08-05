@@ -47,10 +47,10 @@ class BlogPostTests(TestCase):
         # scrub database before each test
         drop_database()
         # get user credentials
-        token = create_user(self, avatar_href=None)
+        self.user, self.token = create_user(self, avatar_href=None)
         # construct request headers
         self.headers = {
-            'Authorization': token
+            'Authorization': self.token
         }
 
     def test_core_user_resource(self):
