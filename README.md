@@ -171,6 +171,7 @@ The following requirements are required for staging *py-blog* for either develop
 
 - python 3.6
 - mongodb 3.6
+- redis 4 (optional)
 - pipenv (python package manager)
 - s3 bucket or fakes3 (optional)
 
