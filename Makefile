@@ -36,7 +36,7 @@ test:
 
 test-clean:
 	docker rm -f test-${PRODUCT_NAME}-mongodb test-${PRODUCT_NAME}-redis \
-							 test-${PRODUCT_NAME}-fakes3 test-${PRODUCT_NAME}-instance
+							 test-${PRODUCT_NAME}-fakes3 test-${PRODUCT_NAME}-instance || true
 
 publish: build
 	docker push ${PRODUCT_IMAGE}
