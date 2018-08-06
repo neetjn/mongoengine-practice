@@ -178,8 +178,11 @@ class BlogPostTests(TestCase):
         user_res = self.simulate_get(UserResource.route, headers=self.headers)
         self.assertEqual(user_res.status_code, 200)
         user_id = user_res.json.get('avatarHref').split('/')[-3]
+        # generate a timestamp from 12 hours and 1 second ago
         creation_time = datetime.datetime.utcnow().timestamp() - 36e2 * 12 - 1
-        token = create_auth_token(user_id, creation_time, '')
-        mod_user_res = self.simulate_get(UserResource.route, headers={'Authentication': token})
-        print(mod_user_res.__dict__)
-        self.assertEqual(mod_user_res.status_code, 401)
+        token = create_auth_token(user_id, creation_time, '127.0.0.1')
+        expired_req = self.simulate_get(UserResource.route, headers={'Authorization': token})
+        self.assertEqual(expired_req.status_code, 401)
+        token = create_auth_token(user_id, datetime.datetime.utcnow().timestamp(), '')
+        invalid_host_req = self.simulate_get(UserResource.route, headers={'Authorization': token})
+        self.assertEqual(invalid_host_req.status_code, 401)

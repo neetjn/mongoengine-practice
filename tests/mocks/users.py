@@ -21,7 +21,7 @@ def create_auth_token(user_id: str, time_of_creation: str, host: str) -> str:
     :type host: str
     """
     return jwt.encode(
-        {'user': str(user_id), 'created': datetime.datetime.utcnow().timestamp(), 'host': host},
+        {'user': str(user_id), 'created': time_of_creation, 'host': host},
         BLOG_JWT_SECRET_KEY,
         algorithm='HS256').decode('utf-8')
 
