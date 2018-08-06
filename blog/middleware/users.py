@@ -23,7 +23,8 @@ class UserProcessor(object):
                 warning(req, 'Token host "{}" does not match the requestee "{}"'.format(payload.get('host'), host))
                 raise UnauthorizedRequestError()
             elif int(payload.get('created')) + settings.login.max_session_time <= datetime.datetime.utcnow().timestamp():
-                warning(req, 'Token created over "{}" hour(s) ago.'.format(settings.login.max_session_time_hours))
+                warning(req, 'Token has expired')
+                raise UnauthorizedRequestError()
             else:
                 user_id = payload.get('user')
                 try:

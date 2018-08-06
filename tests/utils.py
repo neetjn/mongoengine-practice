@@ -2,12 +2,14 @@ import random
 import string
 from falcon.testing import TestCase
 from blog.db import client
+from blog.middleware.redis import client as redis
 
 
 def drop_database():
     """Drop all collections in database"""
     db_name = client.get_database().name
     client.drop_database(db_name)
+    redis.flushdb()
 
 
 def random_string(length: int) -> str:
