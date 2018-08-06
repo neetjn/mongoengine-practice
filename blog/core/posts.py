@@ -65,9 +65,9 @@ def search_posts(post_search_settings: PostSearchSettingsDto, user_id, start: in
 
     if PostSearchOptions.AUTHOR in post_search_settings.options:
         try:
-            author = User.objects.get(username=post_search_settings)
+            author = User.objects.get(username=post_search_settings.query)
             # filter posts by author username
-            posts = [post for post in posts if post.author == author.id]
+            posts = [post for post in posts if post.author == str(author.id)]
         except DoesNotExist:
             posts = []
 

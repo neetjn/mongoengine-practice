@@ -1,12 +1,24 @@
+import boto3
 import datetime
+import hashlib
+import io
 import time
 from mongoengine import DoesNotExist, ValidationError, MultipleObjectsReturned, NotUniqueError
 from mongoengine.queryset.visitor import Q
+from blog.constants import BLOG_TEST, BLOG_AWS_ACCESS_KEY_ID, BLOG_AWS_SECRET_ACCESS_KEY, BLOG_AWS_S3_BUCKET, \
+    BLOG_FAKE_S3_HOST
 from blog.db import User, FailedLogin, Comment, Post
 from blog.errors import UserNotFoundError, UserExistsError, UserForbiddenRequestError
 from blog.mediatypes import UserProfileDto, UserAuthDto, UserFormDto, UserRoles
 from blog.settings import settings
 from blog.utils.crypto import hash_password, compare_passwords, encrypt_content, decrypt_content
+
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=BLOG_AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=BLOG_AWS_SECRET_ACCESS_KEY,
+    endpoint_url=f'http://{BLOG_FAKE_S3_HOST}' if BLOG_TEST else None)
 
 
 def authenticate(user_auth_dto: UserAuthDto, client: str) -> User:
@@ -104,6 +116,58 @@ def edit_user(user_id: str, user_form_dto: UserFormDto):
         user.salt = salt
     user.full_name = user_form_dto.full_name or user.full_name
     user.email = user_form_dto.email or user.email
+    if user_form_dto.avatar_href and user_form_dto.avatar_href != user.avatar_href:
+        user.avatar_href = user_form_dto.avatar_href
+        user.avatar_binary = user.avatar_binary.delete()
+    user.save()
+
+
+def store_user_avatar(user_id: str, file: io.BufferedReader, content_type: str):
+    """
+    Store user avatar image.
+
+    :param user_id: Identifier of target user.
+    :type user_id: str
+    :param file: Avatar to store.
+    :type file: BufferReader
+    :param content_type: Avatar filetype.
+    :type content_type: str
+    """
+    user = get_user(user_id)
+    user.avatar_binary.delete()
+    if settings.user.upload_avatar_s3:
+        object_key = hashlib.md5(file).hexdigest()
+        s3_client.put_object(
+            ACL='public-read',
+            Body=file,
+            Bucket=BLOG_AWS_S3_BUCKET,
+            ContentType=content_type,
+            Key=object_key)
+        user.avatar_href = s3_client.generate_presigned_url(
+            ClientMethod='get_object',
+            Params={
+                'Key': object_key,
+                'Bucket': BLOG_AWS_S3_BUCKET
+            })
+    else:
+        if user.avatar_href:
+            user.avatar_href = None
+        user.avatar_binary.put(file, content_type=content_type)
+    user.save()
+
+
+def delete_user_avatar(user_id: str):
+    """
+    Delete user avatar.
+
+    :param user_id: Identifier of target user.
+    :type user_id: str
+    """
+    user = get_user(user_id)
+    if user.avatar_href:
+        user.avatar_href = None
+    if user.avatar_binary:
+        user.avatar_binary.delete()
     user.save()
 
 

@@ -28,6 +28,7 @@ class User(mongoengine.Document):
     password = mongoengine.StringField(required=True)
     salt = mongoengine.StringField(required=True)
     role = mongoengine.StringField()
+    avatar_binary = mongoengine.FileField()
     avatar_href = mongoengine.StringField()
     verified = mongoengine.BooleanField(default=False)
     last_posted = mongoengine.DateTimeField()

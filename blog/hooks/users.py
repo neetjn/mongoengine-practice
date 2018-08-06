@@ -1,5 +1,11 @@
-from blog.errors import UnauthorizedRequestError
+from blog.errors import ResourceNotAvailableError, UnauthorizedRequestError
 from blog.mediatypes import UserRoles
+
+
+def is_logged_out(req, resp, resource, params):
+    """Ensure request is being made from an unauthorized user."""
+    if req.context.get('user'):
+        raise ResourceNotAvailableError()
 
 
 def is_logged_in(req, resp, resource, params):

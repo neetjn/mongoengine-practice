@@ -1,7 +1,10 @@
+import time
 from falcon.testing import TestCase
 from blog.blog import api
-from blog.mediatypes import PostFormDtoSerializer, CommentFormDtoSerializer
-from blog.resources.posts import PostResource, PostCollectionResource
+from blog.mediatypes import PostFormDtoSerializer, CommentFormDtoSerializer, \
+    PostSearchSettingsDto, PostSearchSettingsDtoSerializer, PostSearchOptions
+from blog.resources.posts import PostResource, PostCollectionResource, \
+    PostSearchResource
 from blog.settings import settings
 from blog.utils.serializers import to_json
 from tests.generators.comments import generate_comment_form_dto
@@ -19,10 +22,10 @@ class BlogPostTests(TestCase):
         # scrub database before each test
         drop_database()
         # get user credentials
-        token = create_user(self)
+        self.user, self.token = create_user(self)
         # construct request headers
         self.headers = {
-            'Authorization': token
+            'Authorization': self.token
         }
 
     def test_core_post_resource(self):
@@ -37,9 +40,18 @@ class BlogPostTests(TestCase):
             body=to_json(PostFormDtoSerializer, generate_post_form_dto()),
             headers=self.headers)
         self.assertEqual(post_create_res.status_code, 201)
+        elapsed_start = time.clock() * 1000
         post_collection_res = self.simulate_get(PostCollectionResource.route)
+        elapsed_delta = (time.clock() * 1000) - elapsed_start
         self.assertEqual(post_collection_res.status_code, 200)
         self.assertEqual(len(post_collection_res.json.get('posts')), 1)
+        # verify caching works as intended
+        elapsed_start = time.clock() * 1000
+        self.simulate_get(PostCollectionResource.route)
+        cached_delta = (time.clock() * 1000) - elapsed_start
+        self.assertGreater(elapsed_delta / 2, cached_delta)
+        # measurement subject to change, cached response should take no longer than 3 ms
+        self.assertLess(cached_delta, 3.5)
         # get resource href for created post
         created_post = post_collection_res.json.get('posts')[0]
         post_href = normalize_href(created_post.get('href'))
@@ -74,6 +86,49 @@ class BlogPostTests(TestCase):
         self.assertEqual(post_res.status_code, 404)
         post_collection_res = self.simulate_get(PostCollectionResource.route)
         self.assertEqual(len(post_collection_res.json.get('posts')), 0)
+
+    def test_search_post_critera(self):
+        """Verify post resources can be searched by critera"""
+        post_collection = [generate_post_form_dto() for _ in range(10)]
+        for post in post_collection:
+            self.simulate_post(
+                PostCollectionResource.route,
+                body=to_json(PostFormDtoSerializer, post),
+                headers=self.headers)
+        target_post = post_collection[-1]
+        search_settings = PostSearchSettingsDto(
+            query=target_post.content,
+            options=[PostSearchOptions.CONTENT])
+        post_search_res = self.simulate_post(
+            PostSearchResource.route,
+            body=to_json(PostSearchSettingsDtoSerializer, search_settings),
+            headers=self.headers)
+        self.assertEqual(post_search_res.status_code, 201)
+        self.assertEqual(len(post_search_res.json.get('posts')), 1)
+        found_post = post_search_res.json.get('posts')[0]
+        self.assertEqual(target_post.title, found_post.get('title'))
+        self.assertEqual(target_post.description, found_post.get('description'))
+        self.assertEqual(target_post.content, found_post.get('content'))
+        self.assertEqual(target_post.private, found_post.get('private'))
+        self.assertEqual(target_post.featured, found_post.get('featured'))
+
+    def test_search_post_author(self):
+        """Verify post resources can be searched by author"""
+        post_collection = [generate_post_form_dto() for _ in range(10)]
+        for post in post_collection:
+            self.simulate_post(
+                PostCollectionResource.route,
+                body=to_json(PostFormDtoSerializer, post),
+                headers=self.headers)
+        search_settings = PostSearchSettingsDto(
+            query=self.user.username,
+            options=[PostSearchOptions.AUTHOR])
+        post_search_res = self.simulate_post(
+            PostSearchResource.route,
+            body=to_json(PostSearchSettingsDtoSerializer, search_settings),
+            headers=self.headers)
+        self.assertEqual(post_search_res.status_code, 201)
+        self.assertEqual(len(post_search_res.json.get('posts')), 10)
 
     def test_like_post(self):
         """Verify post resources can be liked"""

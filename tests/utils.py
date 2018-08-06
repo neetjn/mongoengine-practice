@@ -2,12 +2,14 @@ import random
 import string
 from falcon.testing import TestCase
 from blog.db import client
+from blog.middleware.redis import client as redis
 
 
 def drop_database():
     """Drop all collections in database"""
     db_name = client.get_database().name
     client.drop_database(db_name)
+    redis.flushdb()
 
 
 def random_string(length: int) -> str:
@@ -29,3 +31,13 @@ def random_email() -> str:
 
 def normalize_href(href: str) -> str:
     return href.replace('falconframework.org', '')
+
+
+def find_link_href(links: list, rel: str) -> str:
+    """Extract link href by rel for linkdto instances."""
+    return next(l for l in links if l.rel == rel).href
+
+
+def find_link_href_json(links: list, rel: str) -> str:
+    """Extract link href by rel for non serialized json."""
+    return next(l for l in links if l.get('rel') == rel).get('href')
