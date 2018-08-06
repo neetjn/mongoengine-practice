@@ -5,6 +5,7 @@ python:
 services:
   - mongodb
   - docker
+  - redis
 before_install:
   - pip install codecov
   - pip install pipenv
