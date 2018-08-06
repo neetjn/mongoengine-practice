@@ -173,7 +173,7 @@ class BlogPostTests(TestCase):
         avatar_href = user_res.json.get('avatarHref')
         self.assertIn(f'http://{BLOG_FAKE_S3_HOST}/{BLOG_AWS_S3_BUCKET}/', avatar_href)
 
-    def test_user_token_invalidation(self):
+    def test_user_token_validation(self):
         """Ensure user token validation"""
         user_res = self.simulate_get(UserResource.route, headers=self.headers)
         self.assertEqual(user_res.status_code, 200)
