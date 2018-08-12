@@ -6,6 +6,15 @@ from blog.utils.serializers import CharLenValidator, EmailValidator, RegexValida
     NotEmptyValidator
 
 
+class HttpMethods(object):
+
+    GET = 'GET'
+    PUT = 'PUT'
+    POST = 'POST'
+    DELETE = 'DELETE'
+    PATCH = 'PATCH'
+
+
 class UserRoles(object):
 
     ADMIN = 'ADMIN'
@@ -24,16 +33,17 @@ class PostSearchOptions(object):
 
 class LinkDto(object):
 
-    def __init__(self, rel=None, href=None):
+    def __init__(self, rel=None, href=None, accepted_methods=None):
         self.rel = rel
         self.href = href
+        self.accepted_methods = accepted_methods or []
 
 
 class LinkDtoSerializer(Serializer):
 
     rel = fields.StringField(required=True)
     href = fields.StringField(required=True)
-
+    accepted_methods = fields.ListField(fields.StringField(), name='acceptedMethods')
     class Meta(object):
         model = LinkDto
 

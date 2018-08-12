@@ -9,7 +9,7 @@ from blog.errors import UnauthorizedRequestError
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
     PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto, \
-    CommentFormDtoSerializer, PostSearchSettingsDtoSerializer
+    CommentFormDtoSerializer, PostSearchSettingsDtoSerializer, HttpMethods
 from blog.resources.base import BaseResource
 from blog.resources.comments import get_comment_links, CommentResource
 from blog.utils.serializers import from_json, to_json
@@ -17,6 +17,7 @@ from blog.utils.serializers import from_json, to_json
 
 class BLOG_POST_RESOURCE_HREF_REL(object):
 
+    SELF = 'self'
     POST_LIKE = 'post-like'
     POST_VIEW = 'post-view'
     POST_COMMENT = 'post-comment'
@@ -32,12 +33,18 @@ def get_post_links(req: falcon.Request, post: Post) -> list:
     :type post: Post
     """
     return [
+        LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.SELF,
+                href=PostResource.url_to(req.netloc, post_id=post.id),
+                accepted_methods=[HttpMethods.GET, HttpMethods.PUT, HttpMethods.DELETE]),
         LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_COMMENT,
-                href=PostCommentResource.url_to(req.netloc, post_id=post.id)),
+                href=PostCommentResource.url_to(req.netloc, post_id=post.id)
+                accepted_methpds=[HttpMethods.POST]),
         LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_LIKE,
-                href=PostLikeResource.url_to(req.netloc, post_id=post.id)),
+                href=PostLikeResource.url_to(req.netloc, post_id=post.id)
+                accepted_methods=[HttpMethods.PUT]),
         LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_VIEW,
-                href=PostViewResource.url_to(req.netloc, post_id=post.id))]
+                href=PostViewResource.url_to(req.netloc, post_id=post.id),
+                accepted_methods=[HttpMethods.PUT])]
 
 
 def user_has_post_access(user: User, post_id: str) -> bool:
@@ -127,21 +134,20 @@ class PostResource(BaseResource):
         """Fetch single post resource."""
         resp.status = falcon.HTTP_200
         cache = req.context.get('cache')
+        cache_key = f'post-{post_id}'
         if cache.get(f'post-{post_id}'):
-            resp.body = cache.get(f'post-{post_id}')
+            resp.body = cache.get(cache_key)
         else:
             post = get_post(post_id)
             post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
             comments = get_post_comments(post_id)
-            post_dto.comments = [
-                comment_to_dto(
-                    comment,
-                    href=CommentResource.url_to(req.netloc, comment_id=str(comment.id),
-                    links=get_comment_links(req, comment))) for comment in comments]
-
+            post_dto.comments = [comment_to_dto(comment,
+                                                href=CommentResource.url_to(req.netloc,
+                                                comment_id=str(comment.id),
+                                                links=get_comment_links(req, comment))) for comment in comments]
             resp.body = to_json(PostDtoSerializer, post_dto)
             # cache post payload in redis
-            cache.set(f'post-{post_id}', resp.body)
+            cache.set(cache_key, resp.body)
 
     @falcon.before(is_logged_in)
     def on_put(self, req, resp, post_id):

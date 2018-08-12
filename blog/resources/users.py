@@ -13,7 +13,7 @@ from blog.db import User
 from blog.errors import ResourceNotAvailableError, UserAvatarUploadError
 from blog.hooks.users import is_logged_in, is_logged_out
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
-    TokenDtoSerializer, UserProfileDtoSerializer, LinkDto
+    TokenDtoSerializer, UserProfileDtoSerializer, LinkDto, HttpMethods
 from blog.resources.base import BaseResource
 from blog.resources.comments import CommentResource
 from blog.resources.posts import PostResource
@@ -163,10 +163,13 @@ class UserResource(BaseResource):
                 for post in get_user_liked_posts(user_id)]
             # no need to construct url, pull from request
             user.href = req.uri
-            user_dto.links = [LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
-                                    href=UserAvatarMediaResource.url_to(req.netloc)),
-                            LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
-                                    href=UserAvatarMediaResource.url_to(req.netloc))]
+            user_dto.links = [
+                LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
+                        href=UserAvatarMediaResource.url_to(req.netloc),
+                        accepted_methods=[HttpMethods,POST]),
+                LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
+                        href=UserAvatarMediaResource.url_to(req.netloc),
+                        accepted_methods=[HttpMethods.DELETE])]
             # if user avatar capabilities present, provide avatar image
             if settings.user.allow_avatar_capability:
                 user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
