@@ -23,6 +23,7 @@ from blog.utils.serializers import from_json, to_json
 
 class BLOG_USER_RESOURCE_HREF_REL(object):
 
+    SELF = 'self'
     USER_AVATAR_UPLOAD = 'user-avatar-upload'
     USER_AVATAR_DELETE = 'user-avatar-delete'
 
@@ -164,6 +165,9 @@ class UserResource(BaseResource):
             # no need to construct url, pull from request
             user.href = req.uri
             user_dto.links = [
+                LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.SELF,
+                        href=UserResource.url_to(req.netloc),
+                        accepted_methods=[HttpMethods,GET, HttpMethods.PUT]),
                 LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
                         href=UserAvatarMediaResource.url_to(req.netloc),
                         accepted_methods=[HttpMethods,POST]),
