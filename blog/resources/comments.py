@@ -47,7 +47,7 @@ def get_comment_links(req: falcon.Request, comment: Comment) -> list:
                     href=CommentResource.url_to(req.netloc, comment_id=comment.id),
                     accepted_methods=[HttpMethods.GET, HttpMethods.PUT, HttpMethods.DELETE]),
             LinkDto(rel=BLOG_COMMENT_RESOURCE_HREF_REL.COMMENT_LIKE,
-                    href=CommentLikeResource.url_to(req.netloc, comment_id=comment.id)
+                    href=CommentLikeResource.url_to(req.netloc, comment_id=comment.id),
                     accepted_methods=[HttpMethods.PUT])]
 
 

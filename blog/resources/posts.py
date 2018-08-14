@@ -37,10 +37,10 @@ def get_post_links(req: falcon.Request, post: Post) -> list:
                 href=PostResource.url_to(req.netloc, post_id=post.id),
                 accepted_methods=[HttpMethods.GET, HttpMethods.PUT, HttpMethods.DELETE]),
         LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_COMMENT,
-                href=PostCommentResource.url_to(req.netloc, post_id=post.id)
-                accepted_methpds=[HttpMethods.POST]),
+                href=PostCommentResource.url_to(req.netloc, post_id=post.id),
+                accepted_methods=[HttpMethods.POST]),
         LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_LIKE,
-                href=PostLikeResource.url_to(req.netloc, post_id=post.id)
+                href=PostLikeResource.url_to(req.netloc, post_id=post.id),
                 accepted_methods=[HttpMethods.PUT]),
         LinkDto(rel=BLOG_POST_RESOURCE_HREF_REL.POST_VIEW,
                 href=PostViewResource.url_to(req.netloc, post_id=post.id),

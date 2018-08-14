@@ -167,10 +167,10 @@ class UserResource(BaseResource):
             user_dto.links = [
                 LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.SELF,
                         href=UserResource.url_to(req.netloc),
-                        accepted_methods=[HttpMethods,GET, HttpMethods.PUT]),
+                        accepted_methods=[HttpMethods.GET, HttpMethods.PUT]),
                 LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
                         href=UserAvatarMediaResource.url_to(req.netloc),
-                        accepted_methods=[HttpMethods,POST]),
+                        accepted_methods=[HttpMethods.POST]),
                 LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
                         href=UserAvatarMediaResource.url_to(req.netloc),
                         accepted_methods=[HttpMethods.DELETE])]
