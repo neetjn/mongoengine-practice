@@ -76,6 +76,7 @@ def comment_to_dto(comment: Comment, href: str = None, links: list = None) -> Co
     likes = CommentLike.objects(comment_id=comment.id)
     return CommentDto(
         href=href,
+        links=links,
         author=get_user(comment.author).username,
         content=comment.content,
         created=comment.created,
