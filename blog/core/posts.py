@@ -214,16 +214,6 @@ def delete_post(post_id: str):
     get_post(post_id).delete()
 
 
-def get_post_comment_count(post_id: str) -> int:
-    """
-    Get total number of comments for existing post.
-
-    :param post_id: Identifier of post to pull comments from.
-    :type post_id: str
-    """
-    return Comment.objects(post_id=post_id).count()
-
-
 def get_post_comments(post_id: str, start: int = None, count: int = None) -> list:
     """
     Fetch collection of comments given post.
