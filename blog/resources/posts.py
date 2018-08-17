@@ -224,7 +224,7 @@ class PostCollectionResource(BaseResource):
 
 class PostSearchResource(BaseResource):
 
-    route = '/v1/posts/search'
+    route = '/v1/posts/search/'
 
     @falcon.before(is_logged_in)
     def on_post(self, req, resp):
