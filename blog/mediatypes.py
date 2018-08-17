@@ -246,6 +246,75 @@ class PostCollectionDtoSerializer(Serializer):
 
         model = PostCollectionDto
 
+
+class PostV2Dto(object):
+
+    def __init__(self, **kwargs):
+        self.href = kwargs.get('href', '')
+        self.author = kwargs.get('author', '')
+        self.title = kwargs.get('title', '')
+        self.description = kwargs.get('description', '')
+        self.content = kwargs.get('content', '')
+        self.tags = kwargs.get('tags', [])
+        self.private = kwargs.get('private', False)
+        self.featured = kwargs.get('featured', False)
+        self.created = kwargs.get('created', None)
+        self.edited = kwargs.get('edited', None)
+        self.comments = kwargs.get('comments', 0)
+        self.likes = kwargs.get('likes', 0)
+        self.views = kwargs.get('views', 0)
+        self.links = kwargs.get('links', [])
+
+
+class PostV2DtoSerializer(Serializer):
+
+    href = fields.StringField()
+    author = fields.StringField()
+    title = fields.StringField(validators=[
+        NotEmptyValidator(),
+        CharLenValidator(
+            min=settings.rules.post.title_min_char,
+            max=settings.rules.post.title_max_char
+        )
+    ])
+    description = fields.StringField(validators=[
+        NotEmptyValidator(),
+        CharLenValidator(
+            min=settings.rules.post.title_min_char,
+            max=settings.rules.post.title_max_char
+        )
+    ])
+    content = fields.StringField(validators=[NotEmptyValidator()])
+    tags = fields.ListField(fields.StringField())
+    private = fields.BooleanField()
+    featured = fields.BooleanField()
+    created = fields.DateTimeField()
+    edited = fields.DateTimeField()
+    comments = fields.IntegerField()
+    likes = fields.IntegerField()
+    views = fields.IntegerField()
+    links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
+
+    class Meta(object):
+
+        model = PostV2Dto
+
+
+class PostCollectionV2Dto(object):
+
+    def __init__(self, **kwargs):
+        self.posts = kwargs.get('posts', [])
+
+
+class PostCollectionV2DtoSerializer(Serializer):
+
+    posts = fields.ListField(fields.ObjectField(PostV2DtoSerializer))
+
+    class Model(object):
+
+        model = PostCollectionV2Dto
+
+
 class PostFormDto(object):
 
     def __init__(self, **kwargs):

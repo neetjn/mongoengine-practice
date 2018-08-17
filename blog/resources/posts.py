@@ -2,13 +2,14 @@ import base64
 import falcon
 import redis
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
-    post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts
+    post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts, \
+    post_to_v2_dto
 from blog.core.comments import comment_to_dto
 from blog.db import Post, User
 from blog.errors import UnauthorizedRequestError
 from blog.hooks.users import is_logged_in
-from blog.mediatypes import PostDtoSerializer, PostCollectionDtoSerializer, \
-    PostFormDtoSerializer, PostCollectionDto, UserRoles, LinkDto, \
+from blog.mediatypes import PostV2DtoSerializer, PostCollectionV2DtoSerializer, \
+    PostFormDtoSerializer, PostCollectionV2Dto, UserRoles, LinkDto, \
     CommentFormDtoSerializer, PostSearchSettingsDtoSerializer, HttpMethods
 from blog.resources.base import BaseResource
 from blog.resources.comments import get_comment_links, CommentResource
@@ -196,13 +197,14 @@ class PostCollectionResource(BaseResource):
         page_count = req.params.get('count')
         cache = req.context.get('cache')
         cache_key = f'post-collection;{page_start};{page_count}'
+        clear_post_cache(cache)
         if cache.get(cache_key):
             resp.body = cache.get(cache_key)
         else:
-            post_collection_dto = PostCollectionDto(posts=[
-                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
+            post_collection_dto = PostCollectionV2Dto(posts=[
+                post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
                 for post in get_posts(start=page_start, count=page_count)])
-            resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
+            resp.body = to_json(PostCollectionV2DtoSerializer, post_collection_dto)
             # cache post collection in redis
             cache.set(cache_key, resp.body)
 
@@ -239,9 +241,9 @@ class PostSearchResource(BaseResource):
         else:
             user = req.context.get('user')
             post_search_settings = from_json(PostSearchSettingsDtoSerializer, payload)
-            post_collection_dto = PostCollectionDto(posts=[
-                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
+            post_collection_dto = PostCollectionV2Dto(posts=[
+                post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
                 for post in search_posts(post_search_settings, str(user.id), page_start, page_count)])
-            resp.body = to_json(PostCollectionDtoSerializer, post_collection_dto)
+            resp.body = to_json(PostCollectionV2DtoSerializer, post_collection_dto)
             # cache post search in redis
             cache.set(cache_key, resp.body)

@@ -6,12 +6,12 @@ from blog.core.users import get_user, get_user_comments
 from blog.db import Post, PostLike, PostView, PostSearchRequest, Comment, User
 from blog.errors import PostNotFoundError, ResourceNotAvailableError
 from blog.mediatypes import LinkDto, PostViewDto, PostDto, PostFormDto, CommentFormDto, \
-    PostSearchSettingsDto, PostSearchOptions
+    PostSearchSettingsDto, PostSearchOptions, PostV2Dto
 from blog.settings import settings
 from blog.utils.crypto import encrypt_content, decrypt_content
 
 
-def search_posts(post_search_settings: PostSearchSettingsDto, user_id, start: int = None, count: int = None):
+def search_posts(post_search_settings: PostSearchSettingsDto, user_id, start: int = None, count: int = None) -> list:
     """
     Search for an existing post resource.
 
@@ -74,7 +74,7 @@ def search_posts(post_search_settings: PostSearchSettingsDto, user_id, start: in
     return posts[start:count]
 
 
-def get_posts(start=None, count=None):
+def get_posts(start=None, count=None) -> list:
     """
     Fetches collection of post resources.
 
@@ -214,7 +214,17 @@ def delete_post(post_id: str):
     get_post(post_id).delete()
 
 
-def get_post_comments(post_id: str, start: int = None, count: int = None):
+def get_post_comment_count(post_id: str) -> int:
+    """
+    Get total number of comments for existing post.
+
+    :param post_id: Identifier of post to pull comments from.
+    :type post_id: str
+    """
+    return Comment.objects(post_id=post_id).count()
+
+
+def get_post_comments(post_id: str, start: int = None, count: int = None) -> list:
     """
     Fetch collection of comments given post.
 
@@ -232,7 +242,7 @@ def get_post_comments(post_id: str, start: int = None, count: int = None):
     return comments
 
 
-def get_user_posts(user_id: str, start: int = None, count: int = None):
+def get_user_posts(user_id: str, start: int = None, count: int = None) -> list:
     """
     Find all posts by given user.
 
@@ -247,7 +257,7 @@ def get_user_posts(user_id: str, start: int = None, count: int = None):
     return Post.objects.get(author=user_id)[start:count]
 
 
-def get_user_liked_posts(user_id: str, start: int = None, count: int = None):
+def get_user_liked_posts(user_id: str, start: int = None, count: int = None) -> list:
     """
     Find all posts liked by given user.
 
@@ -275,8 +285,9 @@ def post_to_dto(post: Post, href: str = None, links: list = None) -> PostDto:
     :type links: list
     :return: PostDto
     """
-    likes = PostLike.objects(post_id=str(post.id))
-    views = PostView.objects(post_id=str(post.id))
+    post_id = str(post.id)
+    likes = PostLike.objects(post_id=post_id).count()
+    views = PostView.objects(post_id=post_id).count()
     return PostDto(
         href=href,
         links=links or [],
@@ -289,5 +300,38 @@ def post_to_dto(post: Post, href: str = None, links: list = None) -> PostDto:
         featured=post.featured,
         created=post.created,
         edited=post.edited,
-        likes=len(likes),
-        views=len(views))
+        likes=likes,
+        views=views)
+
+
+def post_to_v2_dto(post: Post, href: str = None, links: list = None) -> PostDto:
+    """
+    Converts post resource into data transfer object.
+
+    :param post: Post resource to convert.
+    :type post: Post
+    :param href: Post resource href link.
+    :type href: str
+    :param links: Post resource links.
+    :type links: list
+    :return: PostV2Dto
+    """
+    post_id = str(post.id)
+    likes = PostLike.objects(post_id=post_id).count()
+    views = PostView.objects(post_id=post_id).count()
+    comments = Comment.objects(post_id=post_id).count()
+    return PostV2Dto(
+        href=href,
+        links=links or [],
+        author=get_user(post.author).full_name,
+        title=post.title,
+        description=post.description,
+        content=post.content,
+        comments=comments,
+        tags=post.tags,
+        private=post.private,
+        featured=post.featured,
+        created=post.created,
+        edited=post.edited,
+        likes=likes,
+        views=views)
