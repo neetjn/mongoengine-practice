@@ -198,7 +198,6 @@ class PostCollectionResource(BaseResource):
         page_count = req.params.get('count')
         cache = req.context.get('cache')
         cache_key = f'post-collection;{page_start};{page_count}'
-        clear_post_cache(cache)
         if cache.get(cache_key):
             resp.body = cache.get(cache_key)
         else:
