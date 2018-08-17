@@ -173,7 +173,7 @@ class BlogPostTests(TestCase):
             headers=self.headers)
         post_collection_res = self.simulate_get(PostCollectionResource.route)
         created_post = post_collection_res.json.get('posts')[0]
-        self.assertEqual(len(created_post.get('comments')), 0)
+        self.assertEqual(created_post.get('comments'), 0)
         post_href = normalize_href(created_post.get('href'))
         post_res = self.simulate_get(post_href)
         self.assertEqual(len(post_res.json.get('comments')), 0)
