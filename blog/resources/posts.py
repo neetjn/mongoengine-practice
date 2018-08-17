@@ -10,7 +10,8 @@ from blog.errors import UnauthorizedRequestError
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import PostV2DtoSerializer, PostCollectionV2DtoSerializer, \
     PostFormDtoSerializer, PostCollectionV2Dto, UserRoles, LinkDto, \
-    CommentFormDtoSerializer, PostSearchSettingsDtoSerializer, HttpMethods
+    CommentFormDtoSerializer, PostSearchSettingsDtoSerializer, HttpMethods, \
+    PostDtoSerializer
 from blog.resources.base import BaseResource
 from blog.resources.comments import get_comment_links, CommentResource
 from blog.utils.serializers import from_json, to_json
