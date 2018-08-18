@@ -6,6 +6,15 @@ from blog.utils.serializers import CharLenValidator, EmailValidator, RegexValida
     NotEmptyValidator
 
 
+class HttpMethods(object):
+
+    GET = 'GET'
+    PUT = 'PUT'
+    POST = 'POST'
+    DELETE = 'DELETE'
+    PATCH = 'PATCH'
+
+
 class UserRoles(object):
 
     ADMIN = 'ADMIN'
@@ -24,16 +33,17 @@ class PostSearchOptions(object):
 
 class LinkDto(object):
 
-    def __init__(self, rel=None, href=None):
+    def __init__(self, rel=None, href=None, accepted_methods=None):
         self.rel = rel
         self.href = href
+        self.accepted_methods = accepted_methods or []
 
 
 class LinkDtoSerializer(Serializer):
 
     rel = fields.StringField(required=True)
     href = fields.StringField(required=True)
-
+    accepted_methods = fields.ListField(fields.StringField(), name='acceptedMethods')
     class Meta(object):
         model = LinkDto
 
@@ -236,6 +246,75 @@ class PostCollectionDtoSerializer(Serializer):
 
         model = PostCollectionDto
 
+
+class PostV2Dto(object):
+
+    def __init__(self, **kwargs):
+        self.href = kwargs.get('href', '')
+        self.author = kwargs.get('author', '')
+        self.title = kwargs.get('title', '')
+        self.description = kwargs.get('description', '')
+        self.content = kwargs.get('content', '')
+        self.tags = kwargs.get('tags', [])
+        self.private = kwargs.get('private', False)
+        self.featured = kwargs.get('featured', False)
+        self.created = kwargs.get('created', None)
+        self.edited = kwargs.get('edited', None)
+        self.comments = kwargs.get('comments', 0)
+        self.likes = kwargs.get('likes', 0)
+        self.views = kwargs.get('views', 0)
+        self.links = kwargs.get('links', [])
+
+
+class PostV2DtoSerializer(Serializer):
+
+    href = fields.StringField()
+    author = fields.StringField()
+    title = fields.StringField(validators=[
+        NotEmptyValidator(),
+        CharLenValidator(
+            min=settings.rules.post.title_min_char,
+            max=settings.rules.post.title_max_char
+        )
+    ])
+    description = fields.StringField(validators=[
+        NotEmptyValidator(),
+        CharLenValidator(
+            min=settings.rules.post.title_min_char,
+            max=settings.rules.post.title_max_char
+        )
+    ])
+    content = fields.StringField(validators=[NotEmptyValidator()])
+    tags = fields.ListField(fields.StringField())
+    private = fields.BooleanField()
+    featured = fields.BooleanField()
+    created = fields.DateTimeField()
+    edited = fields.DateTimeField()
+    comments = fields.IntegerField()
+    likes = fields.IntegerField()
+    views = fields.IntegerField()
+    links = fields.ListField(fields.ObjectField(LinkDtoSerializer))
+
+    class Meta(object):
+
+        model = PostV2Dto
+
+
+class PostCollectionV2Dto(object):
+
+    def __init__(self, **kwargs):
+        self.posts = kwargs.get('posts', [])
+
+
+class PostCollectionV2DtoSerializer(Serializer):
+
+    posts = fields.ListField(fields.ObjectField(PostV2DtoSerializer))
+
+    class Model(object):
+
+        model = PostCollectionV2Dto
+
+
 class PostFormDto(object):
 
     def __init__(self, **kwargs):
@@ -363,6 +442,37 @@ class UserFormDtoSerializer(Serializer):
     class Meta(object):
 
         model = UserFormDto
+
+
+class UserUpdateFormDto(object):
+
+    def __init__(self, **kwargs):
+        self.avatar_href = kwargs.get('avatar_href', '')
+        self.password = kwargs.get('password', '')
+        self.email = kwargs.get('email', '')
+        self.full_name = kwargs.get('full_name', '')
+
+
+class UserUpdateFormDtoSerializer(Serializer):
+
+    full_name = fields.StringField(name='fullName', validators=[
+        CharLenValidator(
+            min=settings.rules.user.name_min_char,
+            max=settings.rules.user.name_max_char
+        )
+    ])
+    email = fields.StringField(validators=[EmailValidator()])
+    password = fields.StringField(validators=[
+        CharLenValidator(
+            min=settings.rules.user.password_min_char,
+            max=settings.rules.user.password_max_char
+        )
+    ])
+    avatar_href = fields.StringField(name='avatarHref')
+
+    class Meta(object):
+
+        model = UserUpdateFormDto
 
 
 class UserAuthDto(object):

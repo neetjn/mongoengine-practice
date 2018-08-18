@@ -16,7 +16,7 @@ This project provides a seamless REST api for your blog. py-blog has the capabil
 
 **Project Size**
 
-py-blog is composed of a simple RESTful api built on top of [Falcon](https://falconframework.org/), [Gunicorn](http://gunicorn.org/) WSGI and supports [resource expansion](https://stormpath.com/blog/linking-and-resource-expansion-rest-api-tips).
+py-blog is composed of a simple RESTful api built on top of [Falcon](https://falconframework.org/) and [Gunicorn](http://gunicorn.org/) WSGI designed with HATEOAS ([resource expansion](https://stormpath.com/blog/linking-and-resource-expansion-rest-api-tips)).
 
 **Flexbility**
 
@@ -29,23 +29,40 @@ This project was crafted with consumability in mind. The root endpoint serves a 
   "links": [
     {
       "rel": "post-collection",
-      "href": "localhost:8000/v1/posts/"
+      "href": "localhost:8000/v1/posts/",
+      "acceptedMethods": [
+        "GET",
+        "POST"
+      ]
     },
     {
       "rel": "post-search",
-      "href": "localhost:8000/v1/posts/search"
+      "href": "localhost:8000/v1/posts/search/",
+      "acceptedMethods": [
+        "POST"
+      ]
     },
     {
       "rel": "user-authentication",
-      "href": "localhost:8000/v1/user/authenticate/"
+      "href": "localhost:8000/v1/user/authenticate/",
+      "acceptedMethods": [
+        "POST"
+      ]
     },
     {
       "rel": "user",
-      "href": "localhost:8000/v1/user/"
+      "href": "localhost:8000/v1/user/",
+      "acceptedMethods": [
+        "GET",
+        "PUT"
+      ]
     },
     {
       "rel": "user-registration",
-      "href": "localhost:8000/v1/user/register/"
+      "href": "localhost:8000/v1/user/register/",
+      "acceptedMethods": [
+        "POST"
+      ]
     }
   ]
 }
@@ -57,29 +74,52 @@ This project was crafted with consumability in mind. The root endpoint serves a 
 {
   "posts": [
     {
-      "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/",
+      "href": "localhost:8000/v1/post/5b776070df72ea7bdeb80a19/",
       "author": "John Nolette",
       "title": "My First Post",
-      "description": "Hello world!",
-      "content": "Hello world, this is my first post!",
-      "tags": [],
-      "created": "2018-04-04 03:19:59.714000",
+      "description": "This is my first post ever!",
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "tags": [
+        "hello",
+        "world"
+      ],
+      "private": false,
+      "featured": false,
+      "created": "2018-08-17 23:55:28.206000",
       "edited": null,
-      "comments": [],
+      "comments": 0,
       "likes": 0,
-      "views": 1,
+      "views": 0,
       "links": [
         {
+          "rel": "self",
+          "href": "localhost:8000/v1/post/5b776070df72ea7bdeb80a19/",
+          "acceptedMethods": [
+            "GET",
+            "PUT",
+            "DELETE"
+          ]
+        },
+        {
           "rel": "post-comment",
-          "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/comment"
+          "href": "localhost:8000/v1/post/5b776070df72ea7bdeb80a19/comment",
+          "acceptedMethods": [
+            "POST"
+          ]
         },
         {
           "rel": "post-like",
-          "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/like"
+          "href": "localhost:8000/v1/post/5b776070df72ea7bdeb80a19/like",
+          "acceptedMethods": [
+            "PUT"
+          ]
         },
         {
           "rel": "post-view",
-          "href": "localhost:8000/v1/post/5ac4445f8743a17add9ed242/view"
+          "href": "localhost:8000/v1/post/5b776070df72ea7bdeb80a19/view",
+          "acceptedMethods": [
+            "PUT"
+          ]
         }
       ]
     }
