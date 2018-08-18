@@ -13,7 +13,8 @@ from blog.db import User
 from blog.errors import ResourceNotAvailableError, UserAvatarUploadError
 from blog.hooks.users import is_logged_in, is_logged_out
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
-    TokenDtoSerializer, UserProfileDtoSerializer, LinkDto, HttpMethods
+    TokenDtoSerializer, UserProfileDtoSerializer, LinkDto, HttpMethods, \
+    UserUpdateFormDtoSerializer
 from blog.resources.base import BaseResource
 from blog.resources.comments import CommentResource
 from blog.resources.posts import PostResource
@@ -190,6 +191,6 @@ class UserResource(BaseResource):
         user = req.context.get('user')
         user_id = str(user.id)
         cache = req.context.get('cache')
-        edit_user(user.id, from_json(UserFormDtoSerializer, payload))
+        edit_user(user.id, from_json(UserUpdateFormDtoSerializer, payload))
         # delete cached payload on change
         cache.delete(f'user-{user_id}')

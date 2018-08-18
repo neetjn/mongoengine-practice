@@ -444,6 +444,37 @@ class UserFormDtoSerializer(Serializer):
         model = UserFormDto
 
 
+class UserUpdateFormDto(object):
+
+    def __init__(self, **kwargs):
+        self.avatar_href = kwargs.get('avatar_href', '')
+        self.password = kwargs.get('password', '')
+        self.email = kwargs.get('email', '')
+        self.full_name = kwargs.get('full_name', '')
+
+
+class UserUpdateFormDtoSerializer(Serializer):
+
+    full_name = fields.StringField(name='fullName', validators=[
+        CharLenValidator(
+            min=settings.rules.user.name_min_char,
+            max=settings.rules.user.name_max_char
+        )
+    ])
+    email = fields.StringField(validators=[EmailValidator()])
+    password = fields.StringField(validators=[
+        CharLenValidator(
+            min=settings.rules.user.password_min_char,
+            max=settings.rules.user.password_max_char
+        )
+    ])
+    avatar_href = fields.StringField(name='avatarHref')
+
+    class Meta(object):
+
+        model = UserUpdateFormDto
+
+
 class UserAuthDto(object):
 
     def __init__(self, **kwargs):
