@@ -6,6 +6,8 @@ USERNAME_PATTERN = r'([a-zA-Z0-9]{,})$'
 
 BLOG_TEST = os.environ.get('BLOG_TEST', '').lower() == 'true'
 
+BLOG_NAME = os.environ.get('py-blog', '')
+
 # all blog content will be cnrypted before entering the database
 # likewise all blog content must be decoded
 BLOG_CONTENT_KEY = os.environ.get('BLOG_CONTENT_KEY', 'mWmYSBcSzfhGuLCRvqc3A9xK')
