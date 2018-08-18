@@ -149,8 +149,9 @@ class UserResource(BaseResource):
         user = req.context.get('user')
         user_id = str(user.id)
         cache = req.context.get('cache')
-        if cache.get(f'user-{user_id}'):
-            resp.body = cache.get(f'user-{user_id}')
+        cache_key = f'user-{user_id}'
+        if cache.get(cache_key):
+            resp.body = cache.get(cache_key)
         else:
             user_dto = user_to_dto(user)
             user_dto.posts = [
@@ -179,7 +180,7 @@ class UserResource(BaseResource):
                 user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
             resp.body = to_json(UserProfileDtoSerializer, user_dto)
             # cache user payload in redis
-            cache.set(f'user-{user_id}', resp.body)
+            cache.set(cache_key, resp.body)
 
     @falcon.before(is_logged_in)
     def on_put(self, req, resp):
