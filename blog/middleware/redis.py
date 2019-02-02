@@ -25,8 +25,6 @@ def cache_key(req, resource, uri=None) -> str:
 
 class CacheProvider(object):
 
-    # TODO: left here, add processesor for deleting cacge wtg oaransm sjuo reg oarans yse qyery
-
     def process_resource(self, req, resp, resource, params):
         """Provide redis cache with every request."""
         req.context.setdefault('params', params)
@@ -41,7 +39,6 @@ class CacheProvider(object):
                 if not resp.body:
                     resp.body = resp.cached
             else:
-                print(f'\nDeleting caches from.. {req.uri}')
                 client.delete(cache)
                 params = req.context.get('params')
                 for resc in resource.cached_resources:
@@ -52,5 +49,4 @@ class CacheProvider(object):
                     # remove last character, uri has final slash stripped
                     uri = f'{req.scheme}://{req.netloc}{route}'
                     # delete binded cached resources
-                    print(cache_key(req, resc, uri))
                     client.delete(cache_key(req, resc, uri))
