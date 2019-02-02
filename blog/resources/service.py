@@ -1,4 +1,5 @@
 import falcon
+from blog.hooks.responders import auto_respond
 from blog.mediatypes import LinkDto, ServiceDescriptionDto, ServiceDescriptionDtoSerializer, UserRoles, \
     HttpMethods
 from blog.resources.admin import BlogSettingsResource
@@ -23,9 +24,9 @@ class ServiceDescriptionResource(BaseResource):
 
     route = '/'
 
+    @falcon.before(auto_respond)
     def on_get(self, req, resp):
         """Fetch blog service description."""
-        resp.status = falcon.HTTP_200
         service_description = ServiceDescriptionDto(links=[
             LinkDto(rel=BLOG_HREF_REL.POST_COLLECTION,
                     href=PostCollectionResource.url_to(req.netloc),
