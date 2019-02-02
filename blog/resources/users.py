@@ -50,9 +50,9 @@ class UserAuthenticationResource(BaseResource):
     route = '/v1/user/authenticate/'
     use_cache = False
 
+    @falcon.before(auto_respond)
     def on_post(self, req, resp):
         """Fetch serialized session token."""
-        resp.status = falcon.HTTP_200
         payload = req.stream.read()
         host = req.access_route[0]
         user = authenticate(from_json(UserAuthDtoSerializer, payload), host)
@@ -64,25 +64,27 @@ class UserRegistrationResource(BaseResource):
     route = '/v1/user/register/'
     use_cache = False
 
+    @falcon.before(auto_respond)
+    @falcon.before(request_body, UserFormDtoSerializer)
     @falcon.before(is_logged_out)
+    @falcon.after(response_body, TokenDtoSerializer)
     def on_post(self, req, resp):
         """Creates a new user resource and provides a session token."""
-        resp.status = falcon.HTTP_201
         if not settings.user.allow_manual_registration:
             raise ResourceNotAvailableError()
         host = req.access_route[0]
-        payload = req.stream.read()
-        user = create_user(from_json(UserFormDtoSerializer, payload))
-        resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user, host)))
+        user = create_user(req.payload)
+        resp.body = TokenDto(token=get_auth_jwt(user, host))
 
 
 class UserAvatarResource(BaseResource):
 
     route = '/v1/user/{user_id}/avatar/'
+    use_cache = False
 
+    @falcon.before(auto_respond)
     def on_get(self, req, resp, user_id):
         """Fetch and serve avatar for requested user."""
-        resp.status = falcon.HTTP_200
         if not settings.user.allow_avatar_capability:
             raise ResourceNotAvailableError()
         user = get_user(user_id)
@@ -108,13 +110,12 @@ class UserAvatarMediaResource(BaseResource):
     route = '/v1/user/avatar/'
     use_cache = False
 
+    @falcon.before(auto_respond)
     @falcon.before(is_logged_in)
     def on_post(self, req, resp):
         """Consumes and stores avatar for user in current session."""
-        resp.status = falcon.HTTP_201
         if not settings.user.allow_avatar_capability:
             raise ResourceNotAvailableError()
-        cache = req.context.get('cache')
         user = req.context.get('user')
         user_id = str(user.id)
         if 'image' not in req.params:
@@ -126,21 +127,16 @@ class UserAvatarMediaResource(BaseResource):
             raise UserAvatarUploadError()
         mime = magic.Magic(mime=True)
         store_user_avatar(user_id, avatar_stream, mime.from_buffer(avatar_stream))
-        # delete cached payload on change
-        cache.delete(f'user-{user_id}')
 
+    @falcon.before(auto_respond)
     @falcon.before(is_logged_in)
     def on_delete(self, req, resp):
         """Delete existing user avatar, will reference default."""
-        resp.status = falcon.HTTP_204
         if not settings.user.allow_avatar_capability:
             raise ResourceNotAvailableError()
-        cache = req.context.get('cache')
         user = req.context.get('user')
         user_id = str(user.id)
         delete_user_avatar(user_id)
-        # delete cached payload on change
-        cache.delete(f'user-{user_id}')
 
 
 class UserResource(BaseResource):
@@ -148,54 +144,44 @@ class UserResource(BaseResource):
     route = '/v1/user/'
     use_cache = False
 
+    @falcon.before(auto_respond)
     @falcon.before(is_logged_in)
     def on_get(self, req, resp):
         """Fetch user information for current session."""
-        resp.status = falcon.HTTP_200
         user = req.context.get('user')
         user_id = str(user.id)
-        cache = req.context.get('cache')
-        cache_key = f'user-{user_id}'
-        if cache.get(cache_key):
-            resp.body = cache.get(cache_key)
-        else:
-            user_dto = user_to_dto(user)
-            user_dto.posts = [
-                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
-                for post in get_user_posts(user_id)]
-            user_dto.comments = [
-                comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=comment.id))
-                for comment in get_user_comments(user_id)]
-            user_dto.liked_posts = [
-                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
-                for post in get_user_liked_posts(user_id)]
-            # no need to construct url, pull from request
-            user.href = req.uri
-            user_dto.links = [
-                LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.SELF,
-                        href=UserResource.url_to(req.netloc),
-                        accepted_methods=[HttpMethods.GET, HttpMethods.PUT]),
-                LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
-                        href=UserAvatarMediaResource.url_to(req.netloc),
-                        accepted_methods=[HttpMethods.POST]),
-                LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
-                        href=UserAvatarMediaResource.url_to(req.netloc),
-                        accepted_methods=[HttpMethods.DELETE])]
-            # if user avatar capabilities present, provide avatar image
-            if settings.user.allow_avatar_capability:
-                user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
-            resp.body = to_json(UserProfileDtoSerializer, user_dto)
-            # cache user payload in redis
-            cache.set(cache_key, resp.body)
+        user_dto = user_to_dto(user)
+        user_dto.posts = [
+            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
+            for post in get_user_posts(user_id)]
+        user_dto.comments = [
+            comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=comment.id))
+            for comment in get_user_comments(user_id)]
+        user_dto.liked_posts = [
+            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
+            for post in get_user_liked_posts(user_id)]
+        # no need to construct url, pull from request
+        user.href = req.uri
+        user_dto.links = [
+            LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.SELF,
+                    href=UserResource.url_to(req.netloc),
+                    accepted_methods=[HttpMethods.GET, HttpMethods.PUT]),
+            LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
+                    href=UserAvatarMediaResource.url_to(req.netloc),
+                    accepted_methods=[HttpMethods.POST]),
+            LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
+                    href=UserAvatarMediaResource.url_to(req.netloc),
+                    accepted_methods=[HttpMethods.DELETE])]
+        # if user avatar capabilities present, provide avatar image
+        if settings.user.allow_avatar_capability:
+            user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
+        resp.body = to_json(UserProfileDtoSerializer, user_dto)
 
+    @falcon.before(auto_respond)
+    @falcon.before(request_body, UserUpdateFormDtoSerializer)
     @falcon.before(is_logged_in)
     def on_put(self, req, resp):
         """Updates user resource for current session."""
-        resp.status = falcon.HTTP_204
-        payload = req.stream.read()
         user = req.context.get('user')
         user_id = str(user.id)
-        cache = req.context.get('cache')
-        edit_user(user.id, from_json(UserUpdateFormDtoSerializer, payload))
-        # delete cached payload on change
-        cache.delete(f'user-{user_id}')
+        edit_user(user_id, req.payload)
