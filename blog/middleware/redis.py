@@ -35,6 +35,9 @@ class CacheProvider(object):
             else:
                 client.delete(cache_key(req, resource))
                 for resc in resource.cached_resources:
-                    route = resc.route.replace('{', '${')  # interpolate for safe formatting
+                    tmpl = resc.route.replace('{', '${')  # interpolate for safe formatting
                     # assumes that binded resources ay have routes with similar params
-                    client.delete(Template(route).safe_substitute(**req.params))
+                    route = Template(tmpl).safe_substitute(**req.params)
+                    uri = f'{req.protocol}://{req.netloc}{route}'
+                    # delete binded cached resources
+                    client.delete(uri)

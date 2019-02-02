@@ -193,6 +193,6 @@ class PostSearchResource(BaseResource):
             resp.body = post_collection_dto
 
 
-# override post resource binded cache with later defined resources
+# override resource binded cache with later defined resources
 PostLikeResource.cached_resources = [PostResource]
 PostResource.cached_resources = [PostCollectionResource, PostSearchResource]

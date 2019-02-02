@@ -109,7 +109,7 @@ class UserAvatarResource(BaseResource):
 class UserAvatarMediaResource(BaseResource):
 
     route = '/v1/user/avatar/'
-    use_cache = False
+    unique_cache = True
 
     @falcon.before(auto_respond)
     @falcon.before(is_logged_in)
@@ -188,3 +188,7 @@ class UserResource(BaseResource):
         user = req.context.get('user')
         user_id = str(user.id)
         edit_user(user_id, req.payload)
+
+
+# override resource binded cache with later defined resources
+UserAvatarMediaResource.cached_resources = [UserResource]
