@@ -54,8 +54,8 @@ class UserAuthenticationResource(BaseResource):
     @falcon.before(request_body, UserAuthDtoSerializer)
     def on_post(self, req, resp):
         """Fetch serialized session token."""
-        payload = req.stream.read()
         host = req.access_route[0]
+        raise RuntimeError(req.payload)
         user = authenticate(req.payload, host)
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user, host))) if user else 'false'
 

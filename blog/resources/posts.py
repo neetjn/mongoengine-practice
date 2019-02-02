@@ -90,7 +90,6 @@ class PostViewResource(BaseResource):
 class PostLikeResource(BaseResource):
 
     route = '/v1/post/{post_id}/like'
-    cached_resources = [PostResource]
 
     @falcon.before(auto_respond)
     @falcon.before(is_logged_in)
@@ -195,4 +194,5 @@ class PostSearchResource(BaseResource):
 
 
 # override post resource binded cache with later defined resources
+PostLikeResource.cached_resources = [PostResource]
 PostResource.cached_resources = [PostCollectionResource, PostSearchResource]

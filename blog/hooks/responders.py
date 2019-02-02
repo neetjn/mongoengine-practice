@@ -21,7 +21,6 @@ def request_body(req, resp, resource, params, serializer_class):
     """Deserialize request payload into mapped object using defined serializer."""
     req.payload = from_json(serializer_class, req.stream.read())
 
-
-def response_body(req, resp, resource, params, serializer_class, content_type="application/json"):
+def response_body(req, resp, resource, serializer_class, content_type="application/json"):
     resp.body = to_json(serializer_class, resp.body)
     resp.content_type = content_type
