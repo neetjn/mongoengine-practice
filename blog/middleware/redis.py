@@ -1,4 +1,5 @@
 import redis
+from string import Template
 from blog.constants import BLOG_REDIS_HOST, BLOG_REDIS_PORT
 from blog.mediatypes import HttpMethods
 
@@ -19,3 +20,7 @@ class CacheProvider(object):
                 client.set(req.uri, resp.body)
             else:
                 client.delete(req.uri)
+                for resc in resource.cached_resources:
+                    route = resource.route.replace('{', '${')  # interpolate for safe formatting
+                    # assumes that binded resources ay have routes with similar params
+                    client.delete(Template(route).safe_substitute(**req.params))

@@ -4,7 +4,6 @@ from blog.core.comments import get_comment, edit_comment, delete_comment, commen
     like_comment
 from blog.db import Comment, User
 from blog.errors import UnauthorizedRequestError
-from blog.hooks.cache import use_cache
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSerializer, \
     LinkDto, HttpMethods
@@ -63,8 +62,8 @@ class CommentLikeResource(BaseResource):
 class CommentResource(BaseResource):
 
     route = '/v1/blog/comment/{comment_id}/'
+    cached_resources = [CommentLikeResource]
 
-    @falcon.before(get_cache)
     def on_get(self, req, resp, comment_id):
         """Fetch single comment resource."""
         resp.status = falcon.HTTP_200
