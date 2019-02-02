@@ -11,6 +11,7 @@ from blog.core.users import authenticate, get_user, create_user, edit_user, \
     user_to_dto, get_user_comments, get_user_posts, store_user_avatar, delete_user_avatar
 from blog.db import User
 from blog.errors import ResourceNotAvailableError, UserAvatarUploadError
+from blog.hooks.responders import auto_respond, request_body, response_body
 from blog.hooks.users import is_logged_in, is_logged_out
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
     TokenDtoSerializer, UserProfileDtoSerializer, LinkDto, HttpMethods, \
@@ -47,6 +48,7 @@ def get_auth_jwt(user: User, host: str) -> str:
 class UserAuthenticationResource(BaseResource):
 
     route = '/v1/user/authenticate/'
+    use_cache = False
 
     def on_post(self, req, resp):
         """Fetch serialized session token."""
@@ -60,6 +62,7 @@ class UserAuthenticationResource(BaseResource):
 class UserRegistrationResource(BaseResource):
 
     route = '/v1/user/register/'
+    use_cache = False
 
     @falcon.before(is_logged_out)
     def on_post(self, req, resp):
@@ -103,6 +106,7 @@ class UserAvatarResource(BaseResource):
 class UserAvatarMediaResource(BaseResource):
 
     route = '/v1/user/avatar/'
+    use_cache = False
 
     @falcon.before(is_logged_in)
     def on_post(self, req, resp):
@@ -142,6 +146,7 @@ class UserAvatarMediaResource(BaseResource):
 class UserResource(BaseResource):
 
     route = '/v1/user/'
+    use_cache = False
 
     @falcon.before(is_logged_in)
     def on_get(self, req, resp):

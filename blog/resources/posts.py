@@ -108,9 +108,7 @@ class PostResource(BaseResource):
     @falcon.after(response_body, PostDtoSerializer)
     def on_get(self, req, resp, post_id):
         """Fetch single post resource."""
-        cached = req.context.get('cached')
-
-        if not cached:
+        if not resp.cached:
             post = get_post(post_id)
             post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
             comments = get_post_comments(post_id)
@@ -119,9 +117,6 @@ class PostResource(BaseResource):
                                                 comment_id=str(comment.id),
                                                 links=get_comment_links(req, comment))) for comment in comments]
             resp.body = post_dto
-            return
-
-        resp.body = cached
 
     @falcon.before(auto_respond)
     @falcon.before(request_body, PostFormDtoSerializer)
@@ -160,18 +155,13 @@ class PostCollectionResource(BaseResource):
 
         Note: This endpoint supports pagination, pagination arguments must be provided via query args.
         """
-        cached = req.context.get('cached')
-
-        if not cached:
+        if not resp.cached:
             page_start = req.params.get('start')
             page_count = req.params.get('count')
             post_collection_dto = PostCollectionV2Dto(posts=[
                 post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
                 for post in get_posts(start=page_start, count=page_count)])
             resp.body = post_collection_dto
-            return
-
-        resp.body = cached
 
     @falcon.before(auto_respond)
     @falcon.before(request_body, PostFormDtoSerializer)
@@ -194,9 +184,7 @@ class PostSearchResource(BaseResource):
     @falcon.after(response_body, PostCollectionV2DtoSerializer)
     def on_post(self, req, resp):
         """Search for an existing post resource."""
-        cached = req.context.get('cached')
-
-        if not cached:
+        if not resp.cached:
             page_start = req.params.get('start')
             page_count = req.params.get('count')
             user = req.context.get('user')
@@ -204,9 +192,6 @@ class PostSearchResource(BaseResource):
                 post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
                 for post in search_posts(req.payload, str(user.id), page_start, page_count)])
             resp.body = post_collection_dto
-            return
-
-        resp.body = cached
 
 
 # override post resource binded cache with later defined resources

@@ -1,4 +1,5 @@
 import falcon
+from r2dto import ValidationError
 from blog.mediatypes import HttpMethods
 from blog.utils.serializers import from_json, to_json
 

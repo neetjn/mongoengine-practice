@@ -68,15 +68,10 @@ class CommentResource(BaseResource):
     @falcon.after(response_body, CommentDtoSerializer)
     def on_get(self, req, resp, comment_id):
         """Fetch single comment resource."""
-        cached = req.context.get('cached')
-
-        if not cached:
+        if not resp.cached:
             comment = get_comment(comment_id)
             comment_dto = comment_to_dto(comment, href=req.uri, links=get_comment_links(req, comment))
             resp.body = comment_dto
-            return
-
-        resp.body = cached
 
     @falcon.before(auto_respond)
     @falcon.before(request_body, CommentDtoSerializer)

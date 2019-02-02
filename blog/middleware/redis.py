@@ -11,13 +11,15 @@ class CacheProvider(object):
 
     def process_request(self, req, resp):
         """Provide redis cache with every request."""
-        req.context.set('cached', client.get(req.uri))
+        resp.cached = client.get(req.uri)
 
     def process_response(self, req, resp, resource, req_succeeded):
         """Sets or deletes cache for provided resources."""
         if req_succeeded and resource.use_cache:
             if req.method == HttpMethods.GET:
                 client.set(req.uri, resp.body)
+                if not resp.body:
+                    resp.body = resp.cached
             else:
                 client.delete(req.uri)
                 for resc in resource.cached_resources:

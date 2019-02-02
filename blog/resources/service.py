@@ -28,9 +28,7 @@ class ServiceDescriptionResource(BaseResource):
     @falcon.after(response_body, ServiceDescriptionDtoSerializer)
     def on_get(self, req, resp):
         """Fetch blog service description."""
-        cached = req.context.get('cached')
-
-        if not cached:
+        if not resp.cached:
             service_description = ServiceDescriptionDto(links=[
                 LinkDto(rel=BLOG_HREF_REL.POST_COLLECTION,
                         href=PostCollectionResource.url_to(req.netloc),
@@ -56,6 +54,3 @@ class ServiceDescriptionResource(BaseResource):
                             href=BlogSettingsResource.url_to(req.netloc),
                             accepted_methods=[HttpMethods.GET, HttpMethods.PUT]))
             resp.body = service_description
-            return
-
-        resp.body = cached
