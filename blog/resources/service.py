@@ -7,7 +7,6 @@ from blog.resources.base import BaseResource
 from blog.resources.posts import PostCollectionResource, PostSearchResource
 from blog.resources.users import UserAuthenticationResource, UserRegistrationResource, UserResource
 from blog.settings import settings
-from blog.utils.serializers import from_json, to_json
 
 
 class BLOG_HREF_REL(object):

@@ -3,7 +3,6 @@ from blog.hooks.responders import auto_respond, request_body, response_body
 from blog.hooks.users import is_admin
 from blog.settings import settings, save_settings, SettingsSerializer
 from blog.resources.base import BaseResource
-from blog.utils.serializers import from_json, to_json
 
 
 class BlogSettingsResource(BaseResource):
