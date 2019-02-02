@@ -20,7 +20,7 @@ from blog.resources.base import BaseResource
 from blog.resources.comments import CommentResource
 from blog.resources.posts import PostResource
 from blog.settings import settings
-from blog.utils.serializers import from_json, to_json
+from blog.utils.serializers import to_json
 
 
 class BLOG_USER_RESOURCE_HREF_REL(object):
@@ -51,11 +51,12 @@ class UserAuthenticationResource(BaseResource):
     use_cache = False
 
     @falcon.before(auto_respond)
+    @falcon.before(request_body, UserAuthDtoSerializer)
     def on_post(self, req, resp):
         """Fetch serialized session token."""
         payload = req.stream.read()
         host = req.access_route[0]
-        user = authenticate(from_json(UserAuthDtoSerializer, payload), host)
+        user = authenticate(req.payload, host)
         resp.body = to_json(TokenDtoSerializer, TokenDto(token=get_auth_jwt(user, host))) if user else 'false'
 
 
