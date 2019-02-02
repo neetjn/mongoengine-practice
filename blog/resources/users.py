@@ -143,40 +143,42 @@ class UserAvatarMediaResource(BaseResource):
 class UserResource(BaseResource):
 
     route = '/v1/user/'
-    use_cache = False
+    unique_cache = True
 
     @falcon.before(auto_respond)
     @falcon.before(is_logged_in)
+    @falcon.after(response_body, UserProfileDtoSerializer)
     def on_get(self, req, resp):
         """Fetch user information for current session."""
-        user = req.context.get('user')
-        user_id = str(user.id)
-        user_dto = user_to_dto(user)
-        user_dto.posts = [
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
-            for post in get_user_posts(user_id)]
-        user_dto.comments = [
-            comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=comment.id))
-            for comment in get_user_comments(user_id)]
-        user_dto.liked_posts = [
-            post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
-            for post in get_user_liked_posts(user_id)]
-        # no need to construct url, pull from request
-        user.href = req.uri
-        user_dto.links = [
-            LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.SELF,
-                    href=UserResource.url_to(req.netloc),
-                    accepted_methods=[HttpMethods.GET, HttpMethods.PUT]),
-            LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
-                    href=UserAvatarMediaResource.url_to(req.netloc),
-                    accepted_methods=[HttpMethods.POST]),
-            LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
-                    href=UserAvatarMediaResource.url_to(req.netloc),
-                    accepted_methods=[HttpMethods.DELETE])]
-        # if user avatar capabilities present, provide avatar image
-        if settings.user.allow_avatar_capability:
-            user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
-        resp.body = to_json(UserProfileDtoSerializer, user_dto)
+        if not resp.cached:
+            user = req.context.get('user')
+            user_id = str(user.id)
+            user_dto = user_to_dto(user)
+            user_dto.posts = [
+                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
+                for post in get_user_posts(user_id)]
+            user_dto.comments = [
+                comment_to_dto(comment, href=CommentResource.url_to(req.netloc, comment_id=comment.id))
+                for comment in get_user_comments(user_id)]
+            user_dto.liked_posts = [
+                post_to_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id))
+                for post in get_user_liked_posts(user_id)]
+            # no need to construct url, pull from request
+            user.href = req.uri
+            user_dto.links = [
+                LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.SELF,
+                        href=UserResource.url_to(req.netloc),
+                        accepted_methods=[HttpMethods.GET, HttpMethods.PUT]),
+                LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_UPLOAD,
+                        href=UserAvatarMediaResource.url_to(req.netloc),
+                        accepted_methods=[HttpMethods.POST]),
+                LinkDto(rel=BLOG_USER_RESOURCE_HREF_REL.USER_AVATAR_DELETE,
+                        href=UserAvatarMediaResource.url_to(req.netloc),
+                        accepted_methods=[HttpMethods.DELETE])]
+            # if user avatar capabilities present, provide avatar image
+            if settings.user.allow_avatar_capability:
+                user_dto.avatar_href = user.avatar_href or UserAvatarResource.url_to(req.netloc, user_id=user.id)
+            resp.body = user_dto
 
     @falcon.before(auto_respond)
     @falcon.before(request_body, UserUpdateFormDtoSerializer)

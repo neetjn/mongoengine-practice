@@ -2,6 +2,7 @@ class BaseResource(object):
 
     route = ''
     use_cache = True
+    unique_cache = False
     cached_resources = []
 
     @classmethod
