@@ -7,7 +7,7 @@ from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_
 from blog.core.comments import comment_to_dto
 from blog.db import Post, User
 from blog.errors import UnauthorizedRequestError
-from blog.hooks.responders import auto_respond, request_body, response_body
+from blog.hooks.responders import auto_respond, request_body, response_body, Cache
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import PostV2DtoSerializer, PostCollectionV2DtoSerializer, \
     PostFormDtoSerializer, PostCollectionV2Dto, UserRoles, LinkDto, \

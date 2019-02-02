@@ -4,7 +4,7 @@ from blog.core.comments import get_comment, edit_comment, delete_comment, commen
     like_comment
 from blog.db import Comment, User
 from blog.errors import UnauthorizedRequestError
-from blog.hooks.responders import auto_respond, request_body, response_body
+from blog.hooks.responders import auto_respond, request_body, response_body, Cache
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSerializer, \
     LinkDto, HttpMethods
@@ -64,14 +64,14 @@ class CommentResource(BaseResource):
     route = '/v1/blog/comment/{comment_id}/'
     cached_resources = [CommentLikeResource]
 
+    @Cache.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, CommentDtoSerializer)
     def on_get(self, req, resp, comment_id):
         """Fetch single comment resource."""
-        if not resp.cached:
-            comment = get_comment(comment_id)
-            comment_dto = comment_to_dto(comment, href=req.uri, links=get_comment_links(req, comment))
-            resp.body = comment_dto
+        comment = get_comment(comment_id)
+        comment_dto = comment_to_dto(comment, href=req.uri, links=get_comment_links(req, comment))
+        resp.body = comment_dto
 
     @falcon.before(auto_respond)
     @falcon.before(request_body, CommentDtoSerializer)
