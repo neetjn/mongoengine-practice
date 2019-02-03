@@ -4,34 +4,17 @@ from blog.core.comments import get_comment, edit_comment, delete_comment, commen
     like_comment
 from blog.db import Comment, User
 from blog.errors import UnauthorizedRequestError
+from blog.hooks.responders import auto_respond, request_body, response_body, Cache
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSerializer, \
     LinkDto, HttpMethods
 from blog.resources.base import BaseResource
-from blog.utils.serializers import from_json, to_json
 
 
 class BLOG_COMMENT_RESOURCE_HREF_REL(object):
 
     SELF = 'self'
     COMMENT_LIKE = 'comment-like'
-
-
-def clear_post_comment_cache(client: redis.Redis, comment_id: str=None):
-    """
-    Emptys post collection and search cache effectively.
-
-    :param client: Redis client to reference.
-    :type client: redis.Redis
-    :param comment_id: Identifier of individual comment of cache to clear.
-    :type comment_id: str
-    """
-    # delete cached posts
-    for key in client.scan_iter('post-*'):
-        client.delete(key)
-    # delete cached comment by id
-    if comment_id:
-        client.delete(f'comment-{comment_id}')
 
 
 def get_comment_links(req: falcon.Request, comment: Comment) -> list:
@@ -73,50 +56,38 @@ class CommentLikeResource(BaseResource):
         """Like an existing comment resource."""
         resp.status = falcon.HTTP_204
         user = req.context.get('user')
-        cache = req.context.get('cache')
         like_comment(comment_id, str(user.id))
-        clear_post_comment_cache(cache, comment_id)
 
 
 class CommentResource(BaseResource):
 
     route = '/v1/blog/comment/{comment_id}/'
+    cached_resources = [CommentLikeResource]
 
+    @Cache.from_cache
+    @falcon.before(auto_respond)
+    @falcon.after(response_body, CommentDtoSerializer)
     def on_get(self, req, resp, comment_id):
         """Fetch single comment resource."""
-        resp.status = falcon.HTTP_200
-        cache = req.context.get('cache')
-        cache_key = f'comment-{comment_id}'
-        if cache.get(cache_key):
-            resp.body = cache.get(cache_key)
-        else:
-            comment = get_comment(comment_id)
-            comment_dto = comment_to_dto(comment, href=req.uri, links=get_comment_links(req, comment))
-            resp.body = to_json(CommentDtoSerializer, comment_dto)
-            # store requested comment in redis
-            cache.set(cache_key, resp.body)
+        comment = get_comment(comment_id)
+        comment_dto = comment_to_dto(comment, href=req.uri, links=get_comment_links(req, comment))
+        resp.body = comment_dto
 
+    @falcon.before(auto_respond)
+    @falcon.before(request_body, CommentDtoSerializer)
     @falcon.before(is_logged_in)
     def on_put(self, req, resp, comment_id):
         """Update single comment resource."""
-        resp.status = falcon.HTTP_204
-        cache = req.context.get('cache')
         user = req.context.get('user')
         if not user_has_comment_access(user, comment_id):
             raise UnauthorizedRequestError()
-        payload = req.stream.read()
-        edit_comment(comment_id, from_json(CommentFormDtoSerializer, payload))
-        # delete cached comment
-        clear_post_comment_cache(cache, comment_id)
+        edit_comment(comment_id, req.payload)
 
+    @falcon.before(auto_respond)
     @falcon.before(is_logged_in)
     def on_delete(self, req, resp, comment_id):
         """Delete single comment resource."""
-        resp.status = falcon.HTTP_204
-        cache = req.context.get('cache')
         user = req.context.get('user')
         if not user_has_comment_access(user, comment_id):
             raise UnauthorizedRequestError()
         delete_comment(comment_id)
-        # delete cached comment
-        clear_post_comment_cache(cache, comment_id)

@@ -9,7 +9,7 @@ from blog.utils.logger import debug, warning
 
 class UserProcessor(object):
 
-    def process_resource(self, req, resp, resource, params):
+    def process_request(self, req, resp):
         """Process the request for user session before routing it."""
 
         # Note: RFC6648 recommends application headers prefixed with 'X-'

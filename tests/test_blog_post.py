@@ -51,7 +51,7 @@ class BlogPostTests(TestCase):
         cached_delta = (time.clock() * 1000) - elapsed_start
         self.assertGreater(elapsed_delta / 2, cached_delta)
         # measurement subject to change, cached response should take no longer than 3 ms
-        self.assertLess(cached_delta, 3.5)
+        self.assertLess(cached_delta, 3)
         # get resource href for created post
         created_post = post_collection_res.json.get('posts')[0]
         post_href = normalize_href(created_post.get('href'))
@@ -85,6 +85,7 @@ class BlogPostTests(TestCase):
         post_res = self.simulate_get(post_href)
         self.assertEqual(post_res.status_code, 404)
         post_collection_res = self.simulate_get(PostCollectionResource.route)
+        print(post_collection_res.json)
         self.assertEqual(len(post_collection_res.json.get('posts')), 0)
 
     def test_search_post_critera(self):
