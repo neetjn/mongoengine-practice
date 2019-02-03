@@ -162,13 +162,12 @@ class PostCollectionResource(BaseResource):
 
         Note: This endpoint supports pagination, pagination arguments must be provided via query args.
         """
-        if not resp.cached:
-            page_start = req.params.get('start')
-            page_count = req.params.get('count')
-            post_collection_dto = PostCollectionV2Dto(posts=[
-                post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
-                for post in get_posts(start=page_start, count=page_count)])
-            resp.body = post_collection_dto
+        page_start = req.params.get('start')
+        page_count = req.params.get('count')
+        post_collection_dto = PostCollectionV2Dto(posts=[
+            post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
+            for post in get_posts(start=page_start, count=page_count)])
+        resp.body = post_collection_dto
 
     @falcon.before(auto_respond)
     @falcon.before(request_body, PostFormDtoSerializer)
@@ -193,14 +192,13 @@ class PostSearchResource(BaseResource):
     @falcon.after(response_body, PostCollectionV2DtoSerializer)
     def on_post(self, req, resp):
         """Search for an existing post resource."""
-        if not resp.cached:
-            page_start = req.params.get('start')
-            page_count = req.params.get('count')
-            user = req.context.get('user')
-            post_collection_dto = PostCollectionV2Dto(posts=[
-                post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
-                for post in search_posts(req.payload, str(user.id), page_start, page_count)])
-            resp.body = post_collection_dto
+        page_start = req.params.get('start')
+        page_count = req.params.get('count')
+        user = req.context.get('user')
+        post_collection_dto = PostCollectionV2Dto(posts=[
+            post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
+            for post in search_posts(req.payload, str(user.id), page_start, page_count)])
+        resp.body = post_collection_dto
 
 
 # override resource binded cache with later defined resources
