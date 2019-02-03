@@ -104,6 +104,7 @@ class PostResource(BaseResource):
 
     route = '/v1/post/{post_id}/'
 
+    # @Cache.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, PostDtoSerializer)
     def on_get(self, req, resp, post_id):
@@ -152,6 +153,7 @@ class PostCollectionResource(BaseResource):
     route = '/v1/posts/'
     cache_with_params = True
 
+    @Cache.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, PostCollectionV2DtoSerializer)
     def on_get(self, req, resp):
@@ -184,6 +186,7 @@ class PostSearchResource(BaseResource):
     route = '/v1/posts/search/'
     cache_with_params = True
 
+    @Cache.from_cache
     @falcon.before(auto_respond)
     @falcon.before(request_body, PostSearchSettingsDtoSerializer)
     @falcon.before(is_logged_in)

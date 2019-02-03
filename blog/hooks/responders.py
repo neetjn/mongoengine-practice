@@ -3,8 +3,6 @@ from r2dto import ValidationError
 from blog.mediatypes import HttpMethods
 from blog.utils.serializers import from_json, to_json
 
-from blog.utils.logger import warning
-
 
 StatusMethodMap = {
     HttpMethods.GET: falcon.HTTP_200,
@@ -36,7 +34,6 @@ class Cache:
     @staticmethod
     def from_cache(responder):
         def wrapped(*args, **kwargs):
-            req = args[1]
             resp = args[2]
             if not resp.cached:
                 responder(*args, **kwargs)

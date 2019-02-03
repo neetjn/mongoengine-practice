@@ -1,5 +1,5 @@
 import falcon
-from blog.hooks.responders import auto_respond, response_body
+from blog.hooks.responders import auto_respond, response_body, Cache
 from blog.mediatypes import LinkDto, ServiceDescriptionDto, ServiceDescriptionDtoSerializer, UserRoles, \
     HttpMethods
 from blog.resources.admin import BlogSettingsResource
@@ -23,33 +23,33 @@ class ServiceDescriptionResource(BaseResource):
 
     route = '/'
 
+    @Cache.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, ServiceDescriptionDtoSerializer)
     def on_get(self, req, resp):
         """Fetch blog service description."""
-        if not resp.cached:
-            service_description = ServiceDescriptionDto(links=[
-                LinkDto(rel=BLOG_HREF_REL.POST_COLLECTION,
-                        href=PostCollectionResource.url_to(req.netloc),
-                        accepted_methods=[HttpMethods.GET, HttpMethods.POST]),
-                LinkDto(rel=BLOG_HREF_REL.POST_SEARCH,
-                        href=PostSearchResource.url_to(req.netloc),
-                        accepted_methods=[HttpMethods.POST]),
-                LinkDto(rel=BLOG_HREF_REL.USER_AUTHENTICATION,
-                        href=UserAuthenticationResource.url_to(req.netloc),
-                        accepted_methods=[HttpMethods.POST]),
-                LinkDto(rel=BLOG_HREF_REL.USER,
-                        href=UserResource.url_to(req.netloc),
-                        accepted_methods=[HttpMethods.GET, HttpMethods.PUT])])
-            if settings.user.allow_manual_registration:
-                service_description.links.append(
-                    LinkDto(rel=BLOG_HREF_REL.USER_REGISTRATION,
-                            href=UserRegistrationResource.url_to(req.netloc),
-                            accepted_methods=[HttpMethods.POST]))
-            user = req.context.get('user')
-            if user and user.role == UserRoles.ADMIN:
-                service_description.links.append(
-                    LinkDto(rel=BLOG_HREF_REL.ADMIN_BLOG_SETTINGS,
-                            href=BlogSettingsResource.url_to(req.netloc),
-                            accepted_methods=[HttpMethods.GET, HttpMethods.PUT]))
-            resp.body = service_description
+        service_description = ServiceDescriptionDto(links=[
+            LinkDto(rel=BLOG_HREF_REL.POST_COLLECTION,
+                    href=PostCollectionResource.url_to(req.netloc),
+                    accepted_methods=[HttpMethods.GET, HttpMethods.POST]),
+            LinkDto(rel=BLOG_HREF_REL.POST_SEARCH,
+                    href=PostSearchResource.url_to(req.netloc),
+                    accepted_methods=[HttpMethods.POST]),
+            LinkDto(rel=BLOG_HREF_REL.USER_AUTHENTICATION,
+                    href=UserAuthenticationResource.url_to(req.netloc),
+                    accepted_methods=[HttpMethods.POST]),
+            LinkDto(rel=BLOG_HREF_REL.USER,
+                    href=UserResource.url_to(req.netloc),
+                    accepted_methods=[HttpMethods.GET, HttpMethods.PUT])])
+        if settings.user.allow_manual_registration:
+            service_description.links.append(
+                LinkDto(rel=BLOG_HREF_REL.USER_REGISTRATION,
+                        href=UserRegistrationResource.url_to(req.netloc),
+                        accepted_methods=[HttpMethods.POST]))
+        user = req.context.get('user')
+        if user and user.role == UserRoles.ADMIN:
+            service_description.links.append(
+                LinkDto(rel=BLOG_HREF_REL.ADMIN_BLOG_SETTINGS,
+                        href=BlogSettingsResource.url_to(req.netloc),
+                        accepted_methods=[HttpMethods.GET, HttpMethods.PUT]))
+        resp.body = service_description
