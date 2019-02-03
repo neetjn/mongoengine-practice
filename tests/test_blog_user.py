@@ -67,7 +67,9 @@ class BlogPostTests(TestCase):
         elapsed_start = time.clock() * 1000
         self.simulate_get(UserResource.route, headers=self.headers)
         cached_delta = (time.clock() * 1000) - elapsed_start
-        self.assertGreater(elapsed_delta / 1.5, cached_delta)
+        self.assertGreater(elapsed_delta / 2, cached_delta)
+        # measurement subject to change, cached response should take no longer than 3 ms
+        self.assertLess(cached_delta, 3)
         # verify user resource can be updated
         user_profile = generate_user_form_dto()
         put_user_res = self.simulate_put(
