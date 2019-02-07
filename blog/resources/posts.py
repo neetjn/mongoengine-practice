@@ -151,7 +151,7 @@ class PostResource(BaseResource):
 class PostCollectionResource(BaseResource):
 
     route = '/v1/posts/'
-    cache_with_params = True
+    cache_with_query = True
 
     @Cache.from_cache
     @falcon.before(auto_respond)
@@ -162,11 +162,11 @@ class PostCollectionResource(BaseResource):
 
         Note: This endpoint supports pagination, pagination arguments must be provided via query args.
         """
-        page_start = req.params.get('start')
-        page_count = req.params.get('count')
+        pagination = req.context.get('pagination')
         post_collection_dto = PostCollectionV2Dto(posts=[
             post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
-            for post in get_posts(start=page_start, count=page_count)])
+            for post in get_posts(start=pagination.get('start'),
+                                  count=pagination.get('count'))])
         resp.body = post_collection_dto
 
     @falcon.before(auto_respond)
@@ -183,7 +183,7 @@ class PostCollectionResource(BaseResource):
 class PostSearchResource(BaseResource):
 
     route = '/v1/posts/search/'
-    cache_with_params = True
+    cache_with_query = True
 
     @Cache.from_cache
     @falcon.before(auto_respond)
@@ -192,12 +192,11 @@ class PostSearchResource(BaseResource):
     @falcon.after(response_body, PostCollectionV2DtoSerializer)
     def on_post(self, req, resp):
         """Search for an existing post resource."""
-        page_start = req.params.get('start')
-        page_count = req.params.get('count')
+        pagination = req.context.get('pagination')
         user = req.context.get('user')
         post_collection_dto = PostCollectionV2Dto(posts=[
             post_to_v2_dto(post, href=PostResource.url_to(req.netloc, post_id=post.id), links=get_post_links(req, post))
-            for post in search_posts(req.payload, str(user.id), page_start, page_count)])
+            for post in search_posts(req.payload, str(user.id), pagination.get('start'), pagination.get('count'))])
         resp.body = post_collection_dto
 
 

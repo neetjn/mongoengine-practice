@@ -85,6 +85,9 @@ class PostRules(object):
         self.title_max_char = 0
         self.content_min_char = 0
         self.content_max_char = 0
+        self.tag_min_char = 0
+        self.tag_max_char = 0
+        self.tag_max_count = 0
 
 
 class PostRulesSerializer(Serializer):
@@ -92,6 +95,9 @@ class PostRulesSerializer(Serializer):
     title_max_char = fields.IntegerField(required=True)
     content_min_char = fields.IntegerField(required=True)
     content_max_char = fields.IntegerField(required=True)
+    tag_min_char = fields.IntegerField(required=True)
+    tag_max_char = fields.IntegerField(required=True)
+    tag_max_count = fields.IntegerField(required=True)
 
     class Meta(object):
         model = PostRules
@@ -192,6 +198,9 @@ def save_settings(settings_dto: Settings, write_to_config: bool = True):
     settings.rules.post.title_max_char = settings_dto.rules.post.title_max_char
     settings.rules.post.content_min_char = settings_dto.rules.post.content_min_char
     settings.rules.post.content_max_char = settings_dto.rules.post.content_max_char
+    settings.rules.post.tag_min_char = settings_dto.rules.post.tag_min_char
+    settings.rules.post.tag_max_char = settings_dto.rules.post.tag_max_char
+    settings.rules.post.tag_max_count = settings_dto.rules.post.tag_max_count
 
     # comment rules
     settings.rules.comment.content_min_char = settings_dto.rules.comment.content_min_char

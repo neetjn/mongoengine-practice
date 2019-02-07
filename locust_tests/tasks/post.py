@@ -1,4 +1,4 @@
-from locust import TaskSet, task, Locust
+from locust import TaskSet, task, HttpLocust
 
 
 class PostTasks(TaskSet):
@@ -9,14 +9,16 @@ class PostTasks(TaskSet):
 
     @task
     def index(self):
+        self.client.get('google.com')
         print('index tested')
 
     @task
     def about(self):
+        self.client.get('google.com')
         print('about tested')
 
 
-class WebsiteUser(Locust):
-    task_Set = PostTasks
+class WebsiteUser(HttpLocust):
+    task_set = PostTasks
     min_wait = 5000
     max_wait = 15000

@@ -63,15 +63,22 @@ class EmailValidator(object):
             raise ValidationError('"f{data}" is not a valid email.')
 
 
-class CharLenValidator(object):
+class NotEmptyValidator(object):
+
+    def validate(self, field, data):
+        if not len(data.replace(' ', '')):
+            raise ValidationError('Field "{field.name}" must not be empty.')
+
+
+class LengthValidator(object):
 
     def __init__(self, min: int, max: int):
         """
-        Character length validator for r2dto serializer fields.
+        List length validator for r2dto serializer fields.
 
-        :param min: Minimum character length for field value.
+        :param min: Minimum list length for field.
         :type min: int
-        :param max: Maximum character length for field value.
+        :param max: Maximum list length for field.
         :type max: int
         """
         self.min = min
@@ -85,8 +92,6 @@ class CharLenValidator(object):
                 ' or less than or equal to {self.max} in length.')
 
 
-class NotEmptyValidator(object):
+class CharLenValidator(LengthValidator):
 
-    def validate(self, field, data):
-        if not len(data.replace(' ', '')):
-            raise ValidationError('Field "{field.name}" must not be empty.')
+    pass

@@ -13,8 +13,6 @@ def cache_key(req, resource, uri=None) -> str:
     uri = uri or req.uri
     if uri.endswith('/'):
         uri = uri[:-1]
-    if resource.cache_with_params:
-        uri += f'?{req.query_string}'
     if resource.unique_cache:
         user = req.context.get('user')
         if user:
@@ -49,4 +47,9 @@ class CacheProvider(object):
                     # remove last character, uri has final slash stripped
                     uri = f'{req.scheme}://{req.netloc}{route}'
                     # delete binded cached resources
-                    client.delete(cache_key(req, resc, uri))
+                    _cache = cache_key(req, resc, uri)
+                    client.delete(_cache)
+                    if resc.cache_with_query:
+                        # for resources using query strings
+                        for key in client.scan_iter(_cache):
+                            client.delete(key)

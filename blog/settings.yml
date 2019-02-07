@@ -12,6 +12,9 @@ rules:
   post:
     content_max_char: 10000
     content_min_char: 124
+    tag_max_char: 12
+    tag_max_count: 5
+    tag_min_char: 3
     title_max_char: 124
     title_min_char: 3
   user:
