@@ -71,7 +71,7 @@ def search_posts(post_search_settings: PostSearchSettingsDto, user_id, start: in
         except DoesNotExist:
             posts = []
 
-    return posts[start:start + count]
+    return posts[start:start + count] if start and count else posts
 
 
 def get_posts(start=None, count=None) -> list:
@@ -84,7 +84,8 @@ def get_posts(start=None, count=None) -> list:
     :type count: int
     :return: [Post, ...]
     """
-    posts = Post.objects.get_public()[start:start + count]
+    posts = Post.objects.get_public()[start:start + count] \
+        if start and count else Post.objects.get_public()
     for post in posts:
         post.description = decrypt_content(post.description)
         post.content = decrypt_content(post.content)
