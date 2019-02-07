@@ -159,6 +159,38 @@ class BlogPostTests(TestCase):
         self.assertEqual(post_search_res.status_code, 201)
         self.assertEqual(len(post_search_res.json.get('posts')), 10)
 
+    def test_post_search_pagination(self):
+        """Verify post search results are paginated"""
+        post_collection = [generate_post_form_dto() for _ in range(10)]
+        for post in post_collection:
+            self.simulate_post(
+                PostCollectionResource.route,
+                body=to_json(PostFormDtoSerializer, post),
+                headers=self.headers)
+        search_settings = PostSearchSettingsDto(
+            query=self.user.username,
+            options=[PostSearchOptions.AUTHOR])
+        post_search_res = self.simulate_post(
+            PostSearchResource.route,
+            body=to_json(PostSearchSettingsDtoSerializer, search_settings),
+            headers=self.headers,
+            params={
+                'start': 5,
+                'count': 5
+            })
+        self.assertEqual(post_search_res.status_code, 201)
+        posts = post_search_res.json.get('posts')
+        self.assertEqual(len(posts), 5)
+        for res, post in zip(posts, post_collection[5:]):
+            self.assertEqual(res['title'], post.title)
+            self.assertEqual(res['description'], post.description)
+            self.assertEqual(res['content'], post.content)
+            self.assertEqual(res['private'], post.private)
+            self.assertEqual(res['featured'], post.featured)
+            self.assertEqual(len(res['tags']), len(post.tags))
+            for expected, found in zip(res['tags'], post.tags):
+                self.assertEqual(expected, found)
+
     def test_like_post(self):
         """Verify post resources can be liked"""
         self.simulate_post(
