@@ -6,6 +6,7 @@ name = "pypi"
 [dev-packages]
 pytest-cov = "*"
 pylint = "*"
+locustio = "*"
 
 [requires]
 python_version = "3.6"

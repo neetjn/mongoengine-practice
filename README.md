@@ -201,6 +201,9 @@ This project is highly configurable, all blog constants can be found in `blog/co
     * **title_max_char**: Maximum number of characters for post titles.
     * **content_min_char**: Minimum number of characters for post content.
     * **content_max_char**: Maximum number of characters for post content.
+    * **tag_min_char**: Minimum number of characters for a single post tag.
+    * **tag_max_char**: Maximum number of characters for a single post tag.
+    * **tag_max_count**: Maximum number of tags a post can have.
   * **comment**
     * **content_min_char**: Minimum number of characters for comments.
     * **content_max_char**: Maximum number of characters for comments.

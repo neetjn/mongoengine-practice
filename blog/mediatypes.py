@@ -3,7 +3,7 @@ from r2dto import fields, validators, Serializer, ValidationError
 from blog.constants import USERNAME_PATTERN
 from blog.settings import settings
 from blog.utils.serializers import CharLenValidator, EmailValidator, RegexValidator, \
-    NotEmptyValidator
+    NotEmptyValidator, LengthValidator
 
 
 class HttpMethods(object):
@@ -217,7 +217,11 @@ class PostDtoSerializer(Serializer):
         )
     ])
     content = fields.StringField(validators=[NotEmptyValidator()])
-    tags = fields.ListField(fields.StringField())
+    tags = fields.ListField(fields.StringField(validators=[NotEmptyValidator(),
+                                                           CharLenValidator(
+                                                               min=settings.rules.post.tag_min_char,
+                                                               max=settings.rules.post.tag_max_char
+                                                           )]))
     private = fields.BooleanField()
     featured = fields.BooleanField()
     created = fields.DateTimeField()
@@ -285,7 +289,12 @@ class PostV2DtoSerializer(Serializer):
         )
     ])
     content = fields.StringField(validators=[NotEmptyValidator()])
-    tags = fields.ListField(fields.StringField())
+    tags = fields.ListField(fields.StringField(validators=[NotEmptyValidator(),
+                                                           CharLenValidator(
+                                                               min=settings.rules.post.tag_min_char,
+                                                               max=settings.rules.post.tag_max_char
+                                                           )]),
+                            validators=[LengthValidator(min=0, max=settings.rules.post.tag_max_count)])
     private = fields.BooleanField()
     featured = fields.BooleanField()
     created = fields.DateTimeField()

@@ -61,6 +61,7 @@ class BlogPostTests(TestCase):
         self.assertEqual(created_post.get('description'), post_res.json.get('description'))
         self.assertEqual(created_post.get('content'), post_res.json.get('content'))
         self.assertEqual(created_post.get('author'), post_res.json.get('author'))
+        # self.assertEqual(len(created_post.get('tags')), len(post_res.json.get('tags')))
         # validate links for post in collection and payload from post resource
         expected_links = ('post-comment', 'post-like', 'post-view')
         for rel in expected_links:
@@ -87,6 +88,33 @@ class BlogPostTests(TestCase):
         post_collection_res = self.simulate_get(PostCollectionResource.route)
         print(post_collection_res.json)
         self.assertEqual(len(post_collection_res.json.get('posts')), 0)
+
+    def test_post_collection_pagination(self):
+        """Verify post collection can be paginated"""
+        post_collection = [generate_post_form_dto() for _ in range(10)]
+        for post in post_collection:
+            self.simulate_post(
+                PostCollectionResource.route,
+                body=to_json(PostFormDtoSerializer, post),
+                headers=self.headers)
+        # ensure pagination query works as expected
+        post_collection_res = self.simulate_get(PostCollectionResource.route, params={'start': 5, 'count': 5})
+        self.assertEqual(post_collection_res.status_code, 200)
+        posts = post_collection_res.json.get('posts')
+        self.assertEqual(len(posts), 5)
+        # ensure returned items match expected posts
+        for res, post in zip(posts, post_collection[5:]):
+            self.assertEqual(res['title'], post.title)
+            self.assertEqual(res['description'], post.description)
+            self.assertEqual(res['content'], post.content)
+            self.assertEqual(res['private'], post.private)
+            self.assertEqual(res['featured'], post.featured)
+            self.assertEqual(len(res['tags']), len(post.tags))
+            for expected, found in zip(res['tags'], post.tags):
+                self.assertEqual(expected, found)
+        # ensure out of range pagination query works
+        post_collection_res = self.simulate_get(PostCollectionResource.route, params={'start': 5, 'count': 10})
+        self.assertEqual(len(post_collection_res.json.get('posts')), 5)
 
     def test_search_post_critera(self):
         """Verify post resources can be searched by critera"""
@@ -130,6 +158,38 @@ class BlogPostTests(TestCase):
             headers=self.headers)
         self.assertEqual(post_search_res.status_code, 201)
         self.assertEqual(len(post_search_res.json.get('posts')), 10)
+
+    def test_post_search_pagination(self):
+        """Verify post search results are paginated"""
+        post_collection = [generate_post_form_dto() for _ in range(10)]
+        for post in post_collection:
+            self.simulate_post(
+                PostCollectionResource.route,
+                body=to_json(PostFormDtoSerializer, post),
+                headers=self.headers)
+        search_settings = PostSearchSettingsDto(
+            query=self.user.username,
+            options=[PostSearchOptions.AUTHOR])
+        post_search_res = self.simulate_post(
+            PostSearchResource.route,
+            body=to_json(PostSearchSettingsDtoSerializer, search_settings),
+            headers=self.headers,
+            params={
+                'start': 5,
+                'count': 5
+            })
+        self.assertEqual(post_search_res.status_code, 201)
+        posts = post_search_res.json.get('posts')
+        self.assertEqual(len(posts), 5)
+        for res, post in zip(posts, post_collection[5:]):
+            self.assertEqual(res['title'], post.title)
+            self.assertEqual(res['description'], post.description)
+            self.assertEqual(res['content'], post.content)
+            self.assertEqual(res['private'], post.private)
+            self.assertEqual(res['featured'], post.featured)
+            self.assertEqual(len(res['tags']), len(post.tags))
+            for expected, found in zip(res['tags'], post.tags):
+                self.assertEqual(expected, found)
 
     def test_like_post(self):
         """Verify post resources can be liked"""
