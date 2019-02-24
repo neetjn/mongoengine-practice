@@ -27,14 +27,3 @@ def response_body(req, resp, resource, serializer_class, content_type="applicati
     if resp.body and resp.body != resp.cached:
         resp.body = to_json(serializer_class, resp.body)
     resp.content_type = content_type
-
-
-class Cache:
-
-    @staticmethod
-    def from_cache(responder):
-        def wrapped(*args, **kwargs):
-            resp = args[2]
-            if not resp.cached:
-                responder(*args, **kwargs)
-        return wrapped

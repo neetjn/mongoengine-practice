@@ -1,5 +1,6 @@
 import falcon
-from blog.hooks.responders import auto_respond, response_body, Cache
+from falcon_redis_cache.hooks import CacheProvider
+from blog.hooks.responders import auto_respond, response_body
 from blog.mediatypes import LinkDto, ServiceDescriptionDto, ServiceDescriptionDtoSerializer, UserRoles, \
     HttpMethods
 from blog.resources.admin import BlogSettingsResource
@@ -23,7 +24,7 @@ class ServiceDescriptionResource(BaseResource):
 
     route = '/'
 
-    @Cache.from_cache
+    @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, ServiceDescriptionDtoSerializer)
     def on_get(self, req, resp):

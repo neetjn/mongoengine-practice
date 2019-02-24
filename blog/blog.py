@@ -1,7 +1,7 @@
 import falcon
+from blog.constants import BLOG_REDIS_HOST, BLOG_REDIS_PORT
 from blog.errors import ErrorHandler
 from blog.middleware.users import UserProcessor
-from blog.middleware.redis import CacheProvider
 from blog.resources.comments import CommentResource
 from blog.resources.admin import BlogSettingsResource
 from blog.resources.posts import PostCollectionResource, PostResource, PostLikeResource, \
@@ -13,9 +13,13 @@ from blog.settings import settings
 
 from falcon_multipart.middleware import MultipartMiddleware
 from falcon_pagination_processor import PaginationProcessor
+from falcon_redis_cache.middleware import RedisCacheMiddleware
 
 
-api = falcon.API(middleware=[PaginationProcessor(), UserProcessor(), CacheProvider(), MultipartMiddleware()])
+api = falcon.API(middleware=[PaginationProcessor(),
+                             RedisCacheMiddleware(redis_host=BLOG_REDIS_HOST, redis_port=BLOG_REDIS_PORT),
+                             MultipartMiddleware(),
+                             UserProcessor()])
 
 api.add_error_handler(Exception, ErrorHandler.unexpected)
 api.add_error_handler(falcon.HTTPError, ErrorHandler.http)

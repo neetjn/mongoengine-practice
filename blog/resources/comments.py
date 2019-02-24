@@ -1,10 +1,11 @@
 import falcon
 import redis
+from falcon_redis_cache.hooks import CacheProvider
 from blog.core.comments import get_comment, edit_comment, delete_comment, comment_to_dto, \
     like_comment
 from blog.db import Comment, User
 from blog.errors import UnauthorizedRequestError
-from blog.hooks.responders import auto_respond, request_body, response_body, Cache
+from blog.hooks.responders import auto_respond, request_body, response_body
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import UserRoles, CommentDtoSerializer, CommentFormDtoSerializer, \
     LinkDto, HttpMethods
@@ -64,7 +65,7 @@ class CommentResource(BaseResource):
     route = '/v1/blog/comment/{comment_id}/'
     cached_resources = [CommentLikeResource]
 
-    @Cache.from_cache
+    @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, CommentDtoSerializer)
     def on_get(self, req, resp, comment_id):

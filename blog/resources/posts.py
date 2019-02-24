@@ -1,13 +1,14 @@
 import base64
 import falcon
 import redis
+from falcon_redis_cache.hooks import CacheProvider
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
     post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts, \
     post_to_v2_dto
 from blog.core.comments import comment_to_dto
 from blog.db import Post, User
 from blog.errors import UnauthorizedRequestError
-from blog.hooks.responders import auto_respond, request_body, response_body, Cache
+from blog.hooks.responders import auto_respond, request_body, response_body
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import PostV2DtoSerializer, PostCollectionV2DtoSerializer, \
     PostFormDtoSerializer, PostCollectionV2Dto, UserRoles, LinkDto, \
@@ -104,7 +105,7 @@ class PostResource(BaseResource):
 
     route = '/v1/post/{post_id}/'
 
-    # @Cache.from_cache
+    # @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, PostDtoSerializer)
     def on_get(self, req, resp, post_id):
@@ -153,7 +154,7 @@ class PostCollectionResource(BaseResource):
     route = '/v1/posts/'
     cache_with_query = True
 
-    @Cache.from_cache
+    @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, PostCollectionV2DtoSerializer)
     def on_get(self, req, resp):
@@ -185,7 +186,7 @@ class PostSearchResource(BaseResource):
     route = '/v1/posts/search/'
     cache_with_query = True
 
-    @Cache.from_cache
+    @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.before(request_body, PostSearchSettingsDtoSerializer)
     @falcon.before(is_logged_in)

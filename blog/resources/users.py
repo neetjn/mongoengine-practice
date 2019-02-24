@@ -4,6 +4,7 @@ import jwt
 import magic
 import os
 import falcon
+from falcon_redis_cache.hooks import CacheProvider
 from blog.constants import BLOG_JWT_SECRET_KEY
 from blog.core.comments import comment_to_dto
 from blog.core.posts import get_user_liked_posts, post_to_dto
@@ -11,7 +12,7 @@ from blog.core.users import authenticate, get_user, create_user, edit_user, \
     user_to_dto, get_user_comments, get_user_posts, store_user_avatar, delete_user_avatar
 from blog.db import User
 from blog.errors import ResourceNotAvailableError, UserAvatarUploadError
-from blog.hooks.responders import auto_respond, request_body, response_body, Cache
+from blog.hooks.responders import auto_respond, request_body, response_body
 from blog.hooks.users import is_logged_in, is_logged_out
 from blog.mediatypes import UserAuthDtoSerializer, UserFormDtoSerializer, TokenDto, \
     TokenDtoSerializer, UserProfileDtoSerializer, LinkDto, HttpMethods, \
@@ -145,7 +146,7 @@ class UserResource(BaseResource):
     route = '/v1/user/'
     unique_cache = True
 
-    @Cache.from_cache
+    @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.before(is_logged_in)
     @falcon.after(response_body, UserProfileDtoSerializer)
