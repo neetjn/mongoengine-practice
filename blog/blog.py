@@ -1,6 +1,5 @@
 import falcon
 from blog.errors import ErrorHandler
-from blog.middleware.pagination import PaginationProcessor
 from blog.middleware.users import UserProcessor
 from blog.middleware.redis import CacheProvider
 from blog.resources.comments import CommentResource
@@ -13,6 +12,7 @@ from blog.resources.service import ServiceDescriptionResource
 from blog.settings import settings
 
 from falcon_multipart.middleware import MultipartMiddleware
+from falcon_pagination_processor import PaginationProcessor
 
 
 api = falcon.API(middleware=[PaginationProcessor(), UserProcessor(), CacheProvider(), MultipartMiddleware()])
