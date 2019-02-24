@@ -1,14 +1,16 @@
 import random
 import string
 from falcon.testing import TestCase
+from redis import StrictRedis
+from blog.constants import BLOG_REDIS_HOST, BLOG_REDIS_PORT
 from blog.db import client
-from blog.middleware.redis import client as redis
 
 
 def drop_database():
     """Drop all collections in database"""
     db_name = client.get_database().name
     client.drop_database(db_name)
+    redis = StrictRedis(host=BLOG_REDIS_PORT, port=BLOG_REDIS_PORT)
     redis.flushdb()
 
 
