@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "cd732f631ec9125000876c0aa3d14383e5cbc9e3f3ecbf799cc6bfda3198ef96"
+            "sha256": "a7d892b1a154bd3a7fe0f1e4cd840ef1a0fb75e0b7d0a64ce68e6b4107b8426a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -64,11 +64,10 @@
         },
         "falcon-redis-cache": {
             "hashes": [
-                "sha256:258b4b8f5f4e15566cf13ac243c706bd4fab5181bdae1f9838e76a3405a35373",
-                "sha256:84cdc64aac2318d2f2509745b7d6547f4672e08dd36d33ed0d795837db10d480"
+                "sha256:be21c184abea32cae6756077167bba3992281d025ec14c6f48d0592f6e12a5b6"
             ],
             "index": "pypi",
-            "version": "==0.0.1"
+            "version": "==0.0.2"
         },
         "gunicorn": {
             "hashes": [
