@@ -1,5 +1,5 @@
 from blog.blog import api
-from blog.constants import BLOG_HOST, BLOG_PORT
+from blog.constants import BLOG_HOST, BLOG_PORT, BLOG_WORKERS
 import gunicorn.app.base
 
 
@@ -23,6 +23,6 @@ class BlogStandalone(gunicorn.app.base.BaseApplication):
 if __name__ == '__main__':
     options = {
         'bind': f'{BLOG_HOST}:{BLOG_PORT}',
-        'workers': 1,
+        'workers': BLOG_WORKERS,
     }
     BlogStandalone(api, options).run()
