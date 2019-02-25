@@ -1,10 +1,9 @@
-class BaseResource(object):
+from falcon_redis_cache.resource import CacheCompaitableResource
+
+
+class BaseResource(CacheCompaitableResource):
 
     route = ''
-    use_cache = True
-    unique_cache = False
-    cache_with_query = False
-    cached_resources = []
 
     @classmethod
     def url_to(cls, host, **kwargs) -> str:
