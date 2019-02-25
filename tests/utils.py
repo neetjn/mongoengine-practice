@@ -10,7 +10,7 @@ def drop_database():
     """Drop all collections in database"""
     db_name = client.get_database().name
     client.drop_database(db_name)
-    redis = StrictRedis(host=BLOG_REDIS_PORT, port=BLOG_REDIS_PORT)
+    redis = StrictRedis(host=BLOG_REDIS_HOST, port=BLOG_REDIS_PORT)
     redis.flushdb()
 
 
