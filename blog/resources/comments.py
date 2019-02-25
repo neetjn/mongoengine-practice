@@ -63,7 +63,7 @@ class CommentLikeResource(BaseResource):
 class CommentResource(BaseResource):
 
     route = '/v1/blog/comment/{comment_id}/'
-    cached_resources = [CommentLikeResource]
+    binded_resources = [CommentLikeResource]
 
     @CacheProvider.from_cache
     @falcon.before(auto_respond)

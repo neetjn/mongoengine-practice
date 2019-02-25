@@ -110,12 +110,13 @@ class PostResource(BaseResource):
     @falcon.after(response_body, PostDtoSerializer)
     def on_get(self, req, resp, post_id):
         """Fetch single post resource."""
-        if not resp.cached:
+        cached = resp.context.get('cached')
+        if not cached:
             post = get_post(post_id)
             post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
         else:
             # TODO: figure out how to bind post resource with unique comment resource
-            post_dto = from_json(PostDtoSerializer, resp.cached)
+            post_dto = from_json(PostDtoSerializer, cached)
 
         comments = get_post_comments(post_id)
         post_dto.comments = [comment_to_dto(comment,
@@ -202,7 +203,7 @@ class PostSearchResource(BaseResource):
 
 
 # override resource binded cache with later defined resources
-PostCommentResource.cached_resources = [PostResource]
-PostViewResource.cached_resources = [PostResource]
-PostLikeResource.cached_resources = [PostResource]
-PostResource.cached_resources = [PostCollectionResource, PostSearchResource]
+PostCommentResource.binded_resources = [PostResource]
+PostViewResource.binded_resources = [PostResource]
+PostLikeResource.binded_resources = [PostResource]
+PostResource.binded_resources = [PostCollectionResource, PostSearchResource]

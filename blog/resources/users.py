@@ -192,4 +192,4 @@ class UserResource(BaseResource):
 
 
 # override resource binded cache with later defined resources
-UserAvatarMediaResource.cached_resources = [UserResource]
+UserAvatarMediaResource.binded_resources = [UserResource]

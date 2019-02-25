@@ -24,6 +24,6 @@ def request_body(req, resp, resource, params, serializer_class):
 
 def response_body(req, resp, resource, serializer_class, content_type="application/json"):
     # make sure not to try and serialize already serialized, cached responses
-    if resp.body and resp.body != resp.cached:
+    if resp.body and resp.body != resp.context.get('cached'):
         resp.body = to_json(serializer_class, resp.body)
     resp.content_type = content_type
