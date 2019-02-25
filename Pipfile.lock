@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a722ae51ec2057bd36ded48d926141b290f65e6ab99d535ff6fc7b740967b7ca"
+            "sha256": "a7d892b1a154bd3a7fe0f1e4cd840ef1a0fb75e0b7d0a64ce68e6b4107b8426a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -62,6 +62,13 @@
             "index": "pypi",
             "version": "==0.0.2"
         },
+        "falcon-redis-cache": {
+            "hashes": [
+                "sha256:be21c184abea32cae6756077167bba3992281d025ec14c6f48d0592f6e12a5b6"
+            ],
+            "index": "pypi",
+            "version": "==0.0.2"
+        },
         "gunicorn": {
             "hashes": [
                 "sha256:aa8e0b40b4157b36a5df5e599f45c9c76d6af43845ba3b3b0efe2c70473c2471",
@@ -80,10 +87,10 @@
         },
         "jmespath": {
             "hashes": [
-                "sha256:6a81d4c9aa62caf061cb517b4d9ad1dd300374cd4706997aff9cd6aedd61fc64",
-                "sha256:f11b4461f425740a1d908e9a3f7365c3d2e569f6ca68a2ff8bc5bcd9676edd63"
+                "sha256:3720a4b1bd659dd2eecad0666459b9788813e032b83e7ba58578e48254e0a0e6",
+                "sha256:bde2aef6f44302dfb30320115b17d030798de8c4110e28d5cf6cf91a7a31074c"
             ],
-            "version": "==0.9.3"
+            "version": "==0.9.4"
         },
         "markupsafe": {
             "hashes": [

@@ -1,13 +1,14 @@
 import base64
 import falcon
 import redis
+from falcon_redis_cache.hooks import CacheProvider
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
     post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts, \
     post_to_v2_dto
 from blog.core.comments import comment_to_dto
 from blog.db import Post, User
 from blog.errors import UnauthorizedRequestError
-from blog.hooks.responders import auto_respond, request_body, response_body, Cache
+from blog.hooks.responders import auto_respond, request_body, response_body
 from blog.hooks.users import is_logged_in
 from blog.mediatypes import PostV2DtoSerializer, PostCollectionV2DtoSerializer, \
     PostFormDtoSerializer, PostCollectionV2Dto, UserRoles, LinkDto, \
@@ -104,17 +105,18 @@ class PostResource(BaseResource):
 
     route = '/v1/post/{post_id}/'
 
-    # @Cache.from_cache
+    # @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, PostDtoSerializer)
     def on_get(self, req, resp, post_id):
         """Fetch single post resource."""
-        if not resp.cached:
+        cached = resp.context.get('cached')
+        if not cached:
             post = get_post(post_id)
             post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
         else:
             # TODO: figure out how to bind post resource with unique comment resource
-            post_dto = from_json(PostDtoSerializer, resp.cached)
+            post_dto = from_json(PostDtoSerializer, cached)
 
         comments = get_post_comments(post_id)
         post_dto.comments = [comment_to_dto(comment,
@@ -153,7 +155,7 @@ class PostCollectionResource(BaseResource):
     route = '/v1/posts/'
     cache_with_query = True
 
-    @Cache.from_cache
+    @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, PostCollectionV2DtoSerializer)
     def on_get(self, req, resp):
@@ -185,7 +187,7 @@ class PostSearchResource(BaseResource):
     route = '/v1/posts/search/'
     cache_with_query = True
 
-    @Cache.from_cache
+    @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.before(request_body, PostSearchSettingsDtoSerializer)
     @falcon.before(is_logged_in)
@@ -201,7 +203,7 @@ class PostSearchResource(BaseResource):
 
 
 # override resource binded cache with later defined resources
-PostCommentResource.cached_resources = [PostResource]
-PostViewResource.cached_resources = [PostResource]
-PostLikeResource.cached_resources = [PostResource]
-PostResource.cached_resources = [PostCollectionResource, PostSearchResource]
+PostCommentResource.binded_resources = [PostResource]
+PostViewResource.binded_resources = [PostResource]
+PostLikeResource.binded_resources = [PostResource]
+PostResource.binded_resources = [PostCollectionResource, PostSearchResource]

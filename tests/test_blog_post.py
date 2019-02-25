@@ -86,7 +86,6 @@ class BlogPostTests(TestCase):
         post_res = self.simulate_get(post_href)
         self.assertEqual(post_res.status_code, 404)
         post_collection_res = self.simulate_get(PostCollectionResource.route)
-        print(post_collection_res.json)
         self.assertEqual(len(post_collection_res.json.get('posts')), 0)
 
     def test_post_collection_pagination(self):
