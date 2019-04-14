@@ -75,6 +75,8 @@ class PostCommentResource(BaseResource):
         """Create comment for existing post resource"""
         user = req.context.get('user')
         create_post_comment(post_id, str(user.id), req.payload)
+        # TODO: update when falcon-redis-cache updated to 0.0.3
+        clear_resource_cache(PostResource, post_id=post_id)
 
 
 class PostViewResource(BaseResource):
@@ -105,7 +107,7 @@ class PostResource(BaseResource):
 
     route = '/v1/post/{post_id}/'
 
-    # @CacheProvider.from_cache
+    @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, PostDtoSerializer)
     def on_get(self, req, resp, post_id):
@@ -115,8 +117,6 @@ class PostResource(BaseResource):
             post = get_post(post_id)
             post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
         else:
-            # TODO: figure out how to bind post resource with unique comment resource
-            # when new comment created for post, wipe cache?
             post_dto = from_json(PostDtoSerializer, cached)
 
         comments = get_post_comments(post_id)
