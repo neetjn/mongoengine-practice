@@ -2,6 +2,9 @@
 
 [![build](https://travis-ci.org/neetjn/py-blog.svg?branch=master)](https://travis-ci.org/neetjn/py-blog)
 [![codecov](https://codecov.io/gh/neetjn/py-blog/branch/master/graph/badge.svg)](https://codecov.io/gh/neetjn/py-blog)
+[![docker-automated](https://img.shields.io/docker/cloud/automated/neetjn/py-blog.svg)](https://cloud.docker.com/repository/docker/neetjn/py-blog/general)
+[![docker-build](https://img.shields.io/docker/cloud/build/neetjn/py-blog.svg)](https://cloud.docker.com/repository/docker/neetjn/py-blog/general)
+
 
 **py-blog** is a backend blog service that can easily and comfortably sit behind any frontend.
 
