@@ -116,6 +116,7 @@ class PostResource(BaseResource):
             post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
         else:
             # TODO: figure out how to bind post resource with unique comment resource
+            # when new comment created for post, wipe cache?
             post_dto = from_json(PostDtoSerializer, cached)
 
         comments = get_post_comments(post_id)
