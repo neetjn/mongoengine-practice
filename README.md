@@ -294,4 +294,4 @@ Basic contributing guidelines are as follows,
 
 ---
 
-Copyright (c) 2018 John Nolette Licensed under the MIT License.
+Copyright (c) 2019 John Nolette Licensed under the MIT License.

@@ -22,6 +22,9 @@ class UserValidation(mongoengine.Document):
 
 class User(mongoengine.Document):
 
+    _version = 1
+    version = mongoengine.IntField(default=_version)
+
     username = mongoengine.StringField(required=True)
     email = mongoengine.EmailField(required=True)
     full_name = mongoengine.StringField()
