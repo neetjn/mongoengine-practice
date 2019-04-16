@@ -163,6 +163,7 @@ This project is highly configurable, all blog constants can be found in `blog/co
 **Constants** (Environmental)
 
 * **BLOG_TEST**: Provision platform for test environments.
+* **BLOG_RUN_MIGRATIONS**: Runs blog database migrations on application start.
 * **BLOG_HOST**: Host blog will be served on for Gunicorn.
 * **BLOG_PORT**: Port blog will be served on for Gunicorn.
 * **BLOG_REDIS_HOST**: Blog redis host for caching.
