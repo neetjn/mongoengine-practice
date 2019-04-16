@@ -2,6 +2,7 @@ import base64
 import falcon
 import redis
 from falcon_redis_cache.hooks import CacheProvider
+from falcon_redis_cache.utils import clear_resource_cache
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
     post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts, \
     post_to_v2_dto
@@ -76,7 +77,9 @@ class PostCommentResource(BaseResource):
         user = req.context.get('user')
         create_post_comment(post_id, str(user.id), req.payload)
         # TODO: update when falcon-redis-cache updated to 0.0.3
-        clear_resource_cache(PostResource, post_id=post_id)
+        # might have to possibly clear post collection resource?
+        # do we need to bind on comment delete?
+        clear_resource_cache(PostResource, req, post_id=post_id)
 
 
 class PostViewResource(BaseResource):
