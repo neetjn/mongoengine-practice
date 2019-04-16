@@ -14,8 +14,8 @@ from blog.mediatypes import PostV2DtoSerializer, PostCollectionV2DtoSerializer, 
     PostFormDtoSerializer, PostCollectionV2Dto, UserRoles, LinkDto, \
     CommentFormDtoSerializer, PostSearchSettingsDtoSerializer, HttpMethods, \
     PostDtoSerializer
+from blog.resources import comments as comments
 from blog.resources.base import BaseResource
-from blog.resources.comments import get_comment_links, CommentResource
 from blog.utils.serializers import from_json
 
 
@@ -105,24 +105,20 @@ class PostResource(BaseResource):
 
     route = '/v1/post/{post_id}/'
 
-    # @CacheProvider.from_cache
+    @CacheProvider.from_cache
     @falcon.before(auto_respond)
     @falcon.after(response_body, PostDtoSerializer)
     def on_get(self, req, resp, post_id):
         """Fetch single post resource."""
-        cached = resp.context.get('cached')
-        if not cached:
-            post = get_post(post_id)
-            post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
-        else:
-            # TODO: figure out how to bind post resource with unique comment resource
-            post_dto = from_json(PostDtoSerializer, cached)
+        post = get_post(post_id)
+        post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
+        post_comments = get_post_comments(post_id)
 
-        comments = get_post_comments(post_id)
         post_dto.comments = [comment_to_dto(comment,
-                                            href=CommentResource.url_to(req.netloc,
+                                            href=comments.CommentResource.url_to(req.netloc,
                                             comment_id=str(comment.id),
-                                            links=get_comment_links(req, comment))) for comment in comments]
+                                            links=comments.get_comment_links(req, comment))) for comment in post_comments]
+
         resp.body = post_dto
 
     @falcon.before(auto_respond)
