@@ -1,4 +1,6 @@
+import inject
 import falcon
+import redis
 from blog.constants import BLOG_REDIS_HOST, BLOG_REDIS_PORT
 from blog.errors import ErrorHandler
 from blog.middleware.users import UserProcessor
@@ -39,3 +41,6 @@ api.add_route(UserResource.route, UserResource())
 api.add_route(UserAvatarMediaResource.route, UserAvatarMediaResource())
 api.add_route(UserAvatarResource.route, UserAvatarResource())
 api.add_route(ServiceDescriptionResource.route, ServiceDescriptionResource())
+
+# configure DI for resource cache utilities
+inject.configure(lambda binder: binder.bind(redis.Redis, redis.StrictRedis(host=BLOG_REDIS_HOST, port=BLOG_REDIS_PORT)))

@@ -2,7 +2,6 @@ import base64
 import falcon
 import redis
 from falcon_redis_cache.hooks import CacheProvider
-from falcon_redis_cache.utils import clear_resource_cache
 from blog.core.posts import get_posts, get_post, create_post, edit_post, delete_post, \
     post_to_dto, like_post, view_post, get_post_comments, create_post_comment, search_posts, \
     post_to_v2_dto
@@ -15,8 +14,8 @@ from blog.mediatypes import PostV2DtoSerializer, PostCollectionV2DtoSerializer, 
     PostFormDtoSerializer, PostCollectionV2Dto, UserRoles, LinkDto, \
     CommentFormDtoSerializer, PostSearchSettingsDtoSerializer, HttpMethods, \
     PostDtoSerializer
+from blog.resources import comments as comments
 from blog.resources.base import BaseResource
-from blog.resources.comments import get_comment_links, CommentResource
 from blog.utils.serializers import from_json
 
 
@@ -76,10 +75,6 @@ class PostCommentResource(BaseResource):
         """Create comment for existing post resource"""
         user = req.context.get('user')
         create_post_comment(post_id, str(user.id), req.payload)
-        # TODO: update when falcon-redis-cache updated to 0.0.3
-        # might have to possibly clear post collection resource?
-        # do we need to bind on comment delete?
-        clear_resource_cache(PostResource, req, post_id=post_id)
 
 
 class PostViewResource(BaseResource):
@@ -115,18 +110,15 @@ class PostResource(BaseResource):
     @falcon.after(response_body, PostDtoSerializer)
     def on_get(self, req, resp, post_id):
         """Fetch single post resource."""
-        cached = resp.context.get('cached')
-        if not cached:
-            post = get_post(post_id)
-            post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
-        else:
-            post_dto = from_json(PostDtoSerializer, cached)
+        post = get_post(post_id)
+        post_dto = post_to_dto(post, href=req.uri, links=get_post_links(req, post))
+        post_comments = get_post_comments(post_id)
 
-        comments = get_post_comments(post_id)
         post_dto.comments = [comment_to_dto(comment,
-                                            href=CommentResource.url_to(req.netloc,
+                                            href=comments.CommentResource.url_to(req.netloc,
                                             comment_id=str(comment.id),
-                                            links=get_comment_links(req, comment))) for comment in comments]
+                                            links=comments.get_comment_links(req, comment))) for comment in post_comments]
+
         resp.body = post_dto
 
     @falcon.before(auto_respond)

@@ -236,6 +236,7 @@ class BlogPostTests(TestCase):
         self.assertEqual(created_post.get('comments'), 0)
         post_href = normalize_href(created_post.get('href'))
         post_res = self.simulate_get(post_href)
+        self.assertEqual(post_res.status_code, 200)
         self.assertEqual(len(post_res.json.get('comments')), 0)
         post_comment_href = normalize_href(
             next(ln.get('href') for ln in created_post.get('links') if ln.get('rel') == 'post-comment'))
@@ -247,6 +248,7 @@ class BlogPostTests(TestCase):
             headers=self.headers)
         self.assertEqual(create_comment_res.status_code, 201)
         post_res = self.simulate_get(post_href)
+        self.assertEqual(post_res.status_code, 200)
         self.assertEqual(len(post_res.json.get('comments')), 1)
         created_comment = post_res.json.get('comments')[0]
         self.assertEqual(created_comment.get('content'), comment_form.content)
