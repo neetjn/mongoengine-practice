@@ -1,5 +1,7 @@
 # py-blog
 
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/neetjn/py-blog/LICENSE)
+
 [![build](https://travis-ci.org/neetjn/py-blog.svg?branch=master)](https://travis-ci.org/neetjn/py-blog)
 [![codecov](https://codecov.io/gh/neetjn/py-blog/branch/master/graph/badge.svg)](https://codecov.io/gh/neetjn/py-blog)
 [![docker-automated](https://img.shields.io/docker/cloud/automated/neetjn/py-blog.svg)](https://cloud.docker.com/repository/docker/neetjn/py-blog/general)
@@ -281,6 +283,20 @@ Alternatively, you may run your tests within a docker container using:
 
 ```bash
 make build test test-clean
+```
+
+## Migrations
+
+This project leverages [alley](https://github.com/xperscore/alley), built on top of mongoengine, for database migration. Database migrations can be ran automatically by toggling the environmental variable `BLOG_RUN_MIGRATIONS`:
+
+```bash
+BLOG_RUN_MIGRATIONS=TRUE pipenv run python -m blog
+```
+
+To test database migrations:
+
+```bash
+
 ```
 
 ## Contributors
