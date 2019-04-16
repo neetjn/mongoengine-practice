@@ -296,7 +296,7 @@ BLOG_RUN_MIGRATIONS=TRUE pipenv run python -m blog
 To test database migrations:
 
 ```bash
-
+pipenv run pytest migration_tests
 ```
 
 ## Contributors
@@ -306,6 +306,7 @@ To test database migrations:
 Basic contributing guidelines are as follows,
 
 * Any new features must be tested properly, both from an operational level and via mocked interaction.
+* New database changes require both a migration as well as a test.
 * Branches for bugs and features should be structured like so, `issue-x-username`.
 * Include your name and email in the contributors list.
 
