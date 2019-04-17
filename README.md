@@ -1,5 +1,7 @@
 # py-blog
 
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/neetjn/py-blog/LICENSE)
+
 [![build](https://travis-ci.org/neetjn/py-blog.svg?branch=master)](https://travis-ci.org/neetjn/py-blog)
 [![codecov](https://codecov.io/gh/neetjn/py-blog/branch/master/graph/badge.svg)](https://codecov.io/gh/neetjn/py-blog)
 [![docker-automated](https://img.shields.io/docker/cloud/automated/neetjn/py-blog.svg)](https://cloud.docker.com/repository/docker/neetjn/py-blog/general)
@@ -163,10 +165,14 @@ This project is highly configurable, all blog constants can be found in `blog/co
 **Constants** (Environmental)
 
 * **BLOG_TEST**: Provision platform for test environments.
+* **BLOG_RUN_MIGRATIONS**: Runs blog database migrations on application start.
 * **BLOG_HOST**: Host blog will be served on for Gunicorn.
 * **BLOG_PORT**: Port blog will be served on for Gunicorn.
 * **BLOG_REDIS_HOST**: Blog redis host for caching.
 * **BLOG_DB_HOST**: Blog mongodb database host.
+* **BLOG_DB_PORT**: Blog mongodb database port.
+* **BLOG_DB_NAME**: Blog mongodb database name.
+* **BLOG_DB_URI**: Optional connection string for mongo client.
 * **BLOG_CONTENT_KEY**: Key used to encrypt/decrypt blog content.
 * **BLOG_JWT_SECRET_KEY**: Key used to encrypt/decrypt session JWT.
 
@@ -282,6 +288,26 @@ Alternatively, you may run your tests within a docker container using:
 make build test test-clean
 ```
 
+## Migrations
+
+This project leverages [alley](https://github.com/xperscore/alley), forked from flask-mongoengine-migrations and built on top of mongoengine, for database migration. Database migrations can be ran automatically by toggling the environmental variable `BLOG_RUN_MIGRATIONS`:
+
+```bash
+BLOG_RUN_MIGRATIONS=TRUE pipenv run python -m blog
+```
+
+To test database migrations:
+
+```bash
+pipenv run pytest migration_tests
+```
+
+Alternatively, you may run your migrations tests within a docker container using:
+
+```bash
+make build test-migrations test-migrations-clean
+```
+
 ## Contributors
 
 * **John Nolette** (john@neetgroup.net)
@@ -289,9 +315,10 @@ make build test test-clean
 Basic contributing guidelines are as follows,
 
 * Any new features must be tested properly, both from an operational level and via mocked interaction.
+* New database changes require both a migration as well as a test.
 * Branches for bugs and features should be structured like so, `issue-x-username`.
 * Include your name and email in the contributors list.
 
 ---
 
-Copyright (c) 2018 John Nolette Licensed under the MIT License.
+Copyright (c) 2019 John Nolette Licensed under the MIT License.

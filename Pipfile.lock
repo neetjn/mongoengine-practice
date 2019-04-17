@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0d6e781bb3a79a4cd7c842db3de2b7bb3770bf6be488690ee7a990178d80656d"
+            "sha256": "0d1ca5d64b5d8172fde7be253c3598dd3ddf0c563d1c8c90c77ba5f55b326d6e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,13 @@
         ]
     },
     "default": {
+        "alley": {
+            "hashes": [
+                "sha256:8d7f38dfdbce62f7853a639fa534c8a817c8c7fefc25cbddcbbc10bed3a9d882"
+            ],
+            "index": "pypi",
+            "version": "==0.0.3"
+        },
         "boto3": {
             "hashes": [
                 "sha256:bb69628f933a8dba22817c85289b3421b23ac643ff3202b13dd2e933c2717109",
@@ -30,6 +37,13 @@
                 "sha256:59376112fdee707927b644dd44a1771861f8fe354a48d596131ced83d7a3c05b"
             ],
             "version": "==1.12.130"
+        },
+        "click": {
+            "hashes": [
+                "sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13",
+                "sha256:5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"
+            ],
+            "version": "==7.0"
         },
         "docutils": {
             "hashes": [
@@ -79,9 +93,9 @@
         },
         "inject": {
             "hashes": [
-                "sha256:557f5e4d62cb7ddd29a6f97f4fa6b2e5d892c4f908be573157c7841fc1021634"
+                "sha256:370759a8b15f1131f82a953ed67fbf57760dea2f3651d4c949d8da098e8dc69e"
             ],
-            "version": "==3.5.0"
+            "version": "==3.5.1"
         },
         "jinja2": {
             "hashes": [
