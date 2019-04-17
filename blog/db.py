@@ -1,9 +1,9 @@
 import datetime
 import mongoengine
-from blog.constants import BLOG_DB_HOST
+from blog.constants import BLOG_DB_URI
 
 
-client = mongoengine.connect(host=BLOG_DB_HOST)
+client = mongoengine.connect(host=BLOG_DB_URI)
 
 
 class FailedLogin(mongoengine.Document):

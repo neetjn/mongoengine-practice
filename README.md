@@ -170,6 +170,9 @@ This project is highly configurable, all blog constants can be found in `blog/co
 * **BLOG_PORT**: Port blog will be served on for Gunicorn.
 * **BLOG_REDIS_HOST**: Blog redis host for caching.
 * **BLOG_DB_HOST**: Blog mongodb database host.
+* **BLOG_DB_PORT**: Blog mongodb database port.
+* **BLOG_DB_NAME**: Blog mongodb database name.
+* **BLOG_DB_URI**: Optional connection string for mongo client.
 * **BLOG_CONTENT_KEY**: Key used to encrypt/decrypt blog content.
 * **BLOG_JWT_SECRET_KEY**: Key used to encrypt/decrypt session JWT.
 
