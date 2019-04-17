@@ -84,6 +84,9 @@ class UserAvatarResource(BaseResource):
     route = '/v1/user/{user_id}/avatar/'
     use_cache = False
 
+    # TODO: implement caching once falcon-redis-cache 0.0.4 released
+    # issue: https://github.com/neetjn/falcon-redis-cache/issues/6
+
     @falcon.before(auto_respond)
     def on_get(self, req, resp, user_id):
         """Fetch and serve avatar for requested user."""
