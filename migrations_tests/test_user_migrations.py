@@ -4,8 +4,7 @@ import os
 from alley import Migrations
 from typing import Iterable
 from unittest import TestCase
-from blog.constants import BLOG_DB_NAME
-from blog.db import User, client
+from blog.db import User, db
 from tests.utils import drop_database
 from tests.generators.users import generate_user_form_dto
 
@@ -55,18 +54,17 @@ class UserMigrationTests(TestCase):
 
     def setUp(self):
         drop_database(False)
-        self.db = client[BLOG_DB_NAME]
-        self.migrations = Migrations(MIGRATION_PATH, self.db)
+        self.migrations = Migrations(MIGRATION_PATH, db)
 
     def test_migration_0001(self):
         migration_key = '0001'
         generate_v0_users(self.USER_DOC_COUNT)
-        self.assertEqual(self.db[USER_COLLECTION].count(), self.USER_DOC_COUNT)
-        for user in self.db[USER_COLLECTION].find():
+        self.assertEqual(db[USER_COLLECTION].count(), self.USER_DOC_COUNT)
+        for user in db[USER_COLLECTION].find():
             self.assertFalse(hasattr(user, 'version'))
         self.migrations.up(migration_key)
-        for user in self.db[USER_COLLECTION].find():
+        for user in db[USER_COLLECTION].find():
             self.assertEqual(user['version'], 1)
         self.migrations.down(migration_key)
-        for user in self.db[USER_COLLECTION].find():
+        for user in db[USER_COLLECTION].find():
             self.assertFalse(hasattr(user, 'version'))

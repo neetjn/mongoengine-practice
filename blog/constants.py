@@ -23,9 +23,9 @@ BLOG_REDIS_HOST = os.environ.get('BLOG_REDIS_HOST', '127.0.0.1')
 BLOG_REDIS_PORT = int(os.environ.get('BLOG_REDIS_PORT', '6379'))
 
 # blog mongodb specifications
-BLOG_DB_HOST = '127.0.0.1'
-BLOG_DB_PORT = '27017'
-BLOG_DB_NAME = 'py-blog'
+BLOG_DB_HOST = os.environ.get('BLOG_DB_HOST', '127.0.0.1')
+BLOG_DB_PORT = os.environ.get('BLOG_DB_PORT', '27017')
+BLOG_DB_NAME = os.environ.get('BLOG_DB_NAME', 'py-blog')
 BLOG_DB_URI = os.environ.get('BLOG_DB_URI', 'mongodb://{}:{}/{}'.format(BLOG_DB_HOST, BLOG_DB_PORT, BLOG_DB_NAME))
 
 # aws credentials for s3 bucket storage

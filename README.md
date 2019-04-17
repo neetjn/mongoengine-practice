@@ -290,7 +290,7 @@ make build test test-clean
 
 ## Migrations
 
-This project leverages [alley](https://github.com/xperscore/alley), built on top of mongoengine, for database migration. Database migrations can be ran automatically by toggling the environmental variable `BLOG_RUN_MIGRATIONS`:
+This project leverages [alley](https://github.com/xperscore/alley), forked from flask-mongoengine-migrations and built on top of mongoengine, for database migration. Database migrations can be ran automatically by toggling the environmental variable `BLOG_RUN_MIGRATIONS`:
 
 ```bash
 BLOG_RUN_MIGRATIONS=TRUE pipenv run python -m blog
@@ -300,6 +300,12 @@ To test database migrations:
 
 ```bash
 pipenv run pytest migration_tests
+```
+
+Alternatively, you may run your migrations tests within a docker container using:
+
+```bash
+make build test-migrations test-migrations-clean
 ```
 
 ## Contributors
