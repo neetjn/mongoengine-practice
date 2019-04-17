@@ -1,9 +1,10 @@
 import datetime
 import mongoengine
-from blog.constants import BLOG_DB_HOST
+from blog.constants import BLOG_DB_NAME, BLOG_DB_URI
 
 
-client = mongoengine.connect(host=BLOG_DB_HOST)
+client = mongoengine.connect(host=BLOG_DB_URI)
+db = client[BLOG_DB_NAME]
 
 
 class FailedLogin(mongoengine.Document):
@@ -21,6 +22,9 @@ class UserValidation(mongoengine.Document):
 
 
 class User(mongoengine.Document):
+
+    _version = 1
+    version = mongoengine.IntField(default=_version)
 
     username = mongoengine.StringField(required=True)
     email = mongoengine.EmailField(required=True)

@@ -1,8 +1,9 @@
+import inject
 import falcon
+import redis
+from blog.constants import BLOG_REDIS_HOST, BLOG_REDIS_PORT
 from blog.errors import ErrorHandler
-from blog.middleware.pagination import PaginationProcessor
 from blog.middleware.users import UserProcessor
-from blog.middleware.redis import CacheProvider
 from blog.resources.comments import CommentResource
 from blog.resources.admin import BlogSettingsResource
 from blog.resources.posts import PostCollectionResource, PostResource, PostLikeResource, \
@@ -13,9 +14,14 @@ from blog.resources.service import ServiceDescriptionResource
 from blog.settings import settings
 
 from falcon_multipart.middleware import MultipartMiddleware
+from falcon_pagination_processor import PaginationProcessor
+from falcon_redis_cache.middleware import RedisCacheMiddleware
 
 
-api = falcon.API(middleware=[PaginationProcessor(), UserProcessor(), CacheProvider(), MultipartMiddleware()])
+api = falcon.API(middleware=[PaginationProcessor(),
+                             RedisCacheMiddleware(redis_host=BLOG_REDIS_HOST, redis_port=BLOG_REDIS_PORT),
+                             MultipartMiddleware(),
+                             UserProcessor()])
 
 api.add_error_handler(Exception, ErrorHandler.unexpected)
 api.add_error_handler(falcon.HTTPError, ErrorHandler.http)
@@ -35,3 +41,6 @@ api.add_route(UserResource.route, UserResource())
 api.add_route(UserAvatarMediaResource.route, UserAvatarMediaResource())
 api.add_route(UserAvatarResource.route, UserAvatarResource())
 api.add_route(ServiceDescriptionResource.route, ServiceDescriptionResource())
+
+# configure DI for resource cache utilities
+inject.configure(lambda binder: binder.bind(redis.Redis, redis.StrictRedis(host=BLOG_REDIS_HOST, port=BLOG_REDIS_PORT)))

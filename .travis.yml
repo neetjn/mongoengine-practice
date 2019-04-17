@@ -15,5 +15,6 @@ install:
 before_script:
   - docker run -d -p 4569:4569 lphoward/fake-s3
 script:
+  - BLOG_TEST=TRUE pytest migrations_tests
   - BLOG_TEST=TRUE pytest --cov blog.core tests
   - if [ "$TRAVIS_BRANCH" == "master" ]; then codecov; fi
