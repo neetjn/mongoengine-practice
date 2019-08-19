@@ -19,6 +19,7 @@ BLOG_PORT = int(os.environ.get('BLOG_PORT', '8000'))
 BLOG_WORKERS = int(os.environ.get('BLOG_WORKERS', '1'))
 
 # blog redis specifications
+BLOG_DISABLE_CACHE = os.environ.get('BLOG_DISABLE_CACHE', '').lower() == 'true'
 BLOG_REDIS_HOST = os.environ.get('BLOG_REDIS_HOST', '127.0.0.1')
 BLOG_REDIS_PORT = int(os.environ.get('BLOG_REDIS_PORT', '6379'))
 
