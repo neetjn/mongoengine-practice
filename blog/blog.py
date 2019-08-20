@@ -22,6 +22,11 @@ api_middleware = [PaginationProcessor(),
                   MultipartMiddleware(),
                   UserProcessor()]
 
+if (not BLOG_DISABLE_CACHE):
+    api_middleware.append(RedisCacheMiddleware(redis_host=BLOG_REDIS_HOST, redis_port=BLOG_REDIS_PORT))
+    # configure DI for resource cache utilities
+    inject.configure(lambda binder: binder.bind(redis.Redis, redis.StrictRedis(host=BLOG_REDIS_HOST, port=BLOG_REDIS_PORT)))
+
 api = falcon.API(middleware=api_middleware)
 
 api.add_error_handler(Exception, ErrorHandler.unexpected)
@@ -42,8 +47,3 @@ api.add_route(UserResource.route, UserResource())
 api.add_route(UserAvatarMediaResource.route, UserAvatarMediaResource())
 api.add_route(UserAvatarResource.route, UserAvatarResource())
 api.add_route(ServiceDescriptionResource.route, ServiceDescriptionResource())
-
-if (not BLOG_DISABLE_CACHE):
-    api_middleware.append(RedisCacheMiddleware(redis_host=BLOG_REDIS_HOST, redis_port=BLOG_REDIS_PORT))
-    # configure DI for resource cache utilities
-    inject.configure(lambda binder: binder.bind(redis.Redis, redis.StrictRedis(host=BLOG_REDIS_HOST, port=BLOG_REDIS_PORT)))

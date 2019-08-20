@@ -1,5 +1,6 @@
 import falcon
 from falcon_redis_cache.utils import clear_resource_cache
+from blog.constants import BLOG_DISABLE_CACHE
 from blog.core.comments import get_comment, edit_comment, delete_comment, comment_to_dto, \
     like_comment
 from blog.db import Comment, User
@@ -85,8 +86,9 @@ class CommentResource(BaseResource):
             raise UnauthorizedRequestError()
         edit_comment(comment_id, req.payload)
         comment = get_comment(comment_id)
-        # clear postst resource cache to reflect changes to comment
-        clear_resource_cache(posts.PostResource, req, post_id=comment.post_id)
+        if not BLOG_DISABLE_CACHE:
+            # clear postst resource cache to reflect changes to comment
+            clear_resource_cache(posts.PostResource, req, post_id=comment.post_id)
 
     @falcon.before(auto_respond)
     @falcon.before(is_logged_in)
@@ -96,7 +98,8 @@ class CommentResource(BaseResource):
         if not user_has_comment_access(user, comment_id):
             raise UnauthorizedRequestError()
         delete_comment(comment_id)
-        # clear post collection/search resource cache to reflect new comment count
-        clear_resource_cache(posts.PostCollectionResource, req)
-        clear_resource_cache(posts.PostSearchResource, req)
+        if not BLOG_DISABLE_CACHE:
+            # clear post collection/search resource cache to reflect new comment count
+            clear_resource_cache(posts.PostCollectionResource, req)
+            clear_resource_cache(posts.PostSearchResource, req)
 
