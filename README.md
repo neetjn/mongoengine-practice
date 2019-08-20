@@ -168,7 +168,9 @@ This project is highly configurable, all blog constants can be found in `blog/co
 * **BLOG_RUN_MIGRATIONS**: Runs blog database migrations on application start.
 * **BLOG_HOST**: Host blog will be served on for Gunicorn.
 * **BLOG_PORT**: Port blog will be served on for Gunicorn.
+* **BLOG_DISABLE_CACHE**: Disable redis caching for blog.
 * **BLOG_REDIS_HOST**: Blog redis host for caching.
+* **BLOG_REDIS_PORT**: Blog redis port for caching.
 * **BLOG_DB_HOST**: Blog mongodb database host.
 * **BLOG_DB_PORT**: Blog mongodb database port.
 * **BLOG_DB_NAME**: Blog mongodb database name.
@@ -222,7 +224,7 @@ The following requirements are required for staging *py-blog* for either develop
 
 - python 3.6
 - mongodb 3.6
-- redis 4
+- redis 4 (optional with `BLOG_DISABLE_CACHE` flag)
 - pipenv (python package manager)
 - s3 bucket or fakes3 (optional)
 

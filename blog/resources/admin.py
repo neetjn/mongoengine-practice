@@ -1,5 +1,5 @@
 import falcon
-from falcon_redis_cache.hooks import CacheProvider
+from blog.hooks.cache import ConditionalCache
 from blog.hooks.responders import auto_respond, request_body, response_body
 from blog.hooks.users import is_admin
 from blog.settings import settings, save_settings, SettingsSerializer
@@ -10,7 +10,7 @@ class BlogSettingsResource(BaseResource):
 
     route = '/v1/blog/admin/settings'
 
-    @CacheProvider.from_cache
+    @ConditionalCache.from_cache
     @falcon.before(auto_respond)
     @falcon.before(is_admin)
     @falcon.after(response_body, SettingsSerializer)
